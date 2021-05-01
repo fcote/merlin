@@ -1,0 +1,94 @@
+{
+  "name": "merlin-client",
+  "version": "0.1.0",
+  "author": "Fabien COTE",
+  "description": "Merlin client",
+  "license": "GPL-3.0",
+  "scripts": {
+    "dev": "cross-env PORT=4000 NODE_ENV=development vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "lint": "eslint \"src/**\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.4.0",
+    "@apollo/client": "^3.3.12",
+    "antd": "^4.12.2",
+    "crypto-hash": "^1.3.0",
+    "crypto-js": "^4.0.0",
+    "graphql": "^15.5.0",
+    "js-cookie": "^2.2.1",
+    "katex": "^0.13.0",
+    "lightweight-charts": "^3.3.0",
+    "lodash": "^4.17.20",
+    "numeral": "^2.0.6",
+    "omit-deep-lodash": "^1.1.5",
+    "react": "^17.0.1",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "showdown": "^1.9.1",
+    "subscriptions-transport-ws": "^0.9.18"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^1.4.1",
+    "@types/crypto-js": "^4.0.1",
+    "@types/js-cookie": "^2.2.6",
+    "@types/katex": "^0.11.0",
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^14.14.33",
+    "@types/numeral": "^2.0.0",
+    "@types/omit-deep-lodash": "^1.1.1",
+    "@types/react": "^17.0.1",
+    "@types/react-custom-scrollbars": "^4.0.7",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/showdown": "^1.9.3",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "@vitejs/plugin-react-refresh": "^1.3.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import-helpers": "^1.1.0",
+    "eslint-plugin-jest": "^24.1.3",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^5.0.9",
+    "less": "^4.1.1",
+    "lint-staged": "^10.5.4",
+    "prettier": "^2.2.1",
+    "prettier-eslint": "^12.0.0",
+    "prettier-eslint-cli": "^5.0.0",
+    "typescript": "^4.1.3",
+    "vite": "^2.0.5"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

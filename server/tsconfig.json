@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "sourceMap": true,
+    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@services/*": ["src/services/*"],
+      "@models/*": ["src/models/*"],
+      "@drivers/*": ["src/drivers/*"],
+      "@logger": ["src/drivers/logger"],
+      "@pubSub": ["src/drivers/pubSub"],
+      "@knex": ["src/drivers/knex"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@links": ["src/links"],
+      "@links/*": ["src/links/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@resolvers": ["src/resolvers"],
+      "@resolvers/*": ["src/resolvers/*"],
+      "@typings/*": ["src/types/*"],
+      "@test/*": ["test/*"],
+      "@config": ["src/config"]
+    },
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "./index.ts",
+    "./knexfile.ts",
+    "./src/**/*",
+    "./scripts/**/*",
+    "migrations/**/*"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./src/tests",
+    "./src/**/*.spec.ts"
+  ]
+}

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  merlin-server:
+    image: fcote/merlin-server:latest
+    container_name: merlin-server
+    environment:
+      - SERVER_PORT
+      - ENDPOINT
+    env_file:
+      - server.env
+    expose:
+      - ${SERVER_PORT}
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    restart: unless-stopped
+
+  merlin-client:
+    image: fcote/merlin-client:latest
+    container_name: merlin-client
+    environment:
+      - CLIENT_PORT
+      - ENDPOINT
+    expose:
+      - ${CLIENT_PORT}
+    ports:
+      - ${CLIENT_PORT}:${CLIENT_PORT}
+    restart: unless-stopped

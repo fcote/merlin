@@ -1,0 +1,236 @@
+import {
+  ExportOutlined,
+  InfoCircleOutlined,
+  SyncOutlined,
+} from '@ant-design/icons'
+import { PageHeader, Progress, Descriptions, Button, Tag, Modal } from 'antd'
+import React, { useState, useMemo } from 'react'
+import { useParams, Switch, useHistory } from 'react-router-dom'
+
+import PrivateRoute from '@components/PrivateRoute'
+import SecurityDetailMenu from '@components/menus/SecurityDetailMenu/SecurityDetailMenu'
+import SecurityMetricTable from '@components/tables/SecurityMetricTable/SecurityMetricTable'
+
+import { progressBarStrokeColor } from '@helpers/progressBarStrokeColor'
+
+import useSecurityGetOrSync from '@hooks/api/mutations/useSecurityGetOrSync'
+import { useDocumentTitle } from '@hooks/useDocumentTitle'
+
+import SecurityDetailChart from '@pages/SecurityDetail/SecurityDetailChart'
+import SecurityDetailEarningsCalendar from '@pages/SecurityDetail/SecurityDetailEarningsCalendar'
+import SecurityDetailNews from '@pages/SecurityDetail/SecurityDetailNews'
+import SecurityDetailRatios from '@pages/SecurityDetail/SecurityDetailRatios'
+
+import './SecurityDetail.style.less'
+import SecurityDetailStatements from './SecurityDetailStatements'
+
+export enum SecurityExternalSite {
+  whalewisdom = 'whalewisdom',
+  openinsider = 'openinsider',
+  seekingalpha = 'seekingalpha',
+  investorRelations = 'investorRelations',
+}
+
+const SecurityExternalSiteUrl: { [key: string]: string } = {
+  [SecurityExternalSite.whalewisdom]: 'https://whalewisdom.com/stock/{ticker}',
+  [SecurityExternalSite.openinsider]:
+    'http://openinsider.com/screener?s={ticker}&fd=180',
+  [SecurityExternalSite.seekingalpha]:
+    'https://seekingalpha.com/symbol/{ticker}',
+  [SecurityExternalSite.investorRelations]:
+    'https://www.google.com/search?q={ticker}+investor+relations',
+}
+
+export interface SecurityDetailParams {
+  ticker: string
+}
+
+const SecurityDetail = () => {
+  const { ticker } = useParams<SecurityDetailParams>()
+  const history = useHistory()
+  useDocumentTitle(ticker)
+
+  const {
+    security,
+    securitySyncProgress,
+    securityLoading,
+    syncSecurity,
+  } = useSecurityGetOrSync(ticker)
+
+  const [
+    isCompanyDescriptionModalVisible,
+    setIsCompanyDescriptionModalVisible,
+  ] = useState(false)
+
+  useMemo(() => {
+    if (!security?.type || security.type === 'commonStock') return
+
+    history.replace({ pathname: `/security/${security.ticker}/chart` })
+  }, [security])
+
+  const handleExternalLink = (site: SecurityExternalSite) => {
+    const baseUrl = SecurityExternalSiteUrl[site]
+    const url = baseUrl.replace('{ticker}', security?.ticker)
+    window.open(url, '_blank')
+  }
+
+  const SecuritySyncProgress = () => {
+    if (!securitySyncProgress) return null
+    return (
+      <Progress
+        strokeColor={progressBarStrokeColor}
+        percent={securitySyncProgress}
+      />
+    )
+  }
+
+  const CompanyDescriptionModal = () => {
+    return (
+      <Modal
+        width={640}
+        title={security?.company?.name}
+        closable={false}
+        onCancel={() => setIsCompanyDescriptionModalVisible(false)}
+        visible={isCompanyDescriptionModalVisible}
+        footer={null}
+      >
+        <Descriptions size="small" column={3} layout="vertical" colon={false}>
+          <Descriptions.Item label={<Tag>{'Sector'}</Tag>}>
+            {security?.company?.sector}
+          </Descriptions.Item>
+          <Descriptions.Item label={<Tag>{'Industry'}</Tag>}>
+            {security?.company?.industry}
+          </Descriptions.Item>
+          <Descriptions.Item label={<Tag>{'Employees'}</Tag>}>
+            {security?.company?.employees}
+          </Descriptions.Item>
+          <Descriptions.Item label={<Tag>{'Address'}</Tag>}>
+            {security?.company?.address}
+          </Descriptions.Item>
+        </Descriptions>
+        <Descriptions size="small" column={1} layout="vertical" colon={false}>
+          <Descriptions.Item label={<Tag>{'Description'}</Tag>}>
+            {security?.company?.description}
+          </Descriptions.Item>
+        </Descriptions>
+      </Modal>
+    )
+  }
+
+  const ExternalLinks = [
+    <Button
+      key="whale-wisdom"
+      icon={<ExportOutlined />}
+      onClick={() => handleExternalLink(SecurityExternalSite.whalewisdom)}
+    >
+      WhaleWisdom
+    </Button>,
+    <Button
+      key="open-insider"
+      icon={<ExportOutlined />}
+      onClick={() => handleExternalLink(SecurityExternalSite.openinsider)}
+    >
+      Open Insider
+    </Button>,
+    <Button
+      key="seeking-alpha"
+      icon={<ExportOutlined />}
+      onClick={() => handleExternalLink(SecurityExternalSite.seekingalpha)}
+    >
+      Seeking Alpha
+    </Button>,
+    <Button
+      key="investor-relations"
+      icon={<ExportOutlined />}
+      onClick={() => handleExternalLink(SecurityExternalSite.investorRelations)}
+    >
+      Investor relations
+    </Button>,
+  ]
+
+  const SecurityTitle = () => {
+    if (!security) return ticker
+
+    const companyName = security?.company ? ` (${security?.company?.name})` : ''
+
+    return (
+      <div>
+        {`${security?.ticker}${companyName}`}
+        {security?.company && (
+          <Button
+            icon={<InfoCircleOutlined />}
+            type="text"
+            onClick={() => setIsCompanyDescriptionModalVisible(true)}
+            style={{ marginLeft: 8 }}
+          />
+        )}
+        <Button
+          icon={<SyncOutlined />}
+          type="text"
+          onClick={() => syncSecurity(security.ticker)}
+          loading={securityLoading}
+          style={{ marginLeft: 8 }}
+        />
+      </div>
+    )
+  }
+
+  const SecurityMetrics = () => {
+    if (securitySyncProgress || security?.type !== 'commonStock') return null
+
+    return (
+      <div className="security-metrics">
+        <SecurityMetricTable
+          security={security}
+          securityLoading={securityLoading}
+        />
+      </div>
+    )
+  }
+
+  const SecurityContent = useMemo(() => {
+    if (securitySyncProgress) return null
+    return (
+      <div
+        className="security-detail-content"
+        style={{ height: 'calc(100% - 36px)' }}
+      >
+        <SecurityDetailMenu security={security} />
+        <Switch>
+          <PrivateRoute path="/security/:ticker/statement/:freq">
+            <SecurityDetailStatements security={security} />
+          </PrivateRoute>
+          <PrivateRoute path="/security/:ticker/ratio/:freq">
+            <SecurityDetailRatios security={security} />
+          </PrivateRoute>
+          <PrivateRoute path="/security/:ticker/chart">
+            <SecurityDetailChart security={security} />
+          </PrivateRoute>
+          <PrivateRoute path="/security/:ticker/earnings-calendar">
+            <SecurityDetailEarningsCalendar security={security} />
+          </PrivateRoute>
+          <PrivateRoute path="/security/:ticker/news">
+            <SecurityDetailNews security={security} />
+          </PrivateRoute>
+        </Switch>
+      </div>
+    )
+  }, [securitySyncProgress, security])
+
+  return (
+    <div className="security-detail" style={{ height: 'calc(100% - 152px)' }}>
+      {CompanyDescriptionModal()}
+      <PageHeader
+        className="site-page-header"
+        title={SecurityTitle()}
+        extra={ExternalLinks}
+      >
+        {SecuritySyncProgress()}
+      </PageHeader>
+      {SecurityMetrics()}
+      {SecurityContent}
+    </div>
+  )
+}
+
+export default SecurityDetail

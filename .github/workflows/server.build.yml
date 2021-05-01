@@ -1,0 +1,35 @@
+name: server.build
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - 'server/**'
+  pull_request:
+    branches: [ dev ]
+    paths:
+      - 'server/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: use node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '15.x'
+
+    - name: install dependencies
+      run: npm ci
+      working-directory: server
+
+    - name: lint
+      run: npm run lint
+      working-directory: server
+
+    - name: build
+      run: npm run build
+      working-directory: server

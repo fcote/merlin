@@ -1,0 +1,37 @@
+.security-chart-card {
+  height: 100%;
+  .ant-card-body {
+    height: 100%;
+    padding: 20px 20px 20px 0;
+
+    .security-chart-container {
+      height: 100%;
+
+      .chart-indicator {
+        display: block;
+        position: fixed;
+        margin: 3px 20px;
+        z-index: 10;
+        height: 20px;
+
+        .chart-indicator-color {
+          display: inline-block;
+          width: 20px;
+          height: 2px;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+
+        .chart-indicator-name {
+          margin-right: 4px;
+        }
+
+        .chart-indicator-name, .chart-indicator-value {
+          display: inline-block;
+          height: 20px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}

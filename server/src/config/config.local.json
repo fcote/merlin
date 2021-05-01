@@ -1,0 +1,18 @@
+{
+  "port": 3000,
+  "endpoint": "http://localhost:3000",
+  "database": {
+    "host": "127.0.0.1",
+    "port": "5432",
+    "database": "merlin",
+    "user": "postgres",
+    "password": "postgres",
+    "migration": {
+      "enable": true,
+      "dir": "./migrations"
+    }
+  },
+  "sentry": {
+    "enabled": false
+  }
+}

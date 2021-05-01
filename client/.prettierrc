@@ -1,0 +1,28 @@
+{
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "prefer-template": true,
+  "importOrder": [
+    "^@style/(.*)$",
+    "^@components/(.*)$",
+    "^@assets/(.*)$",
+    "^@api/(.*)$",
+    "^@config/(.*)$",
+    "^@constants/(.*)$",
+    "^@fonts/(.*)$",
+    "^@globalTypes/(.*)$",
+    "^@helpers/(.*)$",
+    "^@hooks/(.*)$",
+    "^@lib/(.*)$",
+    "^@logic/(.*)$",
+    "^@pages/(.*)$",
+    "^@puppeteer/(.*)$",
+    "^@query/(.*)$",
+    "^@routes/(.*)$",
+    "^@utils/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true
+}

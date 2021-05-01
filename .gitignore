@@ -1,0 +1,27 @@
+# Global
+.idea
+.vscode
+.DS_Store
+
+# Client
+client/.env
+client/build/
+client/node_modules
+client/npm-debug.log
+client/.idea
+client/.vscode
+client/.DS_Store
+
+#Server
+server/.DS_Store
+server/node_modules
+server/dist
+server/coverage
+server/*.debug
+server/.env
+server/build.json
+server/version.txt
+server/*.private.json
+server/*.backup
+server/.idea/
+server/schema.graphql

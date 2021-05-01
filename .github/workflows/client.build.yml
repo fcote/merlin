@@ -1,0 +1,35 @@
+name: client.build
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - 'client/**'
+  pull_request:
+    branches: [ dev ]
+    paths:
+      - 'client/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: use node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '15.x'
+
+    - name: install dependencies
+      run: npm ci
+      working-directory: client
+
+    - name: lint
+      run: npm run lint
+      working-directory: client
+
+    - name: build
+      run: npm run build
+      working-directory: client
