@@ -47,11 +47,6 @@ const schema = {
       default: false,
       env: 'APOLLO_TRACING',
     },
-    engine: {
-      doc: 'Activate the apollo engine feature',
-      default: true,
-      env: 'APOLLO_ENGINE',
-    },
   },
   database: {
     host: {
