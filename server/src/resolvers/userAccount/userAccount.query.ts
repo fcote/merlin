@@ -1,9 +1,6 @@
 import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
 
-import {
-  UserAccountSecurity,
-  PaginatedUserAccountSecurity,
-} from '@models/userAccountSecurity'
+import { UserAccount, PaginatedUserAccount } from '@models/userAccount'
 import { Right } from '@resolvers'
 import {
   OrderOptions,
@@ -11,24 +8,24 @@ import {
   Paginated,
 } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'
-import { UserAccountSecurityFilters } from '@resolvers/userAccountSecurity/userAccountSecurity.inputs'
-import { UserAccountSecurityService } from '@services/userAccountSecurity'
+import { UserAccountFilters } from '@resolvers/userAccount/userAccount.inputs'
+import { UserAccountService } from '@services/userAccount'
 import { RequestContext } from '@typings/context'
 
 @Resolver(SelfQuery)
-class SelfUserAccountSecurityQueryResolver {
+class SelfUserAccountQueryResolver {
   @Authorized([Right.authenticated])
-  @FieldResolver((_) => PaginatedUserAccountSecurity)
-  async userAccountSecurities(
+  @FieldResolver((_) => PaginatedUserAccount)
+  async userAccounts(
     @Ctx() ctx: RequestContext,
-    @Arg('filters', (_) => UserAccountSecurityFilters, { nullable: true })
-    filters?: UserAccountSecurityFilters,
+    @Arg('filters', (_) => UserAccountFilters, { nullable: true })
+    filters?: UserAccountFilters,
     @Arg('paginate', (_) => PaginationOptions, { nullable: true })
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<Paginated<UserAccountSecurity>> {
-    return new UserAccountSecurityService(ctx).find(
+  ): Promise<Paginated<UserAccount>> {
+    return new UserAccountService(ctx).find(
       {
         ...filters,
         userId: ctx.user.id,
@@ -39,4 +36,4 @@ class SelfUserAccountSecurityQueryResolver {
   }
 }
 
-export { SelfUserAccountSecurityQueryResolver }
+export { SelfUserAccountQueryResolver }

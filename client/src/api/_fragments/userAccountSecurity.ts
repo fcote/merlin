@@ -11,6 +11,7 @@ const userAccountSecurityFragment = gql`
     openPrice
     currency
     openedAt
+    userAccountId
     security {
       ...SecurityFragment
     }

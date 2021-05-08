@@ -1,9 +1,8 @@
-import { SyncOutlined } from '@ant-design/icons'
+import { SyncOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Col, PageHeader, Row, Space } from 'antd'
-import { chunk, range } from 'lodash'
+import { range } from 'lodash'
 import React, { useState, useMemo } from 'react'
 
-import HeaderAddButton from '@components/buttons/HeaderAddButton/HeaderAddButton'
 import TrackerCard from '@components/cards/TrackerCard/TrackerCard'
 import FollowedSecurityGroupModal from '@components/modals/FollowedSecurityGroupModal/FollowedSecurityGroupModal'
 import FollowedSecurityModal, {
@@ -67,43 +66,32 @@ const Tracker = () => {
   const HeaderTitle = (
     <Space align="center">
       <div>Tracker</div>
-      <HeaderAddButton handleAdd={() => setIsTrackerModalVisible(true)} />
-    </Space>
-  )
-
-  const GroupCards =
-    chunk(trackers, 6).map((groups, index) => {
-      const columns = groups.map((tracker) => (
-        <Col key={tracker.id} span={4}>
-          <TrackerCard
-            tracker={tracker}
-            setCurrentTrackerId={setCurrentTrackerId}
-            setCurrentTrackerItem={setCurrentTrackerItem}
-            setIsTrackerItemModalVisible={setIsTrackerItemModalVisible}
-            loading={loading}
-          />
-        </Col>
-      ))
-
-      return (
-        <Row key={index} gutter={8}>
-          {columns}
-        </Row>
-      )
-    }) ?? []
-
-  const SyncButton = () => {
-    if (!trackers?.length) return null
-
-    return (
+      <Button
+        key="add-tracker-button"
+        onClick={() => setIsTrackerModalVisible(true)}
+        icon={<PlusOutlined />}
+      />
       <Button
         key="sync-button"
         loading={securitySyncPricesLoading}
         onClick={handleSyncPrices}
         icon={<SyncOutlined />}
       />
-    )
-  }
+    </Space>
+  )
+
+  const GroupCards =
+    trackers.map((tracker) => (
+      <Col key={tracker.id} flex="260px">
+        <TrackerCard
+          tracker={tracker}
+          setCurrentTrackerId={setCurrentTrackerId}
+          setCurrentTrackerItem={setCurrentTrackerItem}
+          setIsTrackerItemModalVisible={setIsTrackerItemModalVisible}
+          loading={loading}
+        />
+      </Col>
+    )) ?? []
 
   return (
     <div className="tracker">
@@ -120,9 +108,11 @@ const Tracker = () => {
         isVisible={isTrackerItemModalVisible}
         setIsVisible={setIsTrackerItemModalVisible}
       />
-      <PageHeader title={HeaderTitle} extra={SyncButton()} />
+      <PageHeader title={HeaderTitle} />
       <br />
-      {GroupCards}
+      <Row justify="start" align="top" gutter={16} wrap={false}>
+        {GroupCards}
+      </Row>
     </div>
   )
 }

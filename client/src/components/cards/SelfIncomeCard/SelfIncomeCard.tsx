@@ -30,10 +30,7 @@ const SelfIncomeCard: React.FC<SelfIncomeCardProps> = ({
   )
 
   const handleSave = async (record: UserFinancialItem) => {
-    const value = record.value
-      .replace(' ', '')
-      .replace('%', '')
-      .replace('€', '')
+    const value = record.value.replaceAll(/[^0-9]/g, '')
     await selfUpdateUser({
       variables: {
         inputs: {

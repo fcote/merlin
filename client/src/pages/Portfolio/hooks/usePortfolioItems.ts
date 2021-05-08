@@ -98,7 +98,7 @@ const usePortfolioItems = (
   useMemo(() => {
     if (!userSecurities?.length || !userCurrency || !forex) return
 
-    const securityGroups = groupBy(userSecurities, (s) => s.name)
+    const securityGroups = groupBy(userSecurities, (s) => s.security.ticker)
     const totalValue = sumBy(
       userSecurities,
       (s) => s.volume * s.security.currentPrice

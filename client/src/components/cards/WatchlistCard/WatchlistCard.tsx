@@ -78,7 +78,7 @@ const WatchlistCard = ({
           prefix={<SearchOutlined />}
           onChange={(event) => setSearchText(event.target.value)}
           style={{
-            width: 150,
+            width: 200,
             borderRadius: 8,
           }}
         />

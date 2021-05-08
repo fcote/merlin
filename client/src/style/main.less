@@ -152,7 +152,7 @@ tbody > tr > td > .security-value-loss {
     border: none;
     border-radius: 4px;
     box-shadow: none;
-    background: @component-background;
+    background: rgba(255,255,255,0.08);
     color: @text-color;
     transition: all 200ms cubic-bezier(0.04, 0.8, 0.61, 1) 0s!important;
 }
@@ -194,13 +194,34 @@ tbody > tr > td > .security-value-loss {
 
 // Input
 
+.ant-form-item-has-error {
+    .ant-select:not(.ant-select-customize-input) .ant-select-selector:hover,
+    .ant-picker:hover,
+    .ant-input:hover,
+    .ant-input-number:hover,
+    .ant-input-affix-wrapper:hover,
+    .ant-select:not(.ant-select-customize-input) .ant-select-selector,
+    .ant-picker,
+    .ant-input,
+    .ant-input-number,
+    .ant-input-affix-wrapper {
+        background: @error-color!important;
+    }
+}
+
+.ant-select:not(.ant-select-customize-input) .ant-select-selector,
+.ant-picker,
 .ant-input,
 .ant-input-number,
 .ant-input-affix-wrapper {
     border-radius: 4px;
     border: none;
-    background-color: @primary-1;
+    background: rgba(255,255,255,0.1);
     transition: all 200ms cubic-bezier(0.04, 0.8, 0.61, 1) 0s;
+}
+
+.ant-input-affix-wrapper > .ant-input {
+    background: transparent;
 }
 
 .ant-input-affix-wrapper > .ant-input:hover,
@@ -210,18 +231,23 @@ tbody > tr > td > .security-value-loss {
     outline: none;
 }
 
+.ant-select:hover,
+.ant-picker:hover,
 .ant-input:hover,
 .ant-input-number:hover,
 .ant-input-affix-wrapper:hover {
     border: none;
 }
 
+.ant-select:focus > .ant-select-selector, .ant-select-focused > .ant-select-selector,
+.ant-picker:focus, .ant-picker-focused,
 .ant-input:focus, .ant-input-focused,
 .ant-input-number:focus, .ant-input-number-focused,
 .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused {
+    border-radius: 4px;
     outline: none;
     border: none!important;
-    background-color: @component-background;
+    background: transparent!important;
     box-shadow: inset 0 0 0 1.8px #434343, 0 0 0 1.8px #434343;
 }
 
@@ -252,4 +278,10 @@ tbody > tr > td > .security-value-loss {
         box-shadow: inset 0 0 0 1.8px #434343, 0 0 0 1.8px #434343!important;
         // border-color: @text-color!important;
     }
+}
+
+// Select
+
+.ant-select-dropdown {
+    border-radius: 6px;
 }

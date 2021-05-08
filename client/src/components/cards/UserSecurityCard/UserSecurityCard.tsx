@@ -26,14 +26,8 @@ export interface UserSecurityCardProps {
 
 const defaultColumns: ColumnType<any>[] = [
   { title: 'Ticker', dataIndex: 'name', align: 'left' },
-  { title: 'Volume', dataIndex: 'volume', align: 'left' },
-  { title: 'Open price', dataIndex: 'openPrice', align: 'left' },
-  {
-    title: 'P/L',
-    dataIndex: 'profit',
-    align: 'left',
-    render: (_, record) => ConditionalFormatCell('profit', record),
-  },
+  { title: 'Volume', dataIndex: 'volume', align: 'right' },
+  { title: 'Open price', dataIndex: 'openPrice', align: 'right' },
 ]
 
 const UserSecurityCard: React.FC<UserSecurityCardProps> = ({

@@ -27,7 +27,7 @@ const SelfPortfolioCard: React.FC<SelfPortfolioCardProps> = ({
       name: security.name.split('.').shift(),
       volume: security.volume.toString(),
       openPrice: security.openPrice.toString(),
-      profit: security.profit.toString(),
+      profit: security.profit?.toString(),
     })
 
     const securityGroups = groupBy(securities, (s) => s.name)
@@ -39,7 +39,7 @@ const SelfPortfolioCard: React.FC<SelfPortfolioCardProps> = ({
         key: groupSecurities.map((s) => s.id).join('-'),
         name: name.split('.').shift(),
         volume: sumVolume.toString(),
-        profit: sumProfit.toString(),
+        profit: sumProfit?.toString(),
         openPrice: (
           sumBy(groupSecurities, (s) => s.openPrice * s.volume) / sumVolume
         )

@@ -21,8 +21,8 @@ const useQuery = <TData = any, TVariables = OperationVariables>(
   >(query, { ...options, client })
 
   const refetch = async (variables?: Partial<TVariables>) => {
-    const { data } = await baseRefetch(variables)
-    return queryExtractData<TData>(data, options?.namespace)
+    const result = await baseRefetch(variables)
+    return queryExtractData<TData>(result?.data, options?.namespace)
   }
 
   const data = useMemo(() => {

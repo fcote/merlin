@@ -1,4 +1,4 @@
-import { minBy } from 'lodash'
+import { minBy, min } from 'lodash'
 
 import { dayjs } from '@helpers/dayjs'
 import { FMPLink } from '@links/fmp/link.fmp'
@@ -36,8 +36,12 @@ const computeFiscalPeriod = (
   closestEarningCall: FMPEarningCall,
   daysDiff: number
 ) => {
+  const quarterDuration = daysDiff > 0 ? -90 : 90
   const [quarter, year] = closestEarningCall
-  const callDate = dayjs().year(year).quarter(quarter).add(-daysDiff, 'day')
+  const callDate = dayjs()
+    .year(year)
+    .quarter(quarter)
+    .add(min([-daysDiff, quarterDuration]), 'day')
   return { year: callDate.year(), quarter: callDate.quarter() }
 }
 
@@ -45,8 +49,6 @@ const getEarningCall = (
   item: FMPEarning,
   earningCallItems: FMPEarningCall[]
 ): FMPEarningCall => {
-  const quarterDuration = 90
-
   const earningDate = dayjs(item.date)
   const earningCallDaysDiffs = earningCallItems.map((earningCall) => {
     const [_, __, callDate] = earningCall
@@ -59,13 +61,15 @@ const getEarningCall = (
   const closest = minBy(earningCallDaysDiffs, (earning) =>
     Math.abs(earning.diff)
   )
+  const closestDistance = Math.abs(closest.diff)
   if (!closest) return
 
-  if (closest.diff > quarterDuration || closest.diff < -quarterDuration) {
-    const { quarter, year } = computeFiscalPeriod(closest.call, closest.diff)
-    return [quarter, year, item.date]
+  if (closestDistance <= 7) {
+    return closest.call
   }
-  return closest.call
+
+  const { quarter, year } = computeFiscalPeriod(closest.call, closest.diff)
+  return [quarter, year, item.date]
 }
 
 const toEarningResult = (

@@ -1,9 +1,21 @@
-import { Card, Table, Tag, Skeleton, PageHeader, Row, Col } from 'antd'
+import { EditOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons'
+import {
+  Card,
+  Table,
+  Tag,
+  Skeleton,
+  PageHeader,
+  Row,
+  Col,
+  Button,
+  Space,
+} from 'antd'
 import { ColumnType } from 'antd/es/table'
 import { uniq } from 'lodash'
 import React, { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
+import UserAccountSecurityModal from '@components/modals/UserAccountSecurityModal/UserAccountSecurityModal'
 import ConditionalFormatCell from '@components/tables/cells/ConditionalFormatCell/ConditionalFormatCell'
 
 import { computeSkeletonRows } from '@helpers/computeSkeletonRows'
@@ -28,65 +40,19 @@ import {
 import './Portfolio.style.less'
 import PortfolioStats from './PortfolioStats'
 
-const columns: ColumnType<any>[] = [
-  {
-    title: 'Ticker',
-    dataIndex: 'name',
-    align: 'left',
-    render: (_, record: PortfolioItem) => (
-      <Tag>
-        <Link to={`/security/${record.name}/${FinancialItemType.statement}/Y`}>
-          {record.name}
-        </Link>
-      </Tag>
-    ),
-  },
-  {
-    title: 'Size',
-    dataIndex: 'size',
-    align: 'left',
-    render: (value) => `${value.toFixed(2)} %`,
-  },
-  {
-    title: 'Market cap.',
-    dataIndex: 'marketCapitalization',
-    align: 'left',
-  },
-  { title: 'Price', dataIndex: 'price', align: 'left' },
-  {
-    title: '% Change (Day)',
-    dataIndex: 'dayChangePercent',
-    align: 'left',
-    render: (_, record) =>
-      ConditionalFormatCell('dayChangePercent', record, 'percentage'),
-  },
-  { title: '52 Week High', dataIndex: 'high52Week', align: 'left' },
-  { title: '52 Week Low', dataIndex: 'low52Week', align: 'left' },
-  { title: 'Volume', dataIndex: 'volume', align: 'left' },
-  {
-    title: 'Open price',
-    dataIndex: 'avgOpenPrice',
-    align: 'left',
-    render: (value) => value.toFixed(2),
-  },
-  {
-    title: 'P/L',
-    dataIndex: 'profit',
-    align: 'left',
-    render: (_, record) => ConditionalFormatCell('profit', record),
-  },
-]
-
 const Portfolio = () => {
   useDocumentTitle('Portfolio')
 
   const [subscribed, setSubscribed] = useState<boolean>(false)
+  const [isFormModalVisible, setIsFormModalVisible] = useState<boolean>(false)
+  const [selectedTicker, setSelectedTicker] = useState<string>()
 
   const windowSize = useWindowSize()
   const {
     data: userSecurities,
     loading,
     subscribeToMore,
+    refetch: refetchUserSecurities,
   } = useSelfUserAccountSecurities()
   const { data: userProfile, loading: userProfileLoading } = useSelfProfile()
   const { forex, getForex, loading: forexLoading } = useForex()
@@ -96,6 +62,11 @@ const Portfolio = () => {
     userProfile?.currency,
     forex
   )
+
+  const showFormModal = (record?: PortfolioItem) => {
+    setSelectedTicker(record?.security?.ticker)
+    setIsFormModalVisible(true)
+  }
 
   useMemo(() => {
     if (!userSecurities?.length || !userProfile) return
@@ -127,6 +98,65 @@ const Portfolio = () => {
     setSubscribed(true)
   }, [userSecurities])
 
+  const columns: ColumnType<any>[] = [
+    {
+      title: 'Ticker',
+      dataIndex: 'name',
+      align: 'left',
+      render: (_, record: PortfolioItem) => (
+        <Tag>
+          <Link
+            to={`/security/${record.name}/${FinancialItemType.statement}/Y`}
+          >
+            {record.name}
+          </Link>
+        </Tag>
+      ),
+    },
+    {
+      title: 'Size',
+      dataIndex: 'size',
+      align: 'left',
+      render: (value) => `${value.toFixed(2)} %`,
+    },
+    {
+      title: 'Market cap.',
+      dataIndex: 'marketCapitalization',
+      align: 'left',
+    },
+    { title: 'Price', dataIndex: 'price', align: 'left' },
+    {
+      title: '%C',
+      dataIndex: 'dayChangePercent',
+      align: 'left',
+      render: (_, record) =>
+        ConditionalFormatCell('dayChangePercent', record, 'percentage'),
+    },
+    { title: '52W H', dataIndex: 'high52Week', align: 'left' },
+    { title: '52W L', dataIndex: 'low52Week', align: 'left' },
+    { title: 'Volume', dataIndex: 'volume', align: 'left' },
+    {
+      title: 'Open',
+      dataIndex: 'avgOpenPrice',
+      align: 'left',
+      render: (value) => value.toFixed(2),
+    },
+    {
+      title: 'P/L',
+      dataIndex: 'profit',
+      align: 'left',
+      render: (_, record) => ConditionalFormatCell('profit', record),
+    },
+    {
+      title: '',
+      dataIndex: 'operation',
+      align: 'right',
+      render: (_, record) => (
+        <Button onClick={() => showFormModal(record)} icon={<EditOutlined />} />
+      ),
+    },
+  ]
+
   const PortfolioTable = (
     <Table pagination={false} columns={columns} dataSource={portfolioItems} />
   )
@@ -141,16 +171,35 @@ const Portfolio = () => {
     />
   )
 
+  const PortfolioTitle = (
+    <Space align="center">
+      <div>Portfolio</div>
+      <Button
+        key="add-button"
+        onClick={() => showFormModal()}
+        icon={<PlusOutlined />}
+      />
+    </Space>
+  )
+
   return (
     <div className="portfolio">
-      <PageHeader title="Portfolio" style={{ marginBottom: 16 }} />
+      <UserAccountSecurityModal
+        ticker={selectedTicker}
+        onTickerChange={setSelectedTicker}
+        isVisible={isFormModalVisible}
+        setIsVisible={setIsFormModalVisible}
+        userCurrency={userProfile?.currency}
+        triggerRefresh={refetchUserSecurities}
+      />
+      <PageHeader title={PortfolioTitle} style={{ marginBottom: 16 }} />
       <Row gutter={16}>
-        <Col span={19}>
+        <Col flex="1 1 900px">
           <Card bordered={false}>
             {loading ? LoadingSkeleton : PortfolioTable}
           </Card>
         </Col>
-        <Col span={5}>
+        <Col flex="0 1 300px">
           <PortfolioStats
             portfolioItems={portfolioItems}
             userCurrency={userProfile?.currency}

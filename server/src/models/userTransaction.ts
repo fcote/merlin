@@ -91,7 +91,7 @@ class UserTransaction extends SoftDeleteModel {
 
     const userTransaction = await UserTransaction.query(trx).findById(id)
     if (!userTransaction) {
-      throw new ApolloResourceNotFound('GROUP_NOT_FOUND')
+      throw new ApolloResourceNotFound('TRANSACTION_NOT_FOUND')
     }
     if (userTransaction.userId !== userId) {
       throw new ApolloForbidden('ACCESS_DENIED')

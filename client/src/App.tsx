@@ -75,6 +75,9 @@ const App = () => {
                     renderThumbVertical={(props) => (
                       <div {...props} className="main-scrollbar" />
                     )}
+                    renderThumbHorizontal={(props) => (
+                      <div {...props} className="main-scrollbar" />
+                    )}
                   >
                     {Router}
                   </Scrollbars>

@@ -1,28 +1,32 @@
 import { GraphQLDateTime } from 'graphql-iso-date'
-import { JSONSchema, Model } from 'objection'
+import { JSONSchema, Model, Transaction } from 'objection'
 import { ObjectType, Field, Float, ID } from 'type-graphql'
 
 import { SoftDeleteModel } from '@models/base/softDeleteModel'
 import { Security } from '@models/security'
 import { UserAccount } from '@models/userAccount'
 import { PaginatedClass } from '@resolvers/paginated'
+import {
+  ApolloResourceNotFound,
+  ApolloForbidden,
+} from '@typings/errors/apolloErrors'
 
 @ObjectType('UserAccountSecurity')
 class UserAccountSecurity extends SoftDeleteModel {
   @Field((_) => String)
   name: string
   @Field((_) => Float)
-  profit: number
-  @Field((_) => Float)
   volume: number
   @Field((_) => Float)
   openPrice: number
-  @Field((_) => String, { nullable: true })
-  currency: string
-  @Field((_) => GraphQLDateTime, { nullable: true })
-  openedAt: Date
-
   @Field((_) => String)
+  currency: string
+  @Field((_) => GraphQLDateTime)
+  openedAt: Date
+  @Field((_) => Float, { nullable: true })
+  profit: number
+
+  @Field((_) => String, { nullable: true })
   externalId: string
   @Field((_) => ID)
   securityId: number | string
@@ -37,14 +41,7 @@ class UserAccountSecurity extends SoftDeleteModel {
 
   static jsonSchema: JSONSchema = {
     type: 'object',
-    required: [
-      'name',
-      'profit',
-      'volume',
-      'openPrice',
-      'externalId',
-      'userAccountId',
-    ],
+    required: ['name', 'volume', 'openPrice', 'openedAt', 'userAccountId'],
   }
 
   static get relationMappings() {
@@ -65,6 +62,23 @@ class UserAccountSecurity extends SoftDeleteModel {
           to: `${UserAccount.tableName}.id`,
         },
       },
+    }
+  }
+
+  static checkOwnership = async (
+    id: number | string,
+    userId: string,
+    trx?: Transaction
+  ) => {
+    if (!id) return
+    const userAccountSecurity = await UserAccountSecurity.query(trx)
+      .findById(id)
+      .withGraphFetched('userAccount')
+    if (!userAccountSecurity) {
+      throw new ApolloResourceNotFound('ACCOUNT_SECURITY_NOT_FOUND')
+    }
+    if (userAccountSecurity.userAccount.userId !== userId) {
+      throw new ApolloForbidden('ACCESS_DENIED')
     }
   }
 }

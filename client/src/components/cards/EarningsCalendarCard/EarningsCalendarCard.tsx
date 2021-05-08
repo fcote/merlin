@@ -48,7 +48,9 @@ const EarningsCalendarCard: React.FC<EarningsCalendarCardProps> = ({
       ...ed,
       key: ed.id,
       date: dayjs(ed.date).format('DD/MM/YYYY'),
-      fiscalPeriod: `${ed.fiscalYear} (Q${ed.fiscalQuarter})`,
+      fiscalPeriod: ed.fiscalQuarter
+        ? `${ed.fiscalYear} (Q${ed.fiscalQuarter})`
+        : null,
       time: ed.time ? EarningTimeLabel[ed.time] : null,
       epsSurprisePercent: ed.epsSurprisePercent,
       revenueSurprisePercent: ed.revenueSurprisePercent,

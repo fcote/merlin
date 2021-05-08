@@ -8,9 +8,12 @@ import usePaginatedQuery from '@hooks/api/usePaginatedQuery'
 
 import UserAccountSecurity from '@lib/userAccountSecurity'
 
-const useSelfUserAccountSecurities = () =>
+const useSelfUserAccountSecurities = (ticker?: string) =>
   usePaginatedQuery<UserAccountSecurity>(useSelfUserAccountSecuritiesQuery, {
     namespace: 'self',
+    variables: {
+      filters: { ticker },
+    },
   })
 
 const subscribeToMoreUserAccountSecurityPrices = (

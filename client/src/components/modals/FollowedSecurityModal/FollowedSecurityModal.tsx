@@ -1,24 +1,18 @@
-import {
-  CheckOutlined,
-  DeleteOutlined,
-  SearchOutlined,
-  LoadingOutlined,
-} from '@ant-design/icons'
+import { CheckOutlined, DeleteOutlined } from '@ant-design/icons'
 import {
   Modal,
   Form,
   Button,
   FormInstance,
-  AutoComplete,
   Input,
-  Spin,
   Row,
   Col,
   Popconfirm,
   InputNumber,
 } from 'antd'
-import { debounce, isEmpty } from 'lodash'
-import React, { useRef, useEffect, useMemo } from 'react'
+import React, { useRef, useEffect } from 'react'
+
+import TickerAutocomplete from '@components/inputs/TickerAutocomplete/TickerAutocomplete'
 
 import successNotification from '@helpers/successNotification'
 
@@ -31,7 +25,6 @@ import {
   useSelfFollowedSecurityUnlink,
   FollowedSecurityUnlinkInputs,
 } from '@hooks/api/mutations/useSelfFollowedSecurityUnlink'
-import { useSecuritySearch } from '@hooks/api/queries/useSecuritySearch'
 
 import { SuccessMessage } from '@lib/messages'
 
@@ -64,7 +57,6 @@ const FollowedSecurityModal = ({
   triggerRefresh,
 }: FollowedSecurityModalProps) => {
   const form = useRef<FormInstance<FollowedSecurityFormType>>()
-  const { securitySearch, securitySearchResults, loading } = useSecuritySearch()
   const { getOrSyncSecurity, securityLoading } = useSecurityGetOrSync()
   const {
     selfFollowedSecurityLink,
@@ -72,28 +64,9 @@ const FollowedSecurityModal = ({
   } = useSelfFollowedSecurityLink()
   const { selfFollowedSecurityUnlink } = useSelfFollowedSecurityUnlink()
 
-  const searchItems = useMemo(() => {
-    if (!securitySearchResults?.length) return []
-
-    return securitySearchResults.map((r) => ({
-      value: r.ticker,
-      label: `${r.ticker} (${r.name})`,
-    }))
-  }, [securitySearchResults])
-
   const handleClose = () => {
     form.current.resetFields()
     setIsVisible(false)
-  }
-
-  const handleSearch = async (ticker: string) => {
-    if (isEmpty(ticker)) {
-      return
-    }
-
-    await securitySearch({
-      variables: { ticker: ticker.toUpperCase() },
-    })
   }
 
   const handleSubmit = async ({
@@ -175,17 +148,7 @@ const FollowedSecurityModal = ({
               },
             ]}
           >
-            <AutoComplete
-              options={searchItems}
-              onSearch={debounce(handleSearch, 300)}
-            >
-              <Input
-                size="large"
-                placeholder="Search ticker"
-                prefix={<SearchOutlined />}
-                suffix={loading && <Spin indicator={<LoadingOutlined />} />}
-              />
-            </AutoComplete>
+            <TickerAutocomplete />
           </Form.Item>
         )}
 

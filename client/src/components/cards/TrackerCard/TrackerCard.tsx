@@ -91,13 +91,14 @@ const TrackerCard: React.FC<TrackerCardProps> = ({
     {
       dataIndex: 'changePercent',
       align: 'right',
+      width: 70,
       render: (_, record: TrackerItem) =>
         ConditionalFormatCell('changePercent', record, 'percentage'),
     },
     {
       dataIndex: 'link',
       align: 'right',
-      width: 50,
+      width: 40,
       render: (_, record: TrackerItem) => (
         <Button
           type="link"

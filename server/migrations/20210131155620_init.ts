@@ -282,18 +282,18 @@ export async function up(knex: Knex): Promise<any> {
   await knex.schema.createTable(TABLES.USER_ACCOUNT_SECURITIES, (t) => {
     t.increments('id')
     t.string('name').notNullable()
-    t.string('currency')
+    t.string('currency').notNullable()
     t.double('profit')
     t.double('volume').notNullable()
     t.double('open_price').notNullable()
-    t.string('external_id').notNullable()
+    t.string('external_id')
 
     t.integer('user_account_id').notNullable()
     t.foreign('user_account_id').references(`${TABLES.USER_ACCOUNTS}.id`)
     t.integer('security_id')
     t.foreign('security_id').references(`${TABLES.SECURITIES}.id`)
 
-    t.timestamp('opened_at')
+    t.timestamp('opened_at').notNullable()
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now())
     t.timestamp('deleted_at')

@@ -132,13 +132,13 @@ const UserTransactionTableModal = ({
     {
       title: 'Value',
       dataIndex: 'value',
-      align: 'right',
+      align: 'left',
       width: '40%',
       editable: true,
       required: true,
     },
     {
-      title: 'operation',
+      title: '',
       dataIndex: 'operation',
       editable: false,
       required: false,
@@ -169,6 +169,7 @@ const UserTransactionTableModal = ({
         defaultItem={defaultTransaction}
         handleSave={handleSave}
         emptyText="No transactions"
+        showHeaders={true}
       />
     </Modal>
   )

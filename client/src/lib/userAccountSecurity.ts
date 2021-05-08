@@ -16,4 +16,6 @@ export default interface UserAccountSecurity {
 
   security?: Security
   userAccount: UserAccount
+
+  deletedAt?: string
 }

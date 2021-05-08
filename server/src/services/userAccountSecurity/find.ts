@@ -26,8 +26,11 @@ class UserAccountSecurityFindMethod extends ServiceMethod {
     query: QueryBuilder<UserAccountSecurity>,
     filters: UserAccountSecurityFilters
   ) => {
-    query.joinRelated('userAccount')
+    query.joinRelated('[userAccount, security]')
 
+    if (filters.ticker) {
+      query.where('security.ticker', filters.ticker)
+    }
     if (filters.userId) {
       query.where('userAccount.userId', filters.userId)
     }

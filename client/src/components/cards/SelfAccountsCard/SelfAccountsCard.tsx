@@ -107,6 +107,7 @@ const SelfAccountsCard: React.FC<UserAccountsCardProps> = ({
                 type="link"
                 loading={selfUserAccountSyncLoading}
                 icon={<SyncOutlined />}
+                style={{ marginLeft: 8, background: 'transparent' }}
               />
             )}
           </span>
