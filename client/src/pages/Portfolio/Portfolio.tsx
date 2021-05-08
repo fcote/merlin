@@ -1,4 +1,4 @@
-import { EditOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons'
+import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import {
   Card,
   Table,

@@ -2,8 +2,6 @@ import { Table, Card, Skeleton } from 'antd'
 import { ColumnType } from 'antd/lib/table'
 import React from 'react'
 
-import ConditionalFormatCell from '@components/tables/cells/ConditionalFormatCell/ConditionalFormatCell'
-
 import './UserSecurityCard.style.less'
 
 export interface UserAccountSecurityItem {
