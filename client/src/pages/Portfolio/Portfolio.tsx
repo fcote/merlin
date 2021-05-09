@@ -56,15 +56,11 @@ const Portfolio = () => {
   const { data: userProfile, loading: userProfileLoading } = useSelfProfile()
   const { forex, getForex, loading: forexLoading } = useForex()
 
-  console.log(userSecurities)
-
   const portfolioItems = usePortfolioItems(
     userSecurities,
     userProfile?.currency,
     forex
   )
-
-  console.log(portfolioItems)
 
   const showFormModal = (record?: PortfolioItem) => {
     setSelectedTicker(record?.security?.ticker)

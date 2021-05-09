@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons'
-import { Progress, Tag, Button } from 'antd'
+import { Progress, Button } from 'antd'
 import { RenderedCell } from 'rc-table/lib/interface'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'

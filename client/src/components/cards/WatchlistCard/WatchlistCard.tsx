@@ -2,7 +2,6 @@ import { SearchOutlined, PlusOutlined } from '@ant-design/icons'
 import { Card, Space, Skeleton, Input, Button } from 'antd'
 import React, { useState } from 'react'
 
-import HeaderAddButton from '@components/buttons/HeaderAddButton/HeaderAddButton'
 import useWatchlistTableColumns from '@components/cards/WatchlistCard/hooks/useWatchlistTableColumns'
 import useWatchlistTableItems from '@components/cards/WatchlistCard/hooks/useWatchlistTableItems'
 import EditableTable from '@components/tables/EditableTable/EditableTable'
