@@ -43,13 +43,12 @@ const useWatchlistTableColumns = (
       />
     )
     const link = (
-      <Tag>
-        <Link
-          to={`/security/${record.ticker}/${FinancialItemType.statement}/Y`}
-        >
-          {record.ticker}
-        </Link>
-      </Tag>
+      <Link
+        to={`/security/${record.ticker}/${FinancialItemType.statement}/Y`}
+        className="ant-btn ant-btn-sm"
+      >
+        {record.ticker}
+      </Link>
     )
     const isLoading = record.securitySync?.loading
     const isEditable = !isLoading && !record.security?.id
@@ -144,7 +143,6 @@ const useWatchlistTableColumns = (
           <Button
             key="remove-followed-security-button"
             onClick={() => handleRemove(record)}
-            type="text"
             icon={<DeleteOutlined />}
           />,
           record

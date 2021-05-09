@@ -66,16 +66,30 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({
 
   return (
     <div className="portfolio-stats">
-      <Card style={{ padding: 18, marginBottom: 16 }} bordered={false}>
+      <Card
+        key="pl-all-time"
+        style={{ padding: 18, marginBottom: 16 }}
+        bordered={false}
+      >
         {PortfolioStatistic('P/L', portfolioAllTimeChange)}
       </Card>
-      <Card style={{ padding: 18, marginBottom: 16 }} bordered={false}>
+      <Card
+        key="pl-week"
+        style={{ padding: 18, marginBottom: 16 }}
+        bordered={false}
+      >
         {PortfolioStatistic('P/L - Week', portfolioWeekChange)}
       </Card>
-      <Card style={{ padding: 18, marginBottom: 16 }} bordered={false}>
+      <Card
+        key="pl-day"
+        style={{ padding: 18, marginBottom: 16 }}
+        bordered={false}
+      >
         {PortfolioStatistic('P/L - Day', portfolioDayChange)}
       </Card>
-      <Card bordered={false}>{PortfolioSectorWeights}</Card>
+      <Card key="sector-weights" bordered={false}>
+        {PortfolioSectorWeights}
+      </Card>
     </div>
   )
 }

@@ -2,7 +2,6 @@ import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import {
   Card,
   Table,
-  Tag,
   Skeleton,
   PageHeader,
   Row,
@@ -57,11 +56,15 @@ const Portfolio = () => {
   const { data: userProfile, loading: userProfileLoading } = useSelfProfile()
   const { forex, getForex, loading: forexLoading } = useForex()
 
+  console.log(userSecurities)
+
   const portfolioItems = usePortfolioItems(
     userSecurities,
     userProfile?.currency,
     forex
   )
+
+  console.log(portfolioItems)
 
   const showFormModal = (record?: PortfolioItem) => {
     setSelectedTicker(record?.security?.ticker)
@@ -104,13 +107,12 @@ const Portfolio = () => {
       dataIndex: 'name',
       align: 'left',
       render: (_, record: PortfolioItem) => (
-        <Tag>
-          <Link
-            to={`/security/${record.name}/${FinancialItemType.statement}/Y`}
-          >
-            {record.name}
-          </Link>
-        </Tag>
+        <Link
+          to={`/security/${record.name}/${FinancialItemType.statement}/Y`}
+          className="ant-btn ant-btn-sm"
+        >
+          {record.name}
+        </Link>
       ),
     },
     {

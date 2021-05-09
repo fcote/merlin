@@ -12,6 +12,7 @@ const usePortfolioSectorWeights = (portfolioItems: PortfolioItem[]) =>
 
     const sectorWeights = Object.entries(sectorItems).map(
       ([sector, items]) => ({
+        key: sector,
         sector,
         weight: sumBy(items, (i) => i.size),
       })

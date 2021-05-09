@@ -1,5 +1,5 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Card, Space, Skeleton, Input } from 'antd'
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons'
+import { Card, Space, Skeleton, Input, Button } from 'antd'
 import React, { useState } from 'react'
 
 import HeaderAddButton from '@components/buttons/HeaderAddButton/HeaderAddButton'
@@ -60,7 +60,12 @@ const WatchlistCard = ({
   const HeaderTitle = (
     <Space align="center">
       <div>{watchlist.name}</div>
-      <HeaderAddButton handleAdd={handleAdd} />
+      <Button
+        key="add-button"
+        onClick={handleAdd}
+        icon={<PlusOutlined />}
+        style={{ display: 'block' }}
+      />
     </Space>
   )
 
@@ -68,21 +73,23 @@ const WatchlistCard = ({
     <Skeleton paragraph={{ rows: 1 }} title={false} active />
   )
 
+  const FilterInput = (
+    <Input
+      size="large"
+      placeholder="Filter tickers"
+      prefix={<SearchOutlined />}
+      onChange={(event) => setSearchText(event.target.value)}
+      style={{
+        width: 200,
+        borderRadius: 8,
+      }}
+    />
+  )
+
   return (
     <Card
       title={loading ? HeaderLoadingSkeleton : HeaderTitle}
-      extra={
-        <Input
-          size="large"
-          placeholder="Filter tickers"
-          prefix={<SearchOutlined />}
-          onChange={(event) => setSearchText(event.target.value)}
-          style={{
-            width: 200,
-            borderRadius: 8,
-          }}
-        />
-      }
+      extra={FilterInput}
       bordered={false}
     >
       {loading ? LoadingSkeleton : WatchlistTable()}

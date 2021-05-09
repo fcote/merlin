@@ -73,7 +73,7 @@ const userSecurityToItem = (
   const sumProfit = sumCurrentValue - sumOpenValue
   const sumSize = ((sumVolume * currentPrice) / totalAccountValue) * 100
   return {
-    key: userSecurities.map((s) => s.id).join('-'),
+    key: name,
     size: sumSize,
     name: security.ticker ?? name,
     volume: sumVolume,
@@ -117,6 +117,6 @@ const usePortfolioItems = (
     )
 
     return items.sort((a, b) => tableSorter('number', 'size', a, b)).reverse()
-  }, [userSecurities])
+  }, [userSecurities, userCurrency, forex])
 
 export { usePortfolioItems }
