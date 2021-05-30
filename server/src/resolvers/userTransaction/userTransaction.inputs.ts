@@ -10,7 +10,7 @@ import {
 @InputType('UserTransactionFilters')
 class UserTransactionFilters {
   @Field((_) => String, { nullable: true })
-  limitDate?: string
+  since?: string
   @Field((_) => [UserTransactionCategory], { nullable: true })
   categories?: UserTransactionCategory[]
   @Field((_) => [UserTransactionType], { nullable: true })

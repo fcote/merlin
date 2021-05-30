@@ -105,12 +105,12 @@ class UserFieldsResolver {
     const {
       left: incomeLeftPerMonth,
     } = await userTransactionService.monthlyExpenses(user.id)
-    const currentTotalBalance = await userAccountService.totalBalance(user.id)
 
     const transactions = await userTransactionService.find(
       {
         userId: user.id,
         frequencies: [UserTransactionFrequency.punctual],
+        since: currentDate().toISOString(),
       },
       null,
       null
@@ -123,8 +123,10 @@ class UserFieldsResolver {
       return sumBy(trs, (t) => t.value)
     }
 
-    return range(1, nMonth).reduce((result, n) => {
-      const forecastDate = currentDate().add(n - 1, 'month')
+    let currentTotalBalance = await userAccountService.totalBalance(user.id)
+
+    return range(0, nMonth - 1).reduce((result, n) => {
+      const forecastDate = currentDate().add(n, 'month')
       const totalExtraExpenses = getTotal(
         forecastDate,
         UserTransactionType.expense
@@ -136,12 +138,14 @@ class UserFieldsResolver {
 
       const totalExtras = -totalExtraExpenses + totalExtraIncome
       const forecastedBalance =
-        currentTotalBalance + incomeLeftPerMonth * n + totalExtras
+        currentTotalBalance + incomeLeftPerMonth + totalExtras
 
       result[forecastDate.format('YYYY-MM-DD')] = {
         balance: forecastedBalance,
         extras: totalExtras,
       }
+
+      currentTotalBalance = forecastedBalance
 
       return result
     }, {} as Record<string, Record<string, number>>)

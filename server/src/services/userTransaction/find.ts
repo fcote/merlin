@@ -32,10 +32,8 @@ class UserTransactionFindMethod extends ServiceMethod {
     if (filters.userId) {
       query.where('userId', filters.userId)
     }
-    if (filters.limitDate) {
-      query
-        .where('date', '<=', filters.limitDate)
-        .where('date', '>=', new Date().toISOString())
+    if (filters.since) {
+      query.where('date', '>=', filters.since)
     }
     if (filters.categories) {
       query.whereIn('category', filters.categories)
