@@ -96,7 +96,7 @@ class UserFieldsResolver {
     @Arg('nMonth', (_) => Int) nMonth: number
   ): Promise<any> {
     const currentDate = () => {
-      return dayjs().startOf('month').add(1, 'day')
+      return dayjs().startOf('month')
     }
 
     const userTransactionService = new UserTransactionService(ctx)
