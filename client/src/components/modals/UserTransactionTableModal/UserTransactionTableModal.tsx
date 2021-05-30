@@ -68,8 +68,8 @@ const UserTransactionTableModal = ({
 
   useEffect(() => {
     const filteredTransactions = transactions?.filter((t) => {
-      const modalDate = dayjs(date).startOf('month')
-      const transactionDate = dayjs(t.date).startOf('month')
+      const modalDate = dayjs.utc(date).startOf('month')
+      const transactionDate = dayjs.utc(t.date).startOf('month')
       return modalDate.diff(transactionDate, 'month') === 0
     })
     setFormattedTransactions(filteredTransactions?.map(transactionToItem))
@@ -115,7 +115,7 @@ const UserTransactionTableModal = ({
     type: UserTransactionType.expense,
     frequency: UserTransactionFrequency.punctual,
     category: UserTransactionCategory.extra,
-    date: dayjs(date).toISOString(),
+    date: dayjs.utc(date).toISOString(),
     editable: { name: true, value: true },
     editing: true,
   })
