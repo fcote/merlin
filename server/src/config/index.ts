@@ -91,6 +91,10 @@ const schema = {
       default: 120000,
       env: 'DB_ACQUIRE_CONNECTION_TIMEOUT',
     },
+    idleTimeoutMillis: {
+      default: 30000,
+      env: 'DB_IDLE_TIMEOUT_MILLIS',
+    },
   },
   pubsub: {
     maxListeners: {

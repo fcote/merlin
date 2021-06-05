@@ -1,18 +1,20 @@
+import { Knex } from 'knex'
+
 import { config } from './src/config'
-import { DBConfig } from './src/types/db'
 
 require('tsconfig-paths/register')
 
 const pgConnection = config.get('database')
 
-const dbConfig: DBConfig = {
+const dbConfig: Knex.Config = {
   client: 'pg',
   connection: pgConnection,
   pool: {
     min: config.get('database.poolMin'),
     max: config.get('database.poolMax'),
+    acquireTimeoutMillis: config.get('database.acquireConnectionTimeout'),
+    idleTimeoutMillis: config.get('database.idleTimeoutMillis'),
   },
-  acquireConnectionTimeout: config.get('database.acquireConnectionTimeout'),
   migrations: {
     tableName: 'knex_migrations',
   },
