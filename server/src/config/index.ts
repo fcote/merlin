@@ -105,10 +105,11 @@ const schema = {
   sentry: {
     enabled: {
       default: false,
+      env: 'SENTRY_ENABLED',
     },
     dsn: {
-      default:
-        'https://93472cefc5f94472ac1a44f6d9135bac@o543740.ingest.sentry.io/5664705',
+      default: '',
+      env: 'SENTRY_DSN',
     },
     level: {
       default: 'error',

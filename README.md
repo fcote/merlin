@@ -5,7 +5,13 @@
 
 ## About the project
 
---
+When it comes to researching publicly traded companies information is either scattered or very expensive.
+
+This app allows to perform fundamental analysis on publicly traded with accurate data, as well as tracking your investments with the portfolio tab.
+
+The main datasource used is Financial modeling prep ([website](https://financialmodelingprep.com/developer)) which is one the cheapest financial api. 
+
+You can choose to use their free tier as it will allow to unlock most of the features of the app, or you can subscribe to FMP to get the full feature set
 
 ## Disclaimer
 
@@ -15,13 +21,11 @@ This project is still under heavy development, some features might not work as i
 
 ### Install
 
-#### Docker (preferred)
-
 Use the docker-compose example [here](./examples/docker-compose)
 
-#### Manual
+Also take a look at the possible server environment variables for additional configuration:
 
---
+[Server environment variables](https://github.com/fcote/merlin/wiki/Server-environment-variables)
 
 #### Create users
 
