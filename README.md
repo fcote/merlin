@@ -7,7 +7,7 @@
 
 When it comes to researching publicly traded companies information is either scattered or very expensive.
 
-This app allows you to perform fundamental analysis on publicly traded with accurate data, as well as tracking your investments with the portfolio tab.
+This app allows you to perform fundamental analysis on publicly traded companies with accurate data, as well as tracking your investments with the portfolio tab.
 
 The main datasource used is Financial modeling prep ([website](https://financialmodelingprep.com/developer)) which is one the cheapest financial api. 
 
