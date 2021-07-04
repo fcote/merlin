@@ -82,10 +82,13 @@ export interface ForexLink {
 export class APILink {
   private client: Got
 
+  private static timeout: number = 60 * 1000
+
   constructor(protected conf: APILinkConfig) {
     this.client = got.extend({
       cookieJar: new CookieJar(),
       responseType: 'json',
+      timeout: APILink.timeout,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -111,11 +114,7 @@ export class APILink {
       return await this.client(encodeURI(url.toString()), options).json<T>()
     } catch (err) {
       if (err?.response?.statusCode === 429) {
-        logger.info(
-          'link > got code 429 (too many requests), waiting 1 min before retrying...'
-        )
-        await timeout(60 * 1000)
-        return this.query(url, method, body)
+        await this.handleTooManyRequestsError(url, method, body)
       }
       logger.error(`link > ${err.message}`, { err })
       throw err
@@ -146,5 +145,16 @@ export class APILink {
     })
 
     return url
+  }
+  private handleTooManyRequestsError = async (
+    url: URL,
+    method: Method = 'GET',
+    body?: any
+  ) => {
+    logger.info(
+      'link > got code 429 (too many requests), waiting 1 min before retrying...'
+    )
+    await timeout(APILink.timeout)
+    return this.query(url, method, body)
   }
 }

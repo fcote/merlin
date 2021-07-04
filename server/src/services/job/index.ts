@@ -16,9 +16,8 @@ class JobService extends Service {
     type: JobType,
     method: () => Promise<void>
   ): Promise<boolean> => {
-    const fullSync = await Job.query().findOne({ type: JobType.fullSync })
     let existingJob = await Job.query().findOne({ type })
-    if (existingJob?.isRunning || fullSync?.isRunning) {
+    if (existingJob?.isRunning) {
       return false
     }
 
