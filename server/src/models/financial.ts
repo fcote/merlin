@@ -1,4 +1,4 @@
-import { CacheScope } from 'apollo-cache-control'
+import { CacheScope } from 'apollo-server-types'
 import { round } from 'lodash'
 import { JSONSchema, QueryContext, Model } from 'objection'
 import {

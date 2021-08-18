@@ -1,4 +1,4 @@
-import { CacheScope } from 'apollo-cache-control'
+import { CacheScope } from 'apollo-server-types'
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedFinancial } from '@models/financial'

@@ -1,4 +1,4 @@
-import { CacheScope } from 'apollo-cache-control'
+import { CacheScope } from 'apollo-server-types'
 import { Resolver, FieldResolver, Root, Ctx } from 'type-graphql'
 
 import { Financial, FinancialPerformance } from '@models/financial'

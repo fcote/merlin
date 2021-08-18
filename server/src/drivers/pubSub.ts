@@ -1,6 +1,6 @@
-import { PubSub, withFilter } from 'apollo-server-koa'
 import EventEmitter from 'events'
 import { GraphQLResolveInfo } from 'graphql'
+import { PubSub, withFilter } from 'graphql-subscriptions'
 import { ArgsDictionary } from 'type-graphql'
 
 import { config } from '@config'
@@ -41,28 +41,26 @@ const subscriptionJobs: Record<
 
 // eslint-disable-next-line no-redeclare
 namespace SubscriptionChannel {
-  export const onCancel = (channel: SubscriptionChannel) => async (
-    context: RequestContext,
-    args: { tickers: string[] }
-  ) => {
-    const subscriptionStorage = subscriptionStorages[channel]
-    if (!subscriptionStorage[context.user.id]) return
-    subscriptionStorage[context.user.id] = subscriptionStorage[
-      context.user.id
-    ].filter((ticker) => !args.tickers.includes(ticker))
-  }
-
-  export const onSubscribe = (channel: SubscriptionChannel) => async (
-    context: RequestContext,
-    args: { tickers: string[] }
-  ) => {
-    const subscriptionStorage = subscriptionStorages[channel]
-    if (!subscriptionStorage[context.user.id]) {
-      subscriptionStorage[context.user.id] = []
+  export const onCancel =
+    (channel: SubscriptionChannel) =>
+    async (context: RequestContext, args: { tickers: string[] }) => {
+      const subscriptionStorage = subscriptionStorages[channel]
+      if (!subscriptionStorage[context.user.id]) return
+      subscriptionStorage[context.user.id] = subscriptionStorage[
+        context.user.id
+      ].filter((ticker) => !args.tickers.includes(ticker))
     }
-    subscriptionStorage[context.user.id].push(...args.tickers)
-    subscriptionJobs[channel](context).then()
-  }
+
+  export const onSubscribe =
+    (channel: SubscriptionChannel) =>
+    async (context: RequestContext, args: { tickers: string[] }) => {
+      const subscriptionStorage = subscriptionStorages[channel]
+      if (!subscriptionStorage[context.user.id]) {
+        subscriptionStorage[context.user.id] = []
+      }
+      subscriptionStorage[context.user.id].push(...args.tickers)
+      subscriptionJobs[channel](context).then()
+    }
 }
 
 // Subscription helpers
@@ -92,28 +90,30 @@ const withCancel = <T>(
   return asyncIterator
 }
 
-const subscription = <PT, AT>({
-  channel,
-  onSubscribe,
-  onCancel,
-  filter,
-}: SubscriptionOptions<PT, AT>) => (
-  root: any,
-  args: ArgsDictionary,
-  context: RequestContext,
-  info: GraphQLResolveInfo
-) => {
-  onSubscribe?.(context, args)
+const subscription =
+  <PT, AT>({
+    channel,
+    onSubscribe,
+    onCancel,
+    filter,
+  }: SubscriptionOptions<PT, AT>) =>
+  (
+    root: any,
+    args: ArgsDictionary,
+    context: RequestContext,
+    info: GraphQLResolveInfo
+  ) => {
+    onSubscribe?.(context, args)
 
-  const asyncIterator = withFilter(
-    () => pubSub.asyncIterator(channel),
-    (payload, variables) => (filter ? filter(payload, variables) : true)
-  )(root, args, context, info)
+    const asyncIterator = withFilter(
+      () => pubSub.asyncIterator(channel),
+      (payload, variables) => (filter ? filter(payload, variables) : true)
+    )(root, args, context, info)
 
-  return withCancel(asyncIterator, () => {
-    onCancel?.(context, args)
-  })
-}
+    return withCancel(asyncIterator, () => {
+      onCancel?.(context, args)
+    })
+  }
 
 const eventEmitter = new EventEmitter()
 eventEmitter.setMaxListeners(config.get('pubsub.maxListeners'))
