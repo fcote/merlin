@@ -3,7 +3,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import useFinancialItems from '@components/cards/FinancialStatementCard/hooks/useFinancialItems'
-import useFinancialStatementTableColumns from '@components/cards/FinancialStatementCard/hooks/useFinancialStatementTableColumns.tsx'
+import useFinancialStatementTableColumns from '@components/cards/FinancialStatementCard/hooks/useFinancialStatementTableColumns'
 import useFinancialStatementTableItems from '@components/cards/FinancialStatementCard/hooks/useFinancialStatementTableItems'
 
 import { useFinancials } from '@hooks/api/queries/useFinancials'
