@@ -1,17 +1,16 @@
 import { Context } from 'koa'
-import { ExecutionParams } from 'subscriptions-transport-ws'
 
 import { DataloaderService } from '@services/dataloader'
 import { RequestContext } from '@typings/context'
 
 const graphqlContext = ({
   ctx,
-  connection,
+  connectionParams,
 }: {
-  ctx: Context
-  connection: ExecutionParams
+  ctx?: Context
+  connectionParams?: any
 }): RequestContext => {
-  const state = ctx?.state ?? connection?.context
+  const state = ctx?.state ?? connectionParams
 
   const c: RequestContext = {}
   c.user = state.user

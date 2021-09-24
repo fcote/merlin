@@ -14,6 +14,7 @@ import { errorHandler } from '@middlewares/errorHandler'
 import { transactional } from '@middlewares/transactional'
 import { validateOrigin } from '@middlewares/validateOrigins'
 import { schema } from '@resolvers'
+import { graphqlContext } from '@resolvers/context'
 import { Connectable } from '@typings/manager'
 
 class App implements Connectable {
@@ -42,7 +43,12 @@ class App implements Connectable {
       this.server.keepAliveTimeout = config.get('keepAliveTimeout')
 
       this.subscriptionServer = SubscriptionServer.create(
-        { schema, execute, subscribe },
+        {
+          schema,
+          execute,
+          subscribe,
+          onConnect: (connectionParams) => graphqlContext({ connectionParams }),
+        },
         {
           server: this.server,
           path: `${apolloManager.server.graphqlPath}${this.subscriptionPath}`,
