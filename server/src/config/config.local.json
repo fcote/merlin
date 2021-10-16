@@ -12,6 +12,9 @@
       "dir": "./migrations"
     }
   },
+  "graphql": {
+    "tracing": true
+  },
   "sentry": {
     "enabled": false
   }

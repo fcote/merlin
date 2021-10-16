@@ -3,6 +3,7 @@ import {
   ApolloServerPluginLandingPageGraphQLPlaygroundOptions,
   ApolloServerPluginCacheControl,
   ApolloServerPluginCacheControlOptions,
+  PluginDefinition,
 } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-koa'
 
@@ -62,15 +63,7 @@ class ApolloManager implements Connectable {
       introspection: true,
       context: graphqlContext,
       formatError: errorHandlerApollo(logger),
-      plugins: [
-        ApolloServerPluginLandingPageGraphQLPlayground(
-          ApolloManager.playgroundOptions
-        ),
-        new TransactionPlugin(ApolloManager.transactionOptions),
-        new DataloaderPlugin(ApolloManager.dataloaderOptions),
-        ApolloServerPluginCacheControl(ApolloManager.cacheControlOptions),
-        require('apollo-tracing').plugin(),
-      ],
+      plugins: this.plugins,
     })
   }
 
@@ -89,6 +82,23 @@ class ApolloManager implements Connectable {
       cors: false,
       bodyParserConfig: true,
     })
+  }
+
+  private get plugins(): PluginDefinition[] {
+    let plugins = [
+      ApolloServerPluginLandingPageGraphQLPlayground(
+        ApolloManager.playgroundOptions
+      ),
+      ApolloServerPluginCacheControl(ApolloManager.cacheControlOptions),
+      new TransactionPlugin(ApolloManager.transactionOptions),
+      new DataloaderPlugin(ApolloManager.dataloaderOptions),
+    ]
+
+    if (config.get('graphql.tracing')) {
+      plugins.push(require('apollo-tracing').plugin())
+    }
+
+    return plugins
   }
 }
 
