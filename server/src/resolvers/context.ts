@@ -1,6 +1,5 @@
 import { Context } from 'koa'
 
-import { DataloaderService } from '@services/dataloader'
 import { RequestContext } from '@typings/context'
 
 const graphqlContext = ({
@@ -15,8 +14,6 @@ const graphqlContext = ({
   const c: RequestContext = {}
   c.user = state.user
   c.userToken = state['x-api-token']
-  c.trx = state.trx
-  c.loaders = new DataloaderService(c)
 
   return c
 }

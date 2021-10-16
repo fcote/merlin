@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql'
 import { Logger } from 'winston'
 
-import { getLevel } from '@middlewares/errorHandler'
+import { getLevel } from '@middlewares/http/errorHandler'
 import { ApolloBadRequest } from '@typings/errors/apolloErrors'
 
 const reformatError = (err: GraphQLError) => {

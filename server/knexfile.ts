@@ -1,6 +1,6 @@
 import { Knex } from 'knex'
 
-import { config } from './src/config'
+import { config } from '@config'
 
 require('tsconfig-paths/register')
 

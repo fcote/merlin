@@ -1,6 +1,6 @@
 import { PartialModelGraph } from 'objection'
 
-import { handleError } from '@middlewares/errorHandler'
+import { handleError } from '@middlewares/http/errorHandler'
 import { Job, JobType } from '@models/job'
 import { JobEarningSubscribedMethod } from '@services/job/earningsSubscribed'
 import { JobForexMethod } from '@services/job/forex'

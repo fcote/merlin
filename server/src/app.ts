@@ -7,12 +7,10 @@ import { SubscriptionServer } from 'subscriptions-transport-ws'
 
 import { config } from '@config'
 import { apolloManager } from '@drivers/apolloManager'
-import { knexDriver } from '@knex'
 import { logger } from '@logger'
-import { apiToken } from '@middlewares/apiToken'
-import { errorHandler } from '@middlewares/errorHandler'
-import { transactional } from '@middlewares/transactional'
-import { validateOrigin } from '@middlewares/validateOrigins'
+import { apiToken } from '@middlewares/http/apiToken'
+import { errorHandler } from '@middlewares/http/errorHandler'
+import { validateOrigin } from '@middlewares/http/validateOrigins'
 import { schema } from '@resolvers'
 import { graphqlContext } from '@resolvers/context'
 import { Connectable } from '@typings/manager'
@@ -82,7 +80,6 @@ class App implements Connectable {
       .use(bodyParser())
       .use(errorHandler())
       .use(apiToken())
-      .use(transactional(knexDriver.knex))
 
     apolloManager.applyMiddleware()
   }

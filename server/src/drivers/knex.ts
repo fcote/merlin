@@ -20,11 +20,11 @@ class KnexDriver implements Connectable {
     Model.knex(this.knex)
   }
 
-  public connect = async (): Promise<void> =>
+  public connect = async () =>
     this.migrationConfig.enable &&
     this.knex.migrate.latest({ directory: this.migrationConfig.dir })
 
-  public disconnect = async (): Promise<void> => this.knex.destroy()
+  public disconnect = async () => this.knex.destroy()
 }
 
 const knexDriver = new KnexDriver()

@@ -84,15 +84,19 @@ const schema = {
       env: 'DB_POOL_MIN',
     },
     poolMax: {
-      default: 50,
+      default: 10,
       env: 'DB_POOL_MAX',
     },
     acquireConnectionTimeout: {
-      default: 120000,
+      default: 30000,
       env: 'DB_ACQUIRE_CONNECTION_TIMEOUT',
     },
+    idleInTransactionTimeout: {
+      default: 15000,
+      env: 'DB_IDLE_IN_TRANSACTION_TIMEOUT',
+    },
     idleTimeoutMillis: {
-      default: 30000,
+      default: 15000,
       env: 'DB_IDLE_TIMEOUT_MILLIS',
     },
   },

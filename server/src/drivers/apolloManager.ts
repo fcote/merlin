@@ -1,16 +1,26 @@
 import {
-  PluginDefinition,
   ApolloServerPluginLandingPageGraphQLPlayground,
   ApolloServerPluginLandingPageGraphQLPlaygroundOptions,
   ApolloServerPluginCacheControl,
+  ApolloServerPluginCacheControlOptions,
 } from 'apollo-server-core'
 import { ApolloServer } from 'apollo-server-koa'
 
 import { config } from '@config'
+import { knexDriver } from '@knex'
 import { logger } from '@logger'
-import { errorHandlerApollo } from '@middlewares/errorHandlerApollo'
+import {
+  DataloaderPlugin,
+  DataloaderPluginConfig,
+} from '@middlewares/graphql/dataloader'
+import {
+  TransactionPlugin,
+  TransactionPluginConfig,
+} from '@middlewares/graphql/transaction'
+import { errorHandlerApollo } from '@middlewares/http/errorHandlerApollo'
 import { schema } from '@resolvers'
 import { graphqlContext } from '@resolvers/context'
+import { DataloaderService } from '@services/dataloader'
 import { Connectable } from '@typings/manager'
 
 import { app } from '../app'
@@ -21,6 +31,30 @@ class ApolloManager implements Connectable {
   private static path: string = '/graphql'
   private static subscriptionPath: string = '/subscriptions'
 
+  private static cacheControlOptions: ApolloServerPluginCacheControlOptions = {
+    calculateHttpHeaders: false,
+  }
+  private static transactionOptions: TransactionPluginConfig = {
+    knex: knexDriver.knex,
+    transactionTimeoutMs: config.get('database.idleInTransactionTimeout'),
+    logger,
+  }
+  private static dataloaderOptions: DataloaderPluginConfig = {
+    class: DataloaderService,
+  }
+  private static playgroundOptions: ApolloServerPluginLandingPageGraphQLPlaygroundOptions =
+    {
+      endpoint: `${config.get('endpoint')}${ApolloManager.path}`,
+      subscriptionEndpoint: `${config.get('endpoint')}${ApolloManager.path}${
+        ApolloManager.subscriptionPath
+      }`,
+      settings: {
+        'editor.cursorShape': 'block',
+        'request.credentials': 'same-origin',
+        'schema.polling.enable': false,
+      },
+    }
+
   constructor() {
     this.server = new ApolloServer({
       schema,
@@ -28,7 +62,15 @@ class ApolloManager implements Connectable {
       introspection: true,
       context: graphqlContext,
       formatError: errorHandlerApollo(logger),
-      plugins: this.getApolloPluginDefinitions(),
+      plugins: [
+        ApolloServerPluginLandingPageGraphQLPlayground(
+          ApolloManager.playgroundOptions
+        ),
+        new TransactionPlugin(ApolloManager.transactionOptions),
+        new DataloaderPlugin(ApolloManager.dataloaderOptions),
+        ApolloServerPluginCacheControl(ApolloManager.cacheControlOptions),
+        require('apollo-tracing').plugin(),
+      ],
     })
   }
 
@@ -47,37 +89,6 @@ class ApolloManager implements Connectable {
       cors: false,
       bodyParserConfig: true,
     })
-  }
-
-  private getApolloPluginDefinitions = (): PluginDefinition[] => {
-    const plugins: PluginDefinition[] = []
-
-    const defaultPlaygroundConfig = {
-      settings: {
-        'editor.cursorShape': 'block',
-        'request.credentials': 'same-origin',
-        'schema.polling.enable': false,
-        endpoint: `${config.get('endpoint')}${ApolloManager.path}`,
-        subscriptionEndpoint: `${config.get('endpoint')}${ApolloManager.path}${
-          ApolloManager.subscriptionPath
-        }`,
-      },
-    } as ApolloServerPluginLandingPageGraphQLPlaygroundOptions
-    plugins.push(
-      ApolloServerPluginLandingPageGraphQLPlayground({
-        ...defaultPlaygroundConfig,
-      })
-    )
-
-    plugins.push(
-      ApolloServerPluginCacheControl({
-        calculateHttpHeaders: false,
-      })
-    )
-
-    plugins.push(require('apollo-tracing').plugin())
-
-    return plugins
   }
 }
 

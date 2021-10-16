@@ -8,6 +8,8 @@ type RequestContext = {
   userToken?: string
   loaders?: DataloaderService
   trx?: Knex.Transaction
+  trxTimeout?: NodeJS.Timeout
+  trxStartPromise?: Promise<Knex.Transaction>
 }
 
 export { RequestContext }
