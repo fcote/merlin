@@ -1,5 +1,35 @@
 {
   "extends": [
     "config:base"
+  ],
+  "masterIssue": true,
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security",
+      "dependencies"
+    ],
+    "schedule": [
+      "at any time"
+    ],
+    "prPriority": 10
+  },
+  "labels": [
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch"
+      ],
+      "depTypeList": [
+        "dependencies",
+        "peerDependencies"
+      ],
+      "automerge": true,
+      "labels": [
+        "dependencies"
+      ]
+    }
   ]
 }
