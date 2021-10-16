@@ -38,7 +38,7 @@
     "graphql-fields": "^2.0.3",
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
-    "jsdom": "^16.7.0",
+    "jsdom": "^18.0.0",
     "knex": "^0.95.8",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",
