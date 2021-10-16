@@ -90,7 +90,7 @@
     "eslint-plugin-import": "2.24.0",
     "eslint-plugin-import-helpers": "1.1.0",
     "eslint-plugin-prettier": "3.4.0",
-    "nodemon": "2.0.12",
+    "nodemon": "2.0.13",
     "prettier": "2.3.2",
     "prettier-eslint": "13.0.0",
     "ts-jest": "27.0.4",
