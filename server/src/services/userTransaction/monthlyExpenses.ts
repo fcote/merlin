@@ -11,13 +11,13 @@ import { ServiceMethod } from '@services/service'
 
 class UserTransactionMonthlyExpensesMethod extends ServiceMethod {
   run = async (userId: string) => {
-    const sums = ((await UserTransaction.query(this.trx)
+    const sums = (await UserTransaction.query(this.trx)
       .sum('value')
       .select('category')
       .where('userId', userId)
       .where('type', UserTransactionType.expense)
       .where('frequency', UserTransactionFrequency.monthly)
-      .groupBy('category')) as unknown) as {
+      .groupBy('category')) as unknown as {
       sum: number
       category: UserTransactionCategory
     }[]
