@@ -102,9 +102,8 @@ class UserFieldsResolver {
     const userTransactionService = new UserTransactionService(ctx)
     const userAccountService = new UserAccountService(ctx)
 
-    const {
-      left: incomeLeftPerMonth,
-    } = await userTransactionService.monthlyExpenses(user.id)
+    const { left: incomeLeftPerMonth } =
+      await userTransactionService.monthlyExpenses(user.id)
 
     const transactions = await userTransactionService.find(
       {
