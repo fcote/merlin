@@ -35,24 +35,17 @@ const SelfAccountsCard: React.FC<UserAccountsCardProps> = ({
   refetch,
   loading,
 }) => {
-  const {
-    selfUserAccountSync,
-    selfUserAccountSyncLoading,
-    getCredentials,
-  } = useSelfUserAccountSync()
+  const { selfUserAccountSync, selfUserAccountSyncLoading, getCredentials } =
+    useSelfUserAccountSync()
   const [formattedAccounts, setFormattedAccounts] = useState<
     UserFinancialItem<UserAccount>[]
   >([])
-  const [accountModalInstance, setAccountModalInstance] = useState<UserAccount>(
-    null
-  )
-  const [isAccountModalVisible, setIsAccountModalVisible] = useState<boolean>(
-    false
-  )
-  const [
-    isAccountLoginModalVisible,
-    setIsAccountLoginModalVisible,
-  ] = useState<boolean>(false)
+  const [accountModalInstance, setAccountModalInstance] =
+    useState<UserAccount>(null)
+  const [isAccountModalVisible, setIsAccountModalVisible] =
+    useState<boolean>(false)
+  const [isAccountLoginModalVisible, setIsAccountLoginModalVisible] =
+    useState<boolean>(false)
 
   useEffect(() => {
     if (!accounts) return

@@ -27,20 +27,18 @@ const subscribeToMoreFollowedSecurityGroupPrices = (
   updateQuery: (prev, { subscriptionData }) => {
     const newData = subscriptionData?.data?.securityPriceChanges
     if (!newData) return prev
-    const newNodes: FollowedSecurityGroup[] = prev.self.followedSecurityGroups.nodes.map(
-      (node) => {
-        const newFollowedSecurities: FollowedSecurity[] = node.followedSecurities.nodes.map(
-          (fsNode) => {
+    const newNodes: FollowedSecurityGroup[] =
+      prev.self.followedSecurityGroups.nodes.map((node) => {
+        const newFollowedSecurities: FollowedSecurity[] =
+          node.followedSecurities.nodes.map((fsNode) => {
             if (fsNode.security.ticker !== newData.ticker) return { ...fsNode }
             const securityData = { ...fsNode.security, ...newData }
             return { ...fsNode, security: securityData }
-          }
-        )
+          })
         return mergeDeep({}, node, {
           followedSecurities: { nodes: newFollowedSecurities },
         })
-      }
-    )
+      })
     return mergeDeep({}, prev, {
       self: {
         followedSecurityGroups: {

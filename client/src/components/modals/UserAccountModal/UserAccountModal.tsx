@@ -45,10 +45,8 @@ const UserAccountModal = ({
   triggerRefresh,
 }: UserAccountBalanceModalProps) => {
   const form = useRef<FormInstance<UpdateBalanceFormType>>()
-  const {
-    selfUserAccountUpsert,
-    selfUserAccountUpsertLoading,
-  } = useSelfUserAccountUpsert()
+  const { selfUserAccountUpsert, selfUserAccountUpsertLoading } =
+    useSelfUserAccountUpsert()
 
   const [isBalanceDisabled, setIsBalanceDisabled] = useState(false)
 

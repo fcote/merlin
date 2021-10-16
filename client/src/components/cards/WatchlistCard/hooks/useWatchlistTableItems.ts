@@ -46,18 +46,13 @@ const useWatchlistTableItems = (
   triggerRefresh: () => void
 ) => {
   const [watchlistItems, setWatchlistItems] = useState<WatchlistTableItem[]>([])
-  const [
-    currentSyncWatchlistItem,
-    setCurrentSyncWatchlistItem,
-  ] = useState<string>()
+  const [currentSyncWatchlistItem, setCurrentSyncWatchlistItem] =
+    useState<string>()
 
   const { selfFollowedSecurityUnlink } = useSelfFollowedSecurityUnlink()
   const { selfFollowedSecurityLink } = useSelfFollowedSecurityLink()
-  const {
-    getOrSyncSecurity,
-    securityLoading,
-    securitySyncProgress,
-  } = useSecurityGetOrSync()
+  const { getOrSyncSecurity, securityLoading, securitySyncProgress } =
+    useSecurityGetOrSync()
 
   const formatWatchlistItem = (security: Security): WatchlistTableItem => ({
     key: security.id.toString(),

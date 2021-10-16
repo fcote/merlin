@@ -28,12 +28,8 @@ const WatchlistCard = ({
 
   const windowSize = useWindowSize()
 
-  const {
-    watchlistItems,
-    handleAdd,
-    handleSave,
-    handleRemove,
-  } = useWatchlistTableItems(watchlist, searchText, triggerRefresh)
+  const { watchlistItems, handleAdd, handleSave, handleRemove } =
+    useWatchlistTableItems(watchlist, searchText, triggerRefresh)
   const columns = useWatchlistTableColumns(watchlistItems, handleRemove)
 
   const WatchlistTable = () => (

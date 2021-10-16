@@ -15,10 +15,11 @@ const useQuery = <TData = any, TVariables = OperationVariables>(
     namespace?: string
   }
 ) => {
-  const { data: rawData, refetch: baseRefetch, ...rest } = useApolloQuery<
-    any,
-    TVariables
-  >(query, { ...options, client })
+  const {
+    data: rawData,
+    refetch: baseRefetch,
+    ...rest
+  } = useApolloQuery<any, TVariables>(query, { ...options, client })
 
   const refetch = async (variables?: Partial<TVariables>) => {
     const result = await baseRefetch(variables)

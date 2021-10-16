@@ -26,10 +26,8 @@ const UserAccountSelect: React.FC<UserAccountSelectProps> = ({
     loading: userAccountsLoading,
     refetch,
   } = useSelfUserAccounts(type)
-  const {
-    selfUserAccountUpsert,
-    selfUserAccountUpsertLoading,
-  } = useSelfUserAccountUpsert()
+  const { selfUserAccountUpsert, selfUserAccountUpsertLoading } =
+    useSelfUserAccountUpsert()
 
   const handleSelectChange = (value: string) => {
     setSelectedUserAccountId(value)

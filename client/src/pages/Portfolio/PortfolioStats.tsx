@@ -23,11 +23,8 @@ const PortfolioStats: React.FC<PortfolioStatsProps> = ({
   forex,
   loading,
 }) => {
-  const {
-    portfolioDayChange,
-    portfolioWeekChange,
-    portfolioAllTimeChange,
-  } = usePortfolioChanges(portfolioItems, userCurrency, forex)
+  const { portfolioDayChange, portfolioWeekChange, portfolioAllTimeChange } =
+    usePortfolioChanges(portfolioItems, userCurrency, forex)
   const portfolioSectorWeights = usePortfolioSectorWeights(portfolioItems)
 
   const PortfolioStatistic = (title: string, change: PortfolioChange) => {
