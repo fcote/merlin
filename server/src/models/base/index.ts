@@ -136,7 +136,7 @@ class BaseModel extends Model {
     })
 
     const flatNodes = await query
-    const totals = ((await countQuery) as unknown) as { count: number }[]
+    const totals = (await countQuery) as unknown as { count: number }[]
 
     return keys.map((k) => {
       const total = totals.find((t) => t[groupBy].toString() === k)?.count ?? 0

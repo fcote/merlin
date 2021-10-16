@@ -54,7 +54,8 @@ class FMPLink
     HistoricalPriceLink,
     EarningLink,
     NewsLink,
-    ForexLink {
+    ForexLink
+{
   constructor() {
     super({
       endpoint: 'https://financialmodelingprep.com/',
