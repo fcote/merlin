@@ -30,7 +30,7 @@
     "apollo-tracing": "^0.15.0",
     "class-validator": "^0.13.1",
     "convict": "^6.0.1",
-    "cron-parser": "^3.5.0",
+    "cron-parser": "^4.0.0",
     "dataloader": "^2.0.0",
     "dayjs": "^1.10.6",
     "got": "^11.8.2",
