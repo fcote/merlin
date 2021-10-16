@@ -25,23 +25,20 @@ import './Tracker.style.less'
 const Tracker = () => {
   useDocumentTitle('Tracker')
 
-  const { data: rawTrackers, loading, refetch } = useSelfFollowedSecurityGroups(
-    FollowedSecurityGroupType.tracker
-  )
   const {
-    securitySyncPrices,
-    securitySyncPricesLoading,
-  } = useSecuritySyncPrices()
+    data: rawTrackers,
+    loading,
+    refetch,
+  } = useSelfFollowedSecurityGroups(FollowedSecurityGroupType.tracker)
+  const { securitySyncPrices, securitySyncPricesLoading } =
+    useSecuritySyncPrices()
 
   const [isTrackerModalVisible, setIsTrackerModalVisible] = useState(false)
-  const [isTrackerItemModalVisible, setIsTrackerItemModalVisible] = useState(
-    false
-  )
+  const [isTrackerItemModalVisible, setIsTrackerItemModalVisible] =
+    useState(false)
   const [currentTrackerId, setCurrentTrackerId] = useState<string>(null)
-  const [
-    currentTrackerItem,
-    setCurrentTrackerItem,
-  ] = useState<FollowedSecurityModalItem>(null)
+  const [currentTrackerItem, setCurrentTrackerItem] =
+    useState<FollowedSecurityModalItem>(null)
 
   const trackers = useMemo(() => {
     if (loading)

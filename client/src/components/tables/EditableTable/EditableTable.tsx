@@ -64,16 +64,16 @@ const EditableTable: React.FC<EditableTableProps> = ({
   }, [items])
 
   useEffect(() => {
-    const handleCellClick = (col: EditableColumn) => (
-      record: EditableRecord
-    ): EditableCellProps => ({
-      record,
-      title: col.title,
-      editable: record.editable[col.dataIndex],
-      required: col.required,
-      dataIndex: col.dataIndex,
-      handleSave: handleSave,
-    })
+    const handleCellClick =
+      (col: EditableColumn) =>
+      (record: EditableRecord): EditableCellProps => ({
+        record,
+        title: col.title,
+        editable: record.editable[col.dataIndex],
+        required: col.required,
+        dataIndex: col.dataIndex,
+        handleSave: handleSave,
+      })
 
     const formattedColumns: EditableColumn[] = columns.map((col) => {
       if (!col.editable) {

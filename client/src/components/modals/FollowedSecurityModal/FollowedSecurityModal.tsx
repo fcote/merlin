@@ -58,10 +58,8 @@ const FollowedSecurityModal = ({
 }: FollowedSecurityModalProps) => {
   const form = useRef<FormInstance<FollowedSecurityFormType>>()
   const { getOrSyncSecurity, securityLoading } = useSecurityGetOrSync()
-  const {
-    selfFollowedSecurityLink,
-    selfFollowedSecurityLinkLoading,
-  } = useSelfFollowedSecurityLink()
+  const { selfFollowedSecurityLink, selfFollowedSecurityLinkLoading } =
+    useSelfFollowedSecurityLink()
   const { selfFollowedSecurityUnlink } = useSelfFollowedSecurityUnlink()
 
   const handleClose = () => {

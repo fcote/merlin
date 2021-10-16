@@ -24,13 +24,12 @@ const subscribeToMoreUserAccountSecurityPrices = (
   updateQuery: (prev, { subscriptionData }) => {
     const newData = subscriptionData?.data?.securityPriceChanges
     if (!newData) return prev
-    const newNodes: UserAccountSecurity[] = prev.self.userAccountSecurities.nodes.map(
-      (node) => {
+    const newNodes: UserAccountSecurity[] =
+      prev.self.userAccountSecurities.nodes.map((node) => {
         if (node.security.ticker !== newData.ticker) return { ...node }
         const securityData = { ...node.security, ...newData }
         return { ...node, security: securityData }
-      }
-    )
+      })
     return mergeDeep({}, prev, {
       self: {
         userAccountSecurities: {

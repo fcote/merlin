@@ -29,11 +29,8 @@ const UserAccountSyncModal = ({
   triggerRefresh,
 }: UserAccountLoginModalProps) => {
   const form = useRef<FormInstance<LoginFormType>>()
-  const {
-    selfUserAccountSync,
-    selfUserAccountSyncLoading,
-    saveCredentials,
-  } = useSelfUserAccountSync()
+  const { selfUserAccountSync, selfUserAccountSyncLoading, saveCredentials } =
+    useSelfUserAccountSync()
 
   const handleClose = () => {
     form.current.resetFields()

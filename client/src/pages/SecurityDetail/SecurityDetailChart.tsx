@@ -13,11 +13,8 @@ export type SecurityDetailChartProps = {
 const SecurityDetailChart: React.FC<SecurityDetailChartProps> = ({
   security,
 }) => {
-  const {
-    getHistoricalPrices,
-    historicalPrices,
-    loading,
-  } = useHistoricalPrices()
+  const { getHistoricalPrices, historicalPrices, loading } =
+    useHistoricalPrices()
   useEffect(() => {
     if (!security) return
 

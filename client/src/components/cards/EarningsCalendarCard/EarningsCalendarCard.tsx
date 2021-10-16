@@ -27,9 +27,8 @@ const EarningsCalendarCard: React.FC<EarningsCalendarCardProps> = ({
     isEarningCallTranscriptModalVisible,
     setIsEarningCallTranscriptModalVisible,
   ] = useState<boolean>(false)
-  const [currentEarningInstance, setCurrentEarningInstance] = useState<Earning>(
-    null
-  )
+  const [currentEarningInstance, setCurrentEarningInstance] =
+    useState<Earning>(null)
   const defaultColumns: ColumnType<any>[] = [
     { title: 'Date', dataIndex: 'date' },
   ]

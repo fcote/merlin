@@ -18,11 +18,8 @@ const EarningCallTranscriptModal = ({
   setIsVisible,
   earning,
 }: EarningCallTranscriptModalProps) => {
-  const {
-    getEarningCallTranscript,
-    earningCallTranscript,
-    loading,
-  } = useEarningCallTranscript()
+  const { getEarningCallTranscript, earningCallTranscript, loading } =
+    useEarningCallTranscript()
   const size = useWindowSize()
   const markdownConverter = new Converter()
 
