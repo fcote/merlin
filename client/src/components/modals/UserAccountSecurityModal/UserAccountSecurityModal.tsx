@@ -30,10 +30,8 @@ const UserAccountSecurityModal = ({
   userCurrency,
   triggerRefresh,
 }: UserAccountSecurityModalProps) => {
-  const [
-    selectedAccountSecurity,
-    setSelectedAccountSecurity,
-  ] = useState<UserAccountSecurity>()
+  const [selectedAccountSecurity, setSelectedAccountSecurity] =
+    useState<UserAccountSecurity>()
 
   const {
     data: accountSecurities,

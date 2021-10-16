@@ -26,9 +26,8 @@ const SelfForecastCard: React.FC<SelfForecastCardProps> = ({
   loading,
   refetch,
 }) => {
-  const [isForecastModalVisible, setIsForecastModalVisible] = useState<boolean>(
-    false
-  )
+  const [isForecastModalVisible, setIsForecastModalVisible] =
+    useState<boolean>(false)
   const [forecastModalDate, setForecastModalDate] = useState<string>(null)
   const [formattedMonthlyForecast, setFormattedMonthlyForecast] = useState<
     UserFinancialItem[]

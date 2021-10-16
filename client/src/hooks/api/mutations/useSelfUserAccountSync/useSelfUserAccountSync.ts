@@ -12,13 +12,11 @@ export type UserAccountSyncInputs = {
 }
 
 const useSelfUserAccountSync = () => {
-  const [
-    selfUserAccountSync,
-    { loading: selfUserAccountSyncLoading },
-  ] = useMutation<UserAccount, { inputs: UserAccountSyncInputs }>(
-    useSelfUserAccountSyncMutation,
-    { namespace: 'self' }
-  )
+  const [selfUserAccountSync, { loading: selfUserAccountSyncLoading }] =
+    useMutation<UserAccount, { inputs: UserAccountSyncInputs }>(
+      useSelfUserAccountSyncMutation,
+      { namespace: 'self' }
+    )
 
   const getCredentials = (accountId: string) => {
     const rawCredentials = localStorage.getItem(

@@ -24,18 +24,12 @@ const SelfMonthlyExpensesCard: React.FC<SelfMonthlyExpensesCardProps> = ({
   loading,
   refetch,
 }) => {
-  const [
-    transactionModalInstance,
-    setTransactionModalInstance,
-  ] = useState<UserTransaction>(null)
-  const [
-    isTransactionModalVisible,
-    setIsTransactionModalVisible,
-  ] = useState<boolean>(false)
-  const [
-    monthlyExpensesTransactions,
-    setMonthlyExpensesTransactions,
-  ] = useState<UserFinancialItem[]>([])
+  const [transactionModalInstance, setTransactionModalInstance] =
+    useState<UserTransaction>(null)
+  const [isTransactionModalVisible, setIsTransactionModalVisible] =
+    useState<boolean>(false)
+  const [monthlyExpensesTransactions, setMonthlyExpensesTransactions] =
+    useState<UserFinancialItem[]>([])
 
   const onTransactionClick = (r?: UserFinancialItem<UserTransaction>) => () => {
     setTransactionModalInstance(r?.instance)

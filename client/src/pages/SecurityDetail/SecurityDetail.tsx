@@ -50,12 +50,8 @@ const SecurityDetail = () => {
   const history = useHistory()
   useDocumentTitle(ticker)
 
-  const {
-    security,
-    securitySyncProgress,
-    securityLoading,
-    syncSecurity,
-  } = useSecurityGetOrSync(ticker)
+  const { security, securitySyncProgress, securityLoading, syncSecurity } =
+    useSecurityGetOrSync(ticker)
 
   const [
     isCompanyDescriptionModalVisible,
