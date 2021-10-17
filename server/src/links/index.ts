@@ -59,6 +59,13 @@ export interface FinancialLink {
   ) => Promise<SecurityFinancialResult[]>
 }
 
+export interface AnalystEstimatesLink {
+  analystEstimates: (
+    ticker: string,
+    freq: FinancialFreq
+  ) => Promise<SecurityFinancialResult[]>
+}
+
 export interface EarningLink {
   earnings: (
     ticker: string,

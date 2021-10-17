@@ -9,6 +9,7 @@ import {
   CompanyOverviewLink,
   NewsLink,
   ForexLink,
+  AnalystEstimatesLink,
 } from '@links/index'
 import { MacroTrendsLink } from '@links/macrotrends'
 import { seekingAlpha } from '@links/seekingAlpha'
@@ -29,3 +30,5 @@ export const earningsLink: EarningLink =
   config.get('links.earnings') === 'fmp' ? fmp : yahooFinance
 export const financialsLink: FinancialLink =
   config.get('links.financials') === 'fmp' ? fmp : macrotrends
+export const analystEstimatesLink: AnalystEstimatesLink =
+  config.get('datasource.fmp.plan') === 'premium' ? fmp : null

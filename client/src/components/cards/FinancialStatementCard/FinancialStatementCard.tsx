@@ -40,6 +40,7 @@ const FinancialStatementCard = ({
     {
       filters: {
         ticker,
+        estimate: false,
         freq: financialFreq,
         statement,
       },

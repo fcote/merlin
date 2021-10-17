@@ -9,7 +9,9 @@ import {
   EarningLink,
   NewsLink,
   ForexLink,
+  AnalystEstimatesLink,
 } from '@links'
+import { fmpAnalystEstimates } from '@links/fmp/link.fmp.analystEstimates'
 import {
   fmpCompanyOverview,
   fmpBatchCompanyOverview,
@@ -51,6 +53,7 @@ class FMPLink
     QuoteLink,
     CompanyOverviewLink,
     FinancialLink,
+    AnalystEstimatesLink,
     HistoricalPriceLink,
     EarningLink,
     NewsLink,
@@ -133,6 +136,14 @@ class FMPLink
     freq: FinancialFreq
   ): Promise<SecurityFinancialResult[]> => {
     return fmpFinancials.bind(this, ticker, freq)()
+  }
+
+  // Analyst estimates
+  analystEstimates = async (
+    ticker: string,
+    freq: FinancialFreq
+  ): Promise<SecurityFinancialResult[]> => {
+    return fmpAnalystEstimates.bind(this, ticker, freq)()
   }
 
   // Historical prices

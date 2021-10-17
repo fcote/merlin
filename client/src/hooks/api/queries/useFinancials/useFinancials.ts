@@ -7,6 +7,7 @@ import { PaginationOptions } from '@lib/paginated'
 
 export type FinancialFilters = {
   ticker: string
+  estimate: boolean
   type?: FinancialItemType
   statement: FinancialStatement
   freq: FinancialFreq

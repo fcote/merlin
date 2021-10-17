@@ -2,10 +2,10 @@ import { uniqBy, groupBy, mean } from 'lodash'
 
 import { dayjs } from '@helpers/dayjs'
 import { fiscalPeriodFromDate } from '@helpers/fiscalPeriodFromDate'
-import { financialsLink } from '@links/links'
+import { financialsLink, analystEstimatesLink } from '@links/links'
 import { SecurityFinancialResult } from '@links/types'
 import { logger } from '@logger'
-import { Financial, FinancialFreq } from '@models/financial'
+import { Financial, FinancialFreq, FinancialPeriod } from '@models/financial'
 import {
   FinancialItem,
   FinancialItemType,
@@ -33,10 +33,18 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
   private targetProgress?: number
 
   private setCurrentFinancials = async (freq: FinancialFreq) => {
+    const periodFilter =
+      freq === FinancialFreq.Q
+        ? [
+            FinancialPeriod.Q1,
+            FinancialPeriod.Q2,
+            FinancialPeriod.Q3,
+            FinancialPeriod.Q4,
+          ]
+        : [freq]
     this.currentFinancials = await Financial.query(this.trx)
-      .joinRelated('financialItem')
-      .where('securityId', this.security.id)
-      .where('period', 'like', freq === FinancialFreq.Q ? 'Q%' : freq)
+      .where('financials.securityId', this.security.id)
+      .whereIn('financials.period', periodFilter)
       .withGraphFetched('financialItem')
     this.currentFinancialItems = await FinancialItem.query(this.trx)
   }
@@ -79,18 +87,31 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
       inputs.ticker
     )
 
-    this.securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 8))
+    this.securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 10))
 
     // Retrieve historical prices to compute ratios
     await this.setCurrentHistoricalPrices()
 
     // Retrieve raw updated financials
-    const [yearRawFinancials, quarterRawFinancials] = await Promise.all([
+    const [
+      yearRawFinancials,
+      quarterRawFinancials,
+      yearRawEstimates,
+      quarterRawEstimates,
+    ] = await Promise.all([
       financialsLink.financials(this.security.ticker, FinancialFreq.Y),
       financialsLink.financials(this.security.ticker, FinancialFreq.Q),
+      analystEstimatesLink?.analystEstimates?.(
+        this.security.ticker,
+        FinancialFreq.Y
+      ),
+      analystEstimatesLink?.analystEstimates?.(
+        this.security.ticker,
+        FinancialFreq.Q
+      ),
     ])
 
-    this.securitySyncEmitter?.sendProgress(this.getTargetProgress(2 / 8))
+    this.securitySyncEmitter?.sendProgress(this.getTargetProgress(2 / 10))
 
     if (!yearRawFinancials?.length) {
       logger.info(`financials > sync > missing financials`, {
@@ -108,28 +129,44 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
     await this.upsertFinancials(
       yearRawFinancials,
       FinancialFreq.Y,
-      this.getTargetProgress(3 / 8)
+      this.getTargetProgress(3 / 10)
     )
     // Upsert computed yearly ratios
     await this.upsertFinancialRatios(
       FinancialFreq.Y,
-      this.getTargetProgress(4 / 8)
+      this.getTargetProgress(4 / 10)
     )
     // Upsert reported quarters financials
     await this.upsertFinancials(
       quarterRawFinancials,
       FinancialFreq.Q,
-      this.getTargetProgress(5 / 8)
+      this.getTargetProgress(5 / 10)
     )
     // Upsert computed quarters ratios
     await this.upsertFinancialRatios(
       FinancialFreq.Q,
-      this.getTargetProgress(6 / 8)
+      this.getTargetProgress(6 / 10)
     )
     // Upsert ttm financials
-    await this.upsertFinancialTTM(this.getTargetProgress(7 / 8))
+    await this.upsertFinancialTTM(this.getTargetProgress(7 / 10))
     // Upsert ttm ratios
-    await this.upsertFinancialRatios(FinancialFreq.TTM, targetProgress)
+    await this.upsertFinancialRatios(
+      FinancialFreq.TTM,
+      this.getTargetProgress(8 / 10)
+    )
+    // Upsert reported yearly estimates
+    await this.upsertFinancials(
+      yearRawEstimates,
+      FinancialFreq.Y,
+      this.getTargetProgress(9 / 10)
+    )
+    // Upsert reported quarterly estimates
+    await this.upsertFinancials(
+      quarterRawEstimates,
+      FinancialFreq.Q,
+      this.getTargetProgress(10 / 10)
+    )
+
     // Set fiscal year end month
     await this.security
       .$query(this.trx)
@@ -161,6 +198,12 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
     freq: FinancialFreq,
     targetProgress: number
   ) => {
+    if (!rawFinancials) {
+      this.securitySyncEmitter?.clearWatchers()
+      this.securitySyncEmitter?.sendProgress(targetProgress)
+      return
+    }
+
     await this.setCurrentFinancials(freq)
     // Insert financial items
     const itemInputs = this.getFinancialItems(rawFinancials)
@@ -241,7 +284,10 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
 
   private getRatios = (freq: FinancialFreq) => {
     return Object.values(
-      groupBy(this.currentFinancials, (f) => `${f.year}-${f.period}`)
+      groupBy(
+        this.currentFinancials.filter((cf) => !cf.isEstimate),
+        (f) => `${f.year}-${f.period}`
+      )
     ).flatMap((reportFinancials) => {
       const [{ reportDate }] = reportFinancials
       const price = this.getAveragePrice(freq, reportDate)
@@ -256,7 +302,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
 
   private getTTM = () => {
     const groupedFinancials = groupBy(
-      this.currentFinancials,
+      this.currentFinancials.filter((cf) => !cf.isEstimate),
       (f) => `${f.year}-${f.period}`
     )
     const last4Quarters = Object.keys(groupedFinancials)

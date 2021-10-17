@@ -1,6 +1,6 @@
 import { CacheScope } from 'apollo-server-types'
 import { round } from 'lodash'
-import { JSONSchema, QueryContext, Model } from 'objection'
+import { JSONSchema, Model } from 'objection'
 import {
   registerEnumType,
   ObjectType,
@@ -13,7 +13,6 @@ import {
 import { SecurityFinancialResult } from '@links/types'
 import { Security } from '@models/./security'
 import { BaseModel } from '@models/base'
-import { unique } from '@models/base/validationMethods'
 import { FinancialItem } from '@models/financialItem'
 import { Sector } from '@models/sector'
 import { TypeCacheControl } from '@resolvers/cacheControl'
@@ -79,6 +78,8 @@ class Financial extends BaseModel {
   period: FinancialPeriod
   @Field((_) => String)
   reportDate: string
+  @Field(() => Boolean)
+  isEstimate: boolean
 
   @Field((_) => ID, { nullable: true })
   securityId: number | string
@@ -138,7 +139,15 @@ class Financial extends BaseModel {
     existingFinancialItem: Partial<FinancialItem>
   ) {
     const isNoOp = () => {
-      if (!existingFinancial) return false
+      if (
+        !existingFinancial ||
+        (existingFinancial.isEstimate && !rawFinancial.isEstimate)
+      ) {
+        return false
+      }
+      if (!existingFinancial.isEstimate && rawFinancial.isEstimate) {
+        return true
+      }
       return (
         round(rawFinancial.value ?? null, 2) ===
         round(existingFinancial.value ?? null, 2)
@@ -150,24 +159,13 @@ class Financial extends BaseModel {
     return {
       ...(existingFinancial && { id: existingFinancial.id }),
       value: rawFinancial.value,
+      isEstimate: rawFinancial.isEstimate,
       year: year,
       period: period,
       reportDate: rawFinancial.reportDate,
       securityId: security.id,
       financialItemId: existingFinancialItem.id,
     }
-  }
-
-  async $beforeInsert(queryContext: QueryContext) {
-    await this.validate([
-      unique(
-        this,
-        ['financialItemId', 'securityId', 'sectorId', 'year', 'period'],
-        queryContext.transaction
-      ),
-    ])
-
-    return super.$beforeInsert(queryContext)
   }
 }
 

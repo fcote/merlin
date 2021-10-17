@@ -6,7 +6,7 @@ import financialItemFragment from '@api/_fragments/financialItem'
 const useFinancialsTTMQuery = gql`
   query getFinancialsTTM($ticker: String!) {
     financials(
-      filters: { freq: TTM, type: ratio, ticker: $ticker }
+      filters: { freq: TTM, estimate: false, type: ratio, ticker: $ticker }
       orderBy: [{ field: "reportDate", direction: "desc" }]
     ) {
       total
