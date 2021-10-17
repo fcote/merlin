@@ -61,6 +61,7 @@ export type SecurityFinancialResult = SecurityFinancialBaseResult & {
   statement: FinancialStatement
   reportDate: string
   period?: FinancialPeriod
+  isEstimate?: boolean
   value: number
 }
 

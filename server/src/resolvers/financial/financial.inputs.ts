@@ -11,6 +11,8 @@ import {
 class FinancialFilters {
   @Field((_) => String)
   ticker: string
+  @Field((_) => Boolean, { defaultValue: false })
+  estimate: boolean = false
   @Field((_) => FinancialItemType, { nullable: true })
   type?: FinancialItemType
   @Field((_) => FinancialStatementType, { nullable: true })
