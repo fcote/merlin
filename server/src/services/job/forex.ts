@@ -8,7 +8,9 @@ import { ServiceMethod } from '@services/service'
 
 class JobForexMethod extends ServiceMethod {
   run = async (): Promise<void> => {
-    const forexExchangeRates = await forexLink.exchangeRates()
+    const forexExchangeRates = (await forexLink.exchangeRates()).filter(
+      (f) => f.from && f.to
+    )
 
     await pmap(
       forexExchangeRates,
@@ -18,7 +20,7 @@ class JobForexMethod extends ServiceMethod {
             return new ForexService({ trx }).sync(exchangeRate)
           })
         } catch (err) {
-          logger.error('job > newsSubscribed > failed to sync forex', {
+          logger.error('job > forex > failed to sync forex', {
             err,
             exchangeRate,
           })
