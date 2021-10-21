@@ -1,14 +1,16 @@
-import { Statistic } from 'antd'
+import { Statistic, notification } from 'antd'
 import React, { useState, useEffect } from 'react'
 
 import UserFinancialCard, {
   UserFinancialItem,
 } from '@components/cards/UserFinancialCard/UserFinancialCard'
 
+import errorNotification from '@helpers/errorNotification'
 import { formatValue, ValueType } from '@helpers/formatValue'
 
 import { useSelfUpdateUser } from '@hooks/api/mutations/useSelfUpdateUser'
 
+import { ErrorMessage } from '@lib/messages'
 import UserIncome, { UserIncomeItemLabel } from '@lib/userIncome'
 
 interface SelfIncomeCardProps {
@@ -29,8 +31,18 @@ const SelfIncomeCard: React.FC<SelfIncomeCardProps> = ({
     []
   )
 
+  const getValue = (rawValue: string) =>
+    Number(rawValue.replace(',', '.').replaceAll(/[^0-9.]/g, ''))
+
+  const validate = (value: number) =>
+    Number.isFinite(value) && value <= 100 && value >= 0
+
   const handleSave = async (record: UserFinancialItem) => {
-    const value = record.value.replaceAll(/[^0-9]/g, '')
+    const value = getValue(record.value)
+    if (!validate(value)) {
+      errorNotification(ErrorMessage.invalidValue)
+      return
+    }
     await selfUpdateUser({
       variables: {
         inputs: {

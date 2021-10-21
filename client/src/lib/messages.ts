@@ -12,3 +12,7 @@ export enum SuccessMessage {
   addTrackerItem = 'Tracker item successfully added',
   deleteTrackerItem = 'Tracker item successfully removed',
 }
+
+export enum ErrorMessage {
+  invalidValue = 'Invalid value',
+}
