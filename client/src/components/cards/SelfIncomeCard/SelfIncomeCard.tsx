@@ -1,4 +1,4 @@
-import { Statistic, notification } from 'antd'
+import { Statistic } from 'antd'
 import React, { useState, useEffect } from 'react'
 
 import UserFinancialCard, {
@@ -34,12 +34,15 @@ const SelfIncomeCard: React.FC<SelfIncomeCardProps> = ({
   const getValue = (rawValue: string) =>
     Number(rawValue.replace(',', '.').replaceAll(/[^0-9.]/g, ''))
 
-  const validate = (value: number) =>
-    Number.isFinite(value) && value <= 100 && value >= 0
+  const validateRate = (value: number) => value <= 100 && value >= 0
+
+  const validate = (value: number, key: string) =>
+    Number.isFinite(value) &&
+    (!key.toLowerCase().includes('rate') || validateRate(value))
 
   const handleSave = async (record: UserFinancialItem) => {
     const value = getValue(record.value)
-    if (!validate(value)) {
+    if (!validate(value, record.key)) {
       errorNotification(ErrorMessage.invalidValue)
       return
     }
