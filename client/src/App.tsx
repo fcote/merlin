@@ -12,6 +12,7 @@ import ProvideAuth from '@components/ProvideAuth'
 import SiderMenu from '@components/menus/SiderMenu/SiderMenu'
 import SpotlightSearch from '@components/modals/SpotlightSearchModal/SpotlightSearchModal'
 
+import EarningsCalendar from '@pages/EarningsCalendar/EarningsCalendar'
 import Home from '@pages/Home/Home'
 import Login from '@pages/Login'
 import Logs from '@pages/Logs/Logs'
@@ -38,6 +39,9 @@ const App = () => {
       </PrivateRoute>
       <PrivateRoute path="/tracker">
         <Tracker />
+      </PrivateRoute>
+      <PrivateRoute path="/earnings-calendar">
+        <EarningsCalendar />
       </PrivateRoute>
       <PrivateRoute path="/profile">
         <Profile />

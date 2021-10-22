@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs'
-import GraphQLJSON from 'graphql-type-json'
+import { GraphQLJSON } from 'graphql-scalars'
 import { sumBy, range } from 'lodash'
 import {
   Ctx,

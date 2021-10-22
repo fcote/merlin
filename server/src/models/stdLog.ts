@@ -1,4 +1,4 @@
-import GraphQLJSON from 'graphql-type-json'
+import { GraphQLJSON } from 'graphql-scalars'
 import { JSONSchema } from 'objection'
 import { ObjectType, Field } from 'type-graphql'
 

@@ -1,3 +1,5 @@
+import { Security } from '@lib/security'
+
 export enum EarningTime {
   beforeMarketOpen = 'beforeMarketOpen',
   afterMarketClose = 'afterMarketClose',
@@ -25,4 +27,5 @@ export type Earning = {
   revenueEstimate?: number
   revenue?: number
   revenueSurprisePercent?: number
+  security?: Security
 }

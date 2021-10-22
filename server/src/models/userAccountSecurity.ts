@@ -1,4 +1,4 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-scalars'
 import { JSONSchema, Model, Transaction } from 'objection'
 import { ObjectType, Field, Float, ID } from 'type-graphql'
 

@@ -5,6 +5,7 @@ import {
   WalletOutlined,
   FileSearchOutlined,
   UserOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons'
 import { Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
@@ -33,6 +34,9 @@ const SiderMenu = () => {
         </Menu.Item>
         <Menu.Item key="3" icon={<BankOutlined />}>
           <Link to="/tracker">Tracker</Link>
+        </Menu.Item>
+        <Menu.Item key="4" icon={<CalendarOutlined />}>
+          <Link to="/earnings-calendar">Earnings</Link>
         </Menu.Item>
       </Menu>
       <Menu className="main-sider-bottom-menu" theme="dark" mode="inline">

@@ -1,4 +1,4 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-scalars'
 import { Field, InputType, ID, Float } from 'type-graphql'
 
 @InputType('UserAccountSecurityFilters')

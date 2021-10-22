@@ -15,6 +15,14 @@ class SecurityFieldsResolver {
       security.companyId && ctx.loaders.securityCompany.load(security.companyId)
     )
   }
+
+  @FieldResolver((_) => String, { nullable: true })
+  async followedIn(
+    @Root() security: Security,
+    @Ctx() ctx: RequestContext
+  ): Promise<'watchlist' | 'account'> {
+    return ctx.loaders.securityFollowedIn.load(security.id)
+  }
 }
 
 export { SecurityFieldsResolver }
