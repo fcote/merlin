@@ -1,4 +1,4 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-scalars'
 import { InputType, Field, ID, Float } from 'type-graphql'
 
 import { UserAccountType, UserAccountProvider } from '@models/userAccount'

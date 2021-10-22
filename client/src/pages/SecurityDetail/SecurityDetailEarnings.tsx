@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import EarningsCalendarCard from '@components/cards/EarningsCalendarCard/EarningsCalendarCard'
+import EarningsCard from '@components/cards/EarningsCalendarCard/EarningsCard'
 
 import {
   useEarnings,
@@ -13,7 +13,7 @@ export type SecurityDetailEarningsProps = {
   security: Security
 }
 
-const SecurityDetailEarningsCalendar: React.FC<SecurityDetailEarningsProps> = ({
+const SecurityDetailEarnings: React.FC<SecurityDetailEarningsProps> = ({
   security,
 }) => {
   const [subscribed, setSubscribed] = useState<boolean>(false)
@@ -42,9 +42,9 @@ const SecurityDetailEarningsCalendar: React.FC<SecurityDetailEarningsProps> = ({
 
   return (
     <div className="security-detail-earnings-calendar">
-      <EarningsCalendarCard earnings={earnings} loading={loading} />
+      <EarningsCard earnings={earnings} loading={loading} />
     </div>
   )
 }
 
-export default SecurityDetailEarningsCalendar
+export default SecurityDetailEarnings

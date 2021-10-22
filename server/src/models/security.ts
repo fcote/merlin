@@ -16,6 +16,7 @@ import { Company } from '@models/company'
 import { Financial } from '@models/financial'
 import { FollowedSecurity } from '@models/followedSecurity'
 import { HistoricalPrice } from '@models/historicalPrice'
+import { UserAccountSecurity } from '@models/userAccountSecurity'
 import { PaginatedClass } from '@resolvers/paginated'
 
 enum SecurityType {
@@ -115,6 +116,14 @@ class Security extends BaseModel {
         join: {
           from: `${this.tableName}.id`,
           to: `${FollowedSecurity.tableName}.securityId`,
+        },
+      },
+      userAccountSecurities: {
+        relation: Model.HasManyRelation,
+        modelClass: UserAccountSecurity,
+        join: {
+          from: `${this.tableName}.id`,
+          to: `${UserAccountSecurity.tableName}.securityId`,
         },
       },
       historicalPrices: {

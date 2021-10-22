@@ -1,4 +1,4 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-scalars'
 import { without } from 'lodash'
 import {
   Model,

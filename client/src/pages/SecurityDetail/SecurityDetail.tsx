@@ -17,7 +17,7 @@ import useSecurityGetOrSync from '@hooks/api/mutations/useSecurityGetOrSync'
 import { useDocumentTitle } from '@hooks/useDocumentTitle'
 
 import SecurityDetailChart from '@pages/SecurityDetail/SecurityDetailChart'
-import SecurityDetailEarningsCalendar from '@pages/SecurityDetail/SecurityDetailEarningsCalendar'
+import SecurityDetailEarnings from '@pages/SecurityDetail/SecurityDetailEarnings'
 import SecurityDetailNews from '@pages/SecurityDetail/SecurityDetailNews'
 import SecurityDetailRatios from '@pages/SecurityDetail/SecurityDetailRatios'
 
@@ -203,7 +203,7 @@ const SecurityDetail = () => {
             <SecurityDetailChart security={security} />
           </PrivateRoute>
           <PrivateRoute path="/security/:ticker/earnings-calendar">
-            <SecurityDetailEarningsCalendar security={security} />
+            <SecurityDetailEarnings security={security} />
           </PrivateRoute>
           <PrivateRoute path="/security/:ticker/news">
             <SecurityDetailNews security={security} />

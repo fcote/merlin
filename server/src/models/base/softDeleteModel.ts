@@ -1,4 +1,4 @@
-import { GraphQLDateTime } from 'graphql-iso-date'
+import { GraphQLDateTime } from 'graphql-scalars'
 import { ObjectType, Field } from 'type-graphql'
 
 import { BaseModel } from '@models/base'

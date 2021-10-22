@@ -42,6 +42,7 @@ export type Security = {
   low52Week?: number
   marketCapitalization?: number
   sharesOutstanding?: number
+  followedIn?: 'account' | 'watchlist'
 
   exchangeId: string
   companyId: string

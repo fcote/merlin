@@ -14,15 +14,12 @@ import { FinancialUnitType, FinancialUnit } from '@lib/financialItem'
 
 import './EarningsCalendarCard.style.less'
 
-export type EarningsCalendarCardProps = {
+export type EarningsCardProps = {
   earnings: Earning[]
   loading: boolean
 }
 
-const EarningsCalendarCard: React.FC<EarningsCalendarCardProps> = ({
-  earnings,
-  loading,
-}) => {
+const EarningsCard: React.FC<EarningsCardProps> = ({ earnings, loading }) => {
   const [
     isEarningCallTranscriptModalVisible,
     setIsEarningCallTranscriptModalVisible,
@@ -159,4 +156,4 @@ const EarningsCalendarCard: React.FC<EarningsCalendarCardProps> = ({
   )
 }
 
-export default EarningsCalendarCard
+export default EarningsCard
