@@ -1,19 +1,41 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { PageHeader, Card, Badge, Button, Space } from 'antd'
 import { HeaderRender } from 'antd/es/calendar/generateCalendar'
+import { sortBy } from 'lodash'
 import React from 'react'
 
 import Calendar from '@components/Calendar'
+import { Scrollbar } from '@components/Scrollbar'
 
 import { dayjs } from '@helpers/dayjs'
 
 import { useSelfEarnings } from '@hooks/api/queries/useSelfEarnings'
 import { useDocumentTitle } from '@hooks/useDocumentTitle'
 
+import { EarningTime, Earning } from '@lib/earning'
+
 const EarningsCalendar = () => {
   useDocumentTitle('Earnings')
 
-  const { data: earnings } = useSelfEarnings(dayjs().format('YYYY-MM-DD'))
+  const { data: rawEarnings } = useSelfEarnings(dayjs().format('YYYY-MM-DD'))
+
+  const followedInPriority = {
+    account: 1,
+    watchlist: 0,
+  }
+  const earningTimePriority = {
+    [EarningTime.beforeMarketOpen]: 1,
+    [EarningTime.afterMarketClose]: 0,
+  }
+
+  const sortEarnings = (earnings: Earning[]) => {
+    return sortBy(
+      earnings,
+      (e) =>
+        followedInPriority[e.security.followedIn] * 10 +
+        earningTimePriority[e.time]
+    ).reverse()
+  }
 
   const header: HeaderRender<dayjs.Dayjs> = ({ value, onChange }) => {
     const switchMonth = (nMonths: number) => {
@@ -38,24 +60,26 @@ const EarningsCalendar = () => {
 
   const cell = (value: dayjs.Dayjs): React.ReactNode => {
     const date = value.format('YYYY-MM-DD')
-    const cellEarnings = earnings?.filter(
-      (e) => dayjs(e.date).format('YYYY-MM-DD') === date
+    const cellEarnings = sortEarnings(
+      rawEarnings?.filter((e) => dayjs(e.date).format('YYYY-MM-DD') === date)
     )
 
     return (
-      <div className="earnings-cell">
-        {cellEarnings.map((earning) => (
-          <div key={earning.id}>
-            <Badge
-              status={
-                earning.security.followedIn === 'account'
-                  ? 'warning'
-                  : 'default'
-              }
-            />
-            {earning.security.ticker}
-          </div>
-        ))}
+      <div className="earnings-cell" style={{ height: '100%' }}>
+        <Scrollbar>
+          {cellEarnings.map((earning) => (
+            <div key={earning.id}>
+              <Badge
+                status={
+                  earning.security.followedIn === 'account'
+                    ? 'warning'
+                    : 'default'
+                }
+              />
+              {earning.security.ticker} ({earning.time})
+            </div>
+          ))}
+        </Scrollbar>
       </div>
     )
   }

@@ -2,13 +2,13 @@ import { Layout } from 'antd'
 import { Content } from 'antd/es/layout/layout'
 import 'katex/dist/katex.min.css'
 import React from 'react'
-import { Scrollbars } from 'react-custom-scrollbars'
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 
 import '@style/main.less'
 
 import PrivateRoute from '@components/PrivateRoute'
 import ProvideAuth from '@components/ProvideAuth'
+import { Scrollbar } from '@components/Scrollbar'
 import SiderMenu from '@components/menus/SiderMenu/SiderMenu'
 import SpotlightSearch from '@components/modals/SpotlightSearchModal/SpotlightSearchModal'
 
@@ -73,18 +73,7 @@ const App = () => {
                     overflow: 'initial',
                   }}
                 >
-                  <Scrollbars
-                    autoHide={true}
-                    className="main-scrollbar-container"
-                    renderThumbVertical={(props) => (
-                      <div {...props} className="main-scrollbar" />
-                    )}
-                    renderThumbHorizontal={(props) => (
-                      <div {...props} className="main-scrollbar" />
-                    )}
-                  >
-                    {Router}
-                  </Scrollbars>
+                  <Scrollbar>{Router}</Scrollbar>
                 </Content>
               </Layout>
             </PrivateRoute>
