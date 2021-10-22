@@ -10,6 +10,11 @@ export const EarningTimeLabel = {
   [EarningTime.afterMarketClose]: 'After market close',
 }
 
+export const EarningTimeAbbreviation = {
+  [EarningTime.beforeMarketOpen]: 'BMO',
+  [EarningTime.afterMarketClose]: 'AMC',
+}
+
 export type EarningStatement = {
   speaker: string
   statement: string

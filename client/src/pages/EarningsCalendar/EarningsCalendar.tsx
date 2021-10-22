@@ -12,7 +12,9 @@ import { dayjs } from '@helpers/dayjs'
 import { useSelfEarnings } from '@hooks/api/queries/useSelfEarnings'
 import { useDocumentTitle } from '@hooks/useDocumentTitle'
 
-import { EarningTime, Earning } from '@lib/earning'
+import { EarningTime, Earning, EarningTimeAbbreviation } from '@lib/earning'
+
+import './EarningsCalendar.style.less'
 
 const EarningsCalendar = () => {
   useDocumentTitle('Earnings')
@@ -76,7 +78,10 @@ const EarningsCalendar = () => {
                     : 'default'
                 }
               />
-              {earning.security.ticker} ({earning.time})
+              {earning.security.ticker}
+              <span className="earnings-time">
+                ({EarningTimeAbbreviation[earning.time]})
+              </span>
             </div>
           ))}
         </Scrollbar>
