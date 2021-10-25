@@ -38,12 +38,17 @@ class FinancialPerformanceMethod extends ServiceMethod {
   run = async (
     financialIds: (number | string)[]
   ): Promise<FinancialPerformance[]> => {
+    const financials = await Financial.query(this.trx)
+      .joinRelated('financialItem')
+      .where('financialItem.type', FinancialItemType.ratio)
+      .findByIds(financialIds)
+    if (!financials.length) {
+      return financialIds.map(() => null)
+    }
+
     const financialRatioItems = await FinancialItem.query(this.trx).where({
       type: FinancialItemType.ratio,
     })
-    const financials = await Financial.query(this.trx)
-      .joinRelated('financialItem')
-      .findByIds(financialIds)
     const securities = await Security.query(this.trx)
       .findByIds(uniq(financials.map((f) => f.securityId)))
       .withGraphFetched('company')
