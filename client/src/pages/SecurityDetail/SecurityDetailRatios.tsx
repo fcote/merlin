@@ -41,30 +41,35 @@ const SecurityDetailRatios: React.FC<SecurityDetailRatiosProps> = ({
         statement={FinancialRatioStatement.valuationRatios}
         ticker={security?.ticker}
         financialItems={financialItems}
+        estimate={false}
         loading={financialItemsLoading || !security}
       />
       <FinancialStatementCard
         statement={FinancialRatioStatement.cashFlowRatios}
         ticker={security?.ticker}
         financialItems={financialItems}
+        estimate={false}
         loading={financialItemsLoading || !security}
       />
       <FinancialStatementCard
         statement={FinancialRatioStatement.profitabilityRatios}
         ticker={security?.ticker}
         financialItems={financialItems}
+        estimate={false}
         loading={financialItemsLoading || !security}
       />
       <FinancialStatementCard
         statement={FinancialRatioStatement.debtRatios}
         ticker={security?.ticker}
         financialItems={financialItems}
+        estimate={false}
         loading={financialItemsLoading || !security}
       />
       <FinancialStatementCard
         statement={FinancialRatioStatement.liquidityRatios}
         ticker={security?.ticker}
         financialItems={financialItems}
+        estimate={false}
         loading={financialItemsLoading || !security}
       />
     </div>

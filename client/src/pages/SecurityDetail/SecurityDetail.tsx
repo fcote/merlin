@@ -18,6 +18,7 @@ import { useDocumentTitle } from '@hooks/useDocumentTitle'
 
 import SecurityDetailChart from '@pages/SecurityDetail/SecurityDetailChart'
 import SecurityDetailEarnings from '@pages/SecurityDetail/SecurityDetailEarnings'
+import SecurityDetailEstimates from '@pages/SecurityDetail/SecurityDetailEstimates'
 import SecurityDetailNews from '@pages/SecurityDetail/SecurityDetailNews'
 import SecurityDetailRatios from '@pages/SecurityDetail/SecurityDetailRatios'
 
@@ -198,6 +199,9 @@ const SecurityDetail = () => {
           </PrivateRoute>
           <PrivateRoute path="/security/:ticker/ratio/:freq">
             <SecurityDetailRatios security={security} />
+          </PrivateRoute>
+          <PrivateRoute path="/security/:ticker/estimate/:freq">
+            <SecurityDetailEstimates security={security} />
           </PrivateRoute>
           <PrivateRoute path="/security/:ticker/chart">
             <SecurityDetailChart security={security} />

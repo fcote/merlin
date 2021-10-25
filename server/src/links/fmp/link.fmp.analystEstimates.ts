@@ -61,17 +61,23 @@ const toSecurityFinancialResult = (
         freq === FinancialFreq.Y
           ? FinancialPeriod.Y
           : (`Q${reportDate.quarter()}` as FinancialPeriod)
-      const value = item[k] / 1e6
-      return {
+
+      const result = {
         slug: financialSlug,
         statement: FinancialBaseStatement.incomeStatement,
         reportDate: item.date,
         unit: defaultUnit,
         isEstimate: true,
-        value,
+        value: item[k],
         period,
         ...baseSecurityItem,
       }
+
+      if (result.unit === FinancialUnit.millions) {
+        result.value /= 1e6
+      }
+
+      return result
     })
 }
 

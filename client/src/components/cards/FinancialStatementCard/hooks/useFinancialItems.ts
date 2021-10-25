@@ -15,6 +15,7 @@ const useFinancialItems = (
         ...fi,
         financials: rawFinancials?.filter((f) => f.financialItemId === fi.id),
       }))
+      ?.filter((fi) => fi.financials.length)
     return items ?? []
   }, [rawFinancials, rawFinancialItems, statement])
 }

@@ -6,14 +6,14 @@ import FinancialStatementCard from '@components/cards/FinancialStatementCard/Fin
 import { useFinancialItems } from '@hooks/api/queries/useFinancialItems'
 
 import { FinancialFreq } from '@lib/financial'
-import { FinancialBaseStatement, FinancialItemType } from '@lib/financialItem'
+import { FinancialItemType, FinancialBaseStatement } from '@lib/financialItem'
 import { Security } from '@lib/security'
 
-export interface SecurityDetailStatementsProps {
+export interface SecurityDetailEstimatesProps {
   security: Security
 }
 
-const SecurityDetailStatements: React.FC<SecurityDetailStatementsProps> = ({
+const SecurityDetailEstimates: React.FC<SecurityDetailEstimatesProps> = ({
   security,
 }) => {
   const { freq: financialFreq } = useParams<{ freq: FinancialFreq }>()
@@ -41,25 +41,11 @@ const SecurityDetailStatements: React.FC<SecurityDetailStatementsProps> = ({
         statement={FinancialBaseStatement.incomeStatement}
         ticker={security?.ticker}
         financialItems={financialItems}
-        estimate={false}
-        loading={financialItemsLoading || !security}
-      />
-      <FinancialStatementCard
-        statement={FinancialBaseStatement.balanceSheet}
-        ticker={security?.ticker}
-        financialItems={financialItems}
-        estimate={false}
-        loading={financialItemsLoading || !security}
-      />
-      <FinancialStatementCard
-        statement={FinancialBaseStatement.cashFlowStatement}
-        ticker={security?.ticker}
-        financialItems={financialItems}
-        estimate={false}
+        estimate={true}
         loading={financialItemsLoading || !security}
       />
     </div>
   )
 }
 
-export default SecurityDetailStatements
+export default SecurityDetailEstimates

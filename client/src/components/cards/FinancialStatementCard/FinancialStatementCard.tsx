@@ -23,6 +23,7 @@ interface FinancialStatementProps {
   statement: FinancialStatement
   financialItems: FinancialItem[]
   loading: boolean
+  estimate: boolean
 }
 
 const FinancialStatementCard = ({
@@ -30,6 +31,7 @@ const FinancialStatementCard = ({
   financialItems,
   statement,
   loading,
+  estimate,
 }: FinancialStatementProps) => {
   const maxNumberOfPeriod = 16 // 16 year or quarter
   const paginationLimit =
@@ -40,7 +42,7 @@ const FinancialStatementCard = ({
     {
       filters: {
         ticker,
-        estimate: false,
+        estimate,
         freq: financialFreq,
         statement,
       },

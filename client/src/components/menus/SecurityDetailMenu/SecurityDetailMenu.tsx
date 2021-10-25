@@ -18,13 +18,7 @@ const SecurityDetailMenu: React.FC<SecurityDetailMenuProps> = ({
 
   const subPage = useMemo(() => {
     const urlComponents = location.pathname.split('/')
-    const currentSubPage = takeRight(
-      urlComponents,
-      2
-    ).shift() as FinancialItemType
-    return Object.values(FinancialItemType).includes(currentSubPage)
-      ? currentSubPage
-      : takeRight(urlComponents, 1).shift()
+    return takeRight(urlComponents, 2).shift() as FinancialItemType
   }, [location])
 
   const freq = useMemo(() => {
@@ -51,6 +45,13 @@ const SecurityDetailMenu: React.FC<SecurityDetailMenuProps> = ({
           <Link to={`/security/${security?.ticker}/ratio/${freq}`}>Ratios</Link>
         </Menu.Item>
       )}
+      {security?.type === 'commonStock' && (
+        <Menu.Item key="estimate">
+          <Link to={`/security/${security?.ticker}/estimate/${freq}`}>
+            Analyst estimates
+          </Link>
+        </Menu.Item>
+      )}
       <Menu.Item key="chart">
         <Link to={`/security/${security?.ticker}/chart`}>Chart</Link>
       </Menu.Item>
@@ -70,7 +71,8 @@ const SecurityDetailMenu: React.FC<SecurityDetailMenuProps> = ({
   )
 
   const SubMenu = () => {
-    if (!['statement', 'ratio'].includes(subPage)) return null
+    console.log(subPage)
+    if (!['statement', 'ratio', 'estimate'].includes(subPage)) return null
 
     return (
       <Menu
