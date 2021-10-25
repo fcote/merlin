@@ -71,7 +71,6 @@ const SecurityDetailMenu: React.FC<SecurityDetailMenuProps> = ({
   )
 
   const SubMenu = () => {
-    console.log(subPage)
     if (!['statement', 'ratio', 'estimate'].includes(subPage)) return null
 
     return (
