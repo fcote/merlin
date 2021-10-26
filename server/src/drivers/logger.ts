@@ -1,8 +1,10 @@
 import { init, setExtras, captureException } from '@sentry/node'
-import { get, isNumber } from 'lodash'
+import { ApolloError } from 'apollo-server-core'
+import { get, isNumber, pick, cloneDeep } from 'lodash'
 import os from 'os'
 import winston from 'winston'
 import Transport from 'winston-transport'
+import { ConsoleTransportOptions } from 'winston/lib/winston/transports'
 
 import { config } from '@config'
 import { StdLog } from '@models/stdLog'
@@ -16,6 +18,22 @@ const sentryLogLevels = {
   warn: 2,
   info: 3,
   debug: 4,
+}
+
+const serializeErrors = (data: Record<string, any>): any => {
+  const serialize = (error: Error) => {
+    if (error instanceof ApolloError) return error
+    return {
+      message: error.message,
+      stacktrace: error.stack,
+    }
+  }
+
+  data = cloneDeep(data)
+  Object.keys(pick(data, ['err', 'error'])).forEach((key) => {
+    data[key] = serialize(data[key])
+  })
+  return data
 }
 
 class SentryTransport extends Transport {
@@ -138,7 +156,7 @@ class DatabaseTransport extends Transport {
       .insert({
         level,
         message,
-        data,
+        data: serializeErrors(data),
       })
       .catch(() => {
         return
@@ -148,8 +166,18 @@ class DatabaseTransport extends Transport {
   }
 }
 
+class ConsoleTransport extends winston.transports.Console {
+  constructor(options?: ConsoleTransportOptions) {
+    super(options)
+  }
+
+  log(info: LogInfo, next: () => void) {
+    return super.log(serializeErrors(info), next)
+  }
+}
+
 const transports: Transport[] = [
-  new winston.transports.Console(),
+  new ConsoleTransport(),
   new DatabaseTransport(),
 ]
 
