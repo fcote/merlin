@@ -28,30 +28,7 @@ class JobFullSyncMethod extends ServiceMethod {
     )
     const securityGroups = chunk(securityList, 100)
     this.totalNumberOfSecurities = securityList.length
-    await pmap(
-      securityGroups,
-      async (securityGroup: SecurityListResult[], groupIndex) => {
-        const tickers = securityGroup.map((s) => s.ticker)
-        const quotes = await quoteLink.batchQuotes(tickers)
-        const companyOverviews = await companyOverviewLink.batchCompanyOverview(
-          tickers
-        )
-
-        await pmap(
-          securityGroup,
-          async (security, index) => {
-            return this.processSecurity(
-              security,
-              quotes,
-              companyOverviews,
-              groupIndex * 100 + index + 1
-            )
-          },
-          { concurrency: 5 }
-        )
-      },
-      { concurrency: 1 }
-    )
+    await pmap(securityGroups, this.processSecurityGroup, { concurrency: 1 })
 
     // Sync sectors financials
     const sectors = await Sector.query()
@@ -67,6 +44,33 @@ class JobFullSyncMethod extends ServiceMethod {
         await this.processSector(sector, periods, index + 1)
       },
       { concurrency: 1 }
+    )
+
+    // Vacuum & Analyze
+    await this.trx.raw('vacuum analyze')
+  }
+
+  private processSecurityGroup = async (
+    securityGroup: SecurityListResult[],
+    groupIndex
+  ) => {
+    const tickers = securityGroup.map((s) => s.ticker)
+    const quotes = await quoteLink.batchQuotes(tickers)
+    const companyOverviews = await companyOverviewLink.batchCompanyOverview(
+      tickers
+    )
+
+    await pmap(
+      securityGroup,
+      async (security, index) => {
+        return this.processSecurity(
+          security,
+          quotes,
+          companyOverviews,
+          groupIndex * 100 + index + 1
+        )
+      },
+      { concurrency: 5 }
     )
   }
 

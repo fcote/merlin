@@ -61,9 +61,9 @@ const getEarningCall = (
   const closest = minBy(earningCallDaysDiffs, (earning) =>
     Math.abs(earning.diff)
   )
-  const closestDistance = Math.abs(closest.diff)
   if (!closest) return
 
+  const closestDistance = Math.abs(closest.diff)
   if (closestDistance <= 7) {
     return closest.call
   }
