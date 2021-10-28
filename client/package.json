@@ -27,7 +27,7 @@
     "antd": "4.16.13",
     "crypto-hash": "2.0.0",
     "crypto-js": "4.1.1",
-    "graphql": "15.6.1",
+    "graphql": "15.7.2",
     "js-cookie": "3.0.1",
     "katex": "0.13.19",
     "lightweight-charts": "3.6.1",
