@@ -30,11 +30,20 @@ class TransactionPlugin<C extends BaseContext = BaseContext>
 
   private async start(context: C) {
     // Start the actual transaction
-    context.trxStartPromise = this.config.knex.transaction(
-      this.config?.transactionConfig
+    context.trxStartPromise = new Promise<Knex.Transaction>(
+      async (resolve, reject) => {
+        try {
+          const trx = await this.config.knex.transaction(
+            this.config?.transactionConfig
+          )
+          this.setTransactionInContext(context, trx)
+          resolve(trx)
+        } catch (err) {
+          reject(err)
+        }
+      }
     )
-    const trx = await context.trxStartPromise
-    this.setTransactionInContext(context, trx)
+    await context.trxStartPromise
 
     // Set a timeout to kill the transaction if it takes too long
     if (this.config?.transactionTimeoutMs) {

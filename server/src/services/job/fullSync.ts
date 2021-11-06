@@ -2,6 +2,7 @@ import { chunk } from 'lodash'
 import { transaction, Model } from 'objection'
 import pmap from 'p-map'
 
+import { knexDriver } from '@knex'
 import { searchLink, quoteLink, companyOverviewLink } from '@links/links'
 import {
   SecurityListResult,
@@ -47,7 +48,7 @@ class JobFullSyncMethod extends ServiceMethod {
     )
 
     // Vacuum & Analyze
-    await this.trx.raw('vacuum analyze')
+    await knexDriver.knex.raw('vacuum analyze')
   }
 
   private processSecurityGroup = async (
@@ -95,16 +96,23 @@ class JobFullSyncMethod extends ServiceMethod {
     }
 
     try {
-      await transaction(Model.knex(), async (trx) => {
-        await new SecurityService({ trx }).sync({
-          ticker,
-          quote,
-          companyOverview,
+      const startTime = Date.now()
+      const { nHistoricalPriceSynced, nEarningSynced, nFinancialSynced } =
+        await transaction(Model.knex(), async (trx) => {
+          return new SecurityService({ trx }).sync({
+            ticker,
+            quote,
+            companyOverview,
+          })
         })
-      })
+      const duration = (Date.now() - startTime) / 1000
       logger.info('security > syncAll > successfully synced security', {
         ticker,
         progress,
+        duration: `${duration}s`,
+        nHistoricalPriceSynced,
+        nFinancialSynced,
+        nEarningSynced,
       })
     } catch (err) {
       logger.error('security > syncAll > failed to sync security', {

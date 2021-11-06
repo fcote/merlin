@@ -13,6 +13,7 @@ class EarningSyncMethod extends ServiceMethod {
   private securitySyncEmitter?: SecuritySyncEmitter
   private startProgress?: number
   private targetProgress?: number
+  private nSynced: number = 0
 
   private setCurrentEarnings = async () => {
     const earnings = await Earning.query(this.trx)
@@ -62,14 +63,18 @@ class EarningSyncMethod extends ServiceMethod {
       Earning.tableName,
       targetProgress
     )
-    const earnings = await Earning.query(this.trx)
+
+    await Earning.query(this.trx)
       .upsertGraphAndFetch(inputs, {
         relate: true,
         noDelete: true,
       })
       .withGraphFetched('security')
+
+    this.nSynced = inputs.length
     securitySyncEmitter?.clearWatchers()
-    return earnings
+
+    return this.nSynced
   }
 
   getEarningInputs = (

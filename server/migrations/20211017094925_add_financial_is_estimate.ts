@@ -18,11 +18,13 @@ export async function up(knex: Knex): Promise<void> {
 
     t.unique(['financial_item_id', 'security_id', 'period', 'year'])
     t.unique(['financial_item_id', 'sector_id', 'period', 'year'])
+    t.index(['security_id', 'period'])
   })
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.schema.table(TABLES.FINANCIALS, (t) => {
+    t.dropIndex(['security_id', 'period'])
     t.dropUnique(['financial_item_id', 'sector_id', 'period', 'year'])
     t.dropUnique(['financial_item_id', 'security_id', 'period', 'year'])
 

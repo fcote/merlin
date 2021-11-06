@@ -1,6 +1,6 @@
 import { parseExpression } from 'cron-parser'
 import {
-  Job,
+  Job as NodeJob,
   RecurrenceRule,
   scheduleJob,
   RecurrenceSegment,
@@ -8,16 +8,18 @@ import {
 
 import { config } from '@config'
 import { logger } from '@logger'
-import { JobType } from '@models/job'
+import { JobType, Job } from '@models/job'
 import { JobService } from '@services/job'
 import { Connectable } from '@typings/manager'
 
 class Scheduler implements Connectable {
-  public jobs: Job[] = []
+  public jobs: NodeJob[] = []
   public schedulerConfig: any = config.get('scheduler')
   private jobService: JobService = new JobService({})
 
   public connect = async () => {
+    await Job.query().patch({ isRunning: false })
+
     Object.values(JobType).forEach((jobType) => {
       if (!this.schedulerConfig[jobType]?.enabled) return
 

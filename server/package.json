@@ -25,6 +25,7 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@sentry/node": "^6.11.0",
+    "@sindresorhus/string-hash": "^1.2.0",
     "apollo-server-koa": "^3.4.0",
     "apollo-server-plugin-base": "^3.3.0",
     "apollo-tracing": "^0.15.0",

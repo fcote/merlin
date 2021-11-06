@@ -13,7 +13,8 @@ class SecurityMutationResolver {
     @Arg('ticker') ticker: string,
     @Ctx() ctx: RequestContext
   ): Promise<Security> {
-    return new SecurityService(ctx).sync({ ticker })
+    const result = await new SecurityService(ctx).sync({ ticker })
+    return result.security
   }
 
   @Authorized([Right.authenticated])

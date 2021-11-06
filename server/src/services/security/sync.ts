@@ -81,6 +81,10 @@ class SecuritySyncEmitter {
 class SecuritySyncMethod extends ServiceMethod {
   protected service: SecurityService
 
+  public nFinancialSynced: number = 0
+  public nHistoricalPriceSynced: number = 0
+  public nEarningSynced: number = 0
+
   private ticker: string
   private companyService: CompanyService
   private financialService: FinancialService
@@ -96,7 +100,7 @@ class SecuritySyncMethod extends ServiceMethod {
     this.earningService = new EarningService(this.ctx)
   }
 
-  run = async (inputs: SecurityFields): Promise<Security> => {
+  run = async (inputs: SecurityFields) => {
     this.syncEmitter = new SecuritySyncEmitter(inputs.ticker, this.trx)
     this.ticker = inputs.ticker
 
@@ -130,11 +134,15 @@ class SecuritySyncMethod extends ServiceMethod {
     this.syncEmitter.sendProgress(0.15)
 
     // Sync historical prices
-    await this.historicalPriceService.sync(this.ticker, this.syncEmitter, 0.5)
+    this.nHistoricalPriceSynced = await this.historicalPriceService.sync(
+      this.ticker,
+      this.syncEmitter,
+      0.5
+    )
 
     if (security.type === SecurityType.commonStock) {
       // Sync financials
-      await this.financialService.syncSecurity(
+      this.nFinancialSynced = await this.financialService.syncSecurity(
         {
           ticker: this.ticker,
         },
@@ -142,12 +150,21 @@ class SecuritySyncMethod extends ServiceMethod {
         0.9
       )
       // Sync earning dates
-      await this.earningService.sync(this.ticker, this.syncEmitter, 1)
+      this.nEarningSynced = await this.earningService.sync(
+        this.ticker,
+        this.syncEmitter,
+        1
+      )
     } else {
       this.syncEmitter.sendProgress(1)
     }
 
-    return security
+    return {
+      security,
+      nHistoricalPriceSynced: this.nHistoricalPriceSynced,
+      nFinancialSynced: this.nFinancialSynced,
+      nEarningSynced: this.nEarningSynced,
+    }
   }
 
   private getSecurityType = (

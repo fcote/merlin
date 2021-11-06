@@ -29,21 +29,8 @@ class CompanySyncMethod extends ServiceMethod {
       rawCompanyOverview,
       (value) => value
     )
-
-    const sector =
-      companyOverview.sector &&
-      (await Sector.query(this.trx)
-        .insert({ name: companyOverview.sector })
-        .onConflict('name')
-        .merge()
-        .returning('*'))
-    const industry =
-      companyOverview.industry &&
-      (await Industry.query(this.trx)
-        .insert({ name: companyOverview.industry })
-        .onConflict('name')
-        .merge()
-        .returning('*'))
+    const sector = await this.getSector(companyOverview)
+    const industry = await this.getIndustry(companyOverview)
 
     const companyInputs: PartialModelGraph<Company> = {
       cik: companyOverview.cik,
@@ -61,6 +48,38 @@ class CompanySyncMethod extends ServiceMethod {
       ...(company?.id && { id: company.id }),
       ...companyInputs,
     })
+  }
+
+  private getSector = async (
+    companyOverview: Partial<SecurityCompanyOverviewResult>
+  ): Promise<Sector> => {
+    if (!companyOverview.sector) return
+
+    const sector = await Sector.query(this.trx).findOne({
+      name: companyOverview.sector,
+    })
+    if (sector) return sector
+
+    await Sector.acquireLock(`sector.${companyOverview.sector}`, this.trx)
+    return Sector.query(this.trx)
+      .insert({ name: companyOverview.sector })
+      .returning('*')
+  }
+
+  private getIndustry = async (
+    companyOverview: Partial<SecurityCompanyOverviewResult>
+  ): Promise<Industry> => {
+    if (!companyOverview.industry) return
+
+    const industry = await Industry.query(this.trx).findOne({
+      name: companyOverview.industry,
+    })
+    if (industry) return industry
+
+    await Industry.acquireLock(`industry.${companyOverview.industry}`, this.trx)
+    return Industry.query(this.trx)
+      .insert({ name: companyOverview.industry })
+      .returning('*')
   }
 }
 

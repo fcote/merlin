@@ -154,7 +154,8 @@ class Financial extends BaseModel {
       )
     }
 
-    if (isNoOp()) return undefined
+    const noOp = isNoOp()
+    if (noOp) return undefined
 
     return {
       ...(existingFinancial && { id: existingFinancial.id }),

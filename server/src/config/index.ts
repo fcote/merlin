@@ -88,16 +88,20 @@ const schema = {
       env: 'DB_POOL_MAX',
     },
     acquireConnectionTimeout: {
-      default: 30000,
+      default: 60000,
       env: 'DB_ACQUIRE_CONNECTION_TIMEOUT',
     },
     idleInTransactionTimeout: {
-      default: 15000,
+      default: 60000,
       env: 'DB_IDLE_IN_TRANSACTION_TIMEOUT',
     },
     idleTimeoutMillis: {
       default: 15000,
       env: 'DB_IDLE_TIMEOUT_MILLIS',
+    },
+    monitorQueries: {
+      default: false,
+      env: 'DB_MONITOR_QUERIES',
     },
   },
   pubsub: {

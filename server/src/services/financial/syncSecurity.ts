@@ -31,6 +31,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
   private securitySyncEmitter?: SecuritySyncEmitter
   private startProgress?: number
   private targetProgress?: number
+  private nSynced: number = 0
 
   private setCurrentFinancials = async (freq: FinancialFreq) => {
     const periodFilter =
@@ -171,6 +172,8 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
     await this.security
       .$query(this.trx)
       .patch({ fiscalYearEndMonth: this.fiscalYearEndMonth })
+
+    return this.nSynced
   }
 
   private upsertFinancialRatios = async (
@@ -219,10 +222,12 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
       Financial.tableName,
       targetProgress
     )
-    await Financial.query(this.trx).upsertGraph(inputs, {
-      relate: true,
-      noDelete: true,
-    })
+
+    if (inputs.length) {
+      await Financial.query(this.trx).insert(inputs).onConflict('id').merge()
+    }
+
+    this.nSynced += inputs.length
     this.securitySyncEmitter?.clearWatchers()
     this.securitySyncEmitter?.sendProgress(targetProgress)
   }

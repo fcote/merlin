@@ -13,6 +13,7 @@ class HistoricalPriceSyncMethod extends ServiceMethod {
   private securitySyncEmitter?: SecuritySyncEmitter
   private startProgress?: number
   private targetProgress?: number
+  private nSynced: number = 0
 
   private setCurrentHistoricalPrices = async () => {
     const historicalPrices = await HistoricalPrice.query(this.trx)
@@ -44,16 +45,24 @@ class HistoricalPriceSyncMethod extends ServiceMethod {
     securitySyncEmitter?.sendProgress(this.getTargetProgress(2 / 10))
 
     const inputs = this.getHistoricalPriceInputs(historicalPrices)
+
     securitySyncEmitter?.watchTransactionProgress(
       inputs.length,
       HistoricalPrice.tableName,
       targetProgress
     )
-    await HistoricalPrice.query(this.trx).upsertGraph(inputs, {
-      relate: true,
-      noDelete: true,
-    })
+
+    if (inputs.length) {
+      await HistoricalPrice.query(this.trx)
+        .insert(inputs)
+        .onConflict('id')
+        .merge()
+    }
+
+    this.nSynced += inputs.length
     securitySyncEmitter?.clearWatchers()
+
+    return this.nSynced
   }
 
   getHistoricalPriceInputs = (

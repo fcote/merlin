@@ -1,3 +1,4 @@
+import stringHash from '@sindresorhus/string-hash'
 import { GraphQLDateTime } from 'graphql-scalars'
 import { without } from 'lodash'
 import {
@@ -58,6 +59,19 @@ class BaseModel extends Model {
     return values.map((val) =>
       rows.find((row) => String(row[key]) === String(val))
     )
+  }
+
+  // Advisory Lock
+
+  static async acquireLock(slug: string, trx: Transaction, timeoutMs?: number) {
+    const selectLock = trx.raw('pg_advisory_xact_lock(?) as lock', [
+      stringHash(slug),
+    ])
+
+    if (timeoutMs) {
+      await trx.raw('set local lock_timeout = ??', [timeoutMs])
+    }
+    await trx.queryBuilder().select(selectLock)
   }
 
   // Relations handling
