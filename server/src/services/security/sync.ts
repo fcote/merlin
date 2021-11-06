@@ -150,11 +150,9 @@ class SecuritySyncMethod extends ServiceMethod {
         0.9
       )
       // Sync earning dates
-      this.nEarningSynced = await this.earningService.sync(
-        this.ticker,
-        this.syncEmitter,
-        1
-      )
+      this.nEarningSynced = (
+        await this.earningService.sync(this.ticker, this.syncEmitter, 1)
+      )?.length
     } else {
       this.syncEmitter.sendProgress(1)
     }

@@ -19,10 +19,10 @@ class JobEarningSubscribedMethod extends ServiceMethod {
       tickers,
       async (ticker) => {
         try {
-          const earning = await transaction(Model.knex(), async (trx) => {
+          const earnings = await transaction(Model.knex(), async (trx) => {
             return new EarningService({ trx }).sync(ticker)
           })
-          await pmap(earning, async (n) => {
+          await pmap(earnings, async (n) => {
             await pubSub.publish(SubscriptionChannel.earningsChanges, n)
           })
         } catch (err) {

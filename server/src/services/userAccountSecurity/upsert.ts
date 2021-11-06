@@ -7,11 +7,16 @@ class UserAccountSecurityUpsertMethod extends ServiceMethod {
   run = async (inputs: UserAccountSecurityFields) => {
     if (inputs.securityTicker) {
       const securityService = new SecurityService(this.ctx)
-      const security =
-        (await securityService.findOne({ ticker: inputs.securityTicker })) ??
-        (await securityService.sync({
-          ticker: inputs.securityTicker,
-        }))
+      let security = await securityService.findOne({
+        ticker: inputs.securityTicker,
+      })
+      if (!security) {
+        security = (
+          await securityService.sync({
+            ticker: inputs.securityTicker,
+          })
+        )?.security
+      }
       inputs.securityId = security.id
       delete inputs.securityTicker
     }
