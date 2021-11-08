@@ -30,7 +30,7 @@
     "graphql": "15.7.2",
     "js-cookie": "3.0.1",
     "katex": "0.15.1",
-    "lightweight-charts": "3.6.1",
+    "lightweight-charts": "3.7.0",
     "lodash": "4.17.21",
     "numeral": "2.0.6",
     "omit-deep-lodash": "1.1.5",
