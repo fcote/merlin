@@ -43,8 +43,6 @@ class Scheduler implements Connectable {
   }
 
   public disconnect = async () => {
-    if (!this.schedulerConfig.enabled) return
-
     this.jobs.forEach((j) => j.cancel())
   }
 }
