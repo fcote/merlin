@@ -49,7 +49,7 @@
     "node-schedule": "^2.0.0",
     "numeral": "^2.0.6",
     "object-hash": "^2.2.0",
-    "objection": "^2.2.15",
+    "objection": "^3.0.0",
     "p-map": "^4.0.0",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
