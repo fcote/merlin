@@ -40,7 +40,7 @@ class SecuritySubscriptionResolver {
   securityPriceChanges(
     @Root() payload: Security,
     @Arg('tickers', (_) => [String], { nullable: true }) _: string[]
-  ) {
+  ): Security {
     return payload
   }
 
@@ -57,7 +57,7 @@ class SecuritySubscriptionResolver {
   securitySyncProgressChanges(
     @Root() payload: SecuritySyncProgressChange,
     @Arg('ticker', (_) => String, { nullable: true }) _: string
-  ) {
+  ): SecuritySyncProgressChange {
     return payload
   }
 }

@@ -21,7 +21,7 @@ class NewsSubscriptionResolver {
   newsChanges(
     @Root() payload: News,
     @Arg('tickers', (_) => [String], { nullable: true }) _: string[]
-  ) {
+  ): News {
     return payload
   }
 }
