@@ -53,9 +53,12 @@ async function fmpGet(this: FMPLink, ticker: string) {
   )
   if (!response?.length) {
     logger.warn('fmp > could not get security', { ticker })
-    return null
+    return
   }
   const item = response.shift()
+  if (!item) {
+    return
+  }
   return toSearchResult(item)
 }
 

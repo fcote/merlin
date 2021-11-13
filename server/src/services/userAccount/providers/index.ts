@@ -14,7 +14,7 @@ class SecurityProvider {
   }
 
   connect: () => void
-  getBalance: () => Promise<number>
+  getBalance: () => Promise<number | undefined>
   getAccountSecurities: () => Promise<Partial<UserAccountSecurity>[]>
 }
 

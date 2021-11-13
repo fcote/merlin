@@ -1,10 +1,10 @@
 import { earningsLink } from '@links/links'
-import { Earning, EarningStatement } from '@models/earning'
+import { Earning } from '@models/earning'
 import { ServiceMethod } from '@services/service'
 import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
 
 class EarningCallTranscriptMethod extends ServiceMethod {
-  run = async (earningId: number | string): Promise<EarningStatement[]> => {
+  run = async (earningId: number | string) => {
     const earning = await Earning.query(this.trx)
       .findById(earningId)
       .withGraphFetched('security')
@@ -14,18 +14,21 @@ class EarningCallTranscriptMethod extends ServiceMethod {
     if (earning.callTranscript) {
       return earning.callTranscript
     }
+    if (!earning.fiscalYear || !earning.fiscalQuarter) {
+      return
+    }
 
-    const callTranscript = await earningsLink.earningCallTranscript(
+    const callTranscript = await earningsLink.earningCallTranscript?.(
       earning.security.ticker,
       earning.fiscalYear,
       earning.fiscalQuarter
     )
-    if (!callTranscript) return null
+    if (!callTranscript) return
 
     const parsedCallTranscript = Earning.parseCallTranscript(callTranscript)
     await earning
       .$query(this.trx)
-      .patch({ callTranscript: JSON.stringify(parsedCallTranscript) })
+      .patch({ callTranscript: parsedCallTranscript })
 
     return parsedCallTranscript
   }

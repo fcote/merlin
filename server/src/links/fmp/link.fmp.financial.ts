@@ -1,8 +1,11 @@
-import { keyBy, sumBy } from 'lodash'
+import { keyBy, sumBy, get } from 'lodash'
 import pmap from 'p-map'
 
 import { FMPLink } from '@links/fmp/link.fmp'
-import { SecurityFinancialResult } from '@links/types'
+import {
+  SecurityFinancialResult,
+  SecurityFinancialBaseResult,
+} from '@links/types'
 import { FinancialFreq, FinancialPeriod } from '@models/financial'
 import { FinancialBaseStatement, FinancialUnit } from '@models/financialItem'
 import {
@@ -15,7 +18,7 @@ type FMPFinancial = Record<string, number> & {
   period: string
 }
 
-const statementMaps: FinancialStatementMap<string[]> = {
+const statementMaps: FinancialStatementMap<string[] | null> = {
   [FinancialBaseStatement.incomeStatement]: {
     revenue: ['revenue'],
     costOfRevenue: ['costOfRevenue'],
@@ -124,12 +127,12 @@ const parseFMPFinancials = (
     const reportRawFinancials = formattedRawFinancials[reportDate]
 
     return statementKeys.flatMap((financialSlug) => {
-      const baseSecurityItem =
-        FinancialStatementConfig[statement][financialSlug]
-      const value = sumBy(
-        statementMap[financialSlug],
-        (slug: string) => reportRawFinancials[slug]
+      const baseSecurityItem: SecurityFinancialBaseResult = get(
+        FinancialStatementConfig[statement],
+        financialSlug
       )
+      const items: string[] | null = get(statementMap, financialSlug)
+      const value = sumBy(items, (slug: string) => reportRawFinancials[slug])
 
       const res = {
         reportDate,
@@ -141,7 +144,7 @@ const parseFMPFinancials = (
         ...baseSecurityItem,
       } as SecurityFinancialResult
 
-      if (res.unit === FinancialUnit.millions) {
+      if (res.unit === FinancialUnit.millions && res.value) {
         res.value /= 1e6
       }
 
@@ -155,12 +158,12 @@ const baseUrl = (
   statement: FinancialBaseStatement,
   freq: FinancialFreq
 ) => {
-  const statementComponents = {
+  const statementComponents: Record<FinancialBaseStatement, string> = {
     [FinancialBaseStatement.incomeStatement]: 'income-statement',
     [FinancialBaseStatement.balanceSheet]: 'balance-sheet-statement',
     [FinancialBaseStatement.cashFlowStatement]: 'cash-flow-statement',
   }
-  const periodComponents = {
+  const periodComponents: Partial<Record<FinancialFreq, string>> = {
     [FinancialFreq.Y]: 'year',
     [FinancialFreq.Q]: 'quarter',
   }

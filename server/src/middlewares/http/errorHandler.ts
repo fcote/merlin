@@ -1,9 +1,9 @@
-import { Context } from 'koa'
+import { Context, Next } from 'koa'
 
 import { logger } from '@logger'
 import { APIError, InternalServerError } from '@typings/errors/errors'
 
-const errorHandler = () => async (ctx, next) => {
+const errorHandler = () => async (ctx: Context, next: Next) => {
   try {
     await next()
   } catch (err) {
@@ -49,8 +49,11 @@ const handleError = () => (error: any, ctx?: Context) => {
   return err
 }
 
-const getLevel = (status: number, message: string) => {
-  let level = 'error'
+const getLevel = (
+  status: number,
+  message: string
+): 'error' | 'warn' | 'info' | null => {
+  let level: 'error' | 'warn' | 'info' | null = 'error'
   if (status >= 400 && status < 500) level = 'warn'
   if ([401, 403, 404, 409, 423, 498, 304, 413, 422].includes(status))
     level = 'info'

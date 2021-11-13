@@ -29,7 +29,7 @@ class EarningQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedEarning> {
+  ) {
     return new EarningService(ctx).find(filters, paginate, orderBy)
   }
 
@@ -38,7 +38,7 @@ class EarningQueryResolver {
   earningCallTranscript(
     @Ctx() ctx: RequestContext,
     @Arg('earningId', (_) => ID) earningId: number | string
-  ): Promise<EarningStatement[]> {
+  ) {
     return new EarningService(ctx).callTranscript(earningId)
   }
 }
@@ -55,11 +55,11 @@ class SelfEarningQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedEarning> {
+  ) {
     return new EarningService(ctx).find(
       {
         ...filters,
-        userId: ctx.user.id,
+        userId: ctx.user?.id,
       },
       paginate,
       orderBy

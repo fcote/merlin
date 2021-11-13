@@ -66,8 +66,8 @@ class UserAccountSecurity extends SoftDeleteModel {
   }
 
   static checkOwnership = async (
-    id: number | string,
-    userId: string,
+    id: number | string | undefined,
+    userId: string | undefined,
     trx?: Transaction
   ) => {
     if (!id) return

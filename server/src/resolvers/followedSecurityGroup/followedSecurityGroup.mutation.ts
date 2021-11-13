@@ -15,11 +15,11 @@ class SelfFollowedSecurityGroupQueryResolver {
     @Arg('inputs', (_) => FollowedSecurityGroupFields)
     inputs: FollowedSecurityGroupFields,
     @Ctx() ctx: RequestContext
-  ): Promise<FollowedSecurityGroup> {
-    await FollowedSecurityGroup.checkOwnership(inputs.id, ctx.user.id, ctx.trx)
+  ) {
+    await FollowedSecurityGroup.checkOwnership(inputs.id, ctx.user?.id, ctx.trx)
     return new FollowedSecurityGroupService(ctx).upsert({
       ...inputs,
-      userId: ctx.user.id,
+      userId: ctx.user!.id,
     })
   }
 }

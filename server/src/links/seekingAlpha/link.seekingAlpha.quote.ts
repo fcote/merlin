@@ -12,8 +12,6 @@ const getMarketStatus = (quote: SeekingAlphaQuote): SecurityMarketStatus => {
       return SecurityMarketStatus.preMarket
     case 'PostMarket':
       return SecurityMarketStatus.afterHours
-    default:
-      return null
   }
 }
 
@@ -56,7 +54,7 @@ async function seekingAlphaBatchQuotes(
   )
   if (!response?.data) {
     logger.warn('seekingAlpha > could not fetch security quote')
-    return
+    return []
   }
 
   return response.data.map(toSecurityQuoteResult)

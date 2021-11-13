@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class UserTransactionFindMethod extends ServiceMethod {
   run = async (
-    filters: UserTransactionFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserTransactionFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ): Promise<Paginated<UserTransaction>> => {
     return UserTransaction.paginate(
       UserTransactionFindMethod.applyFilters(
@@ -27,21 +27,21 @@ class UserTransactionFindMethod extends ServiceMethod {
 
   static applyFilters = (
     query: QueryBuilder<UserTransaction>,
-    filters: UserTransactionFilters
+    filters?: UserTransactionFilters
   ) => {
-    if (filters.userId) {
+    if (filters?.userId) {
       query.where('userId', filters.userId)
     }
-    if (filters.since) {
+    if (filters?.since) {
       query.where('date', '>=', filters.since)
     }
-    if (filters.categories) {
+    if (filters?.categories) {
       query.whereIn('category', filters.categories)
     }
-    if (filters.types) {
+    if (filters?.types) {
       query.whereIn('type', filters.types)
     }
-    if (filters.frequencies) {
+    if (filters?.frequencies) {
       query.whereIn('frequency', filters.frequencies)
     }
     return query

@@ -40,7 +40,7 @@ class WebsocketClient {
     const response = await this.sendCommand<{
       status: boolean
       streamSessionId: string
-    }>({ message: this.loginCommand, wait: null, isLogin: true })
+    }>({ message: this.loginCommand, isLogin: true })
 
     if (!response?.status) {
       throw new ApolloUnauthorized('WRONG_PROVIDER_CREDENTIALS')
@@ -67,8 +67,8 @@ class WebsocketClient {
       return !command.idField || get(data, command.idField) === requestId
     }
 
-    return new Promise<T>(async (resolve, reject) => {
-      let response: T = null
+    return new Promise<T | null>(async (resolve, reject) => {
+      let response: T | null = null
 
       this.socket.send(JSON.stringify(message), (err) => {
         if (err) reject(err)

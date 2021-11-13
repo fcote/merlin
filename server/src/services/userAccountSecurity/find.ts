@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class UserAccountSecurityFindMethod extends ServiceMethod {
   run = async (
-    filters: UserAccountSecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters: UserAccountSecurityFilters | undefined,
+    paginate: PaginationOptions | undefined,
+    orderBy: OrderOptions[] | undefined
   ): Promise<Paginated<UserAccountSecurity>> => {
     return UserAccountSecurity.paginate(
       this.applyFilters(UserAccountSecurity.query(this.trx), filters),
@@ -24,17 +24,17 @@ class UserAccountSecurityFindMethod extends ServiceMethod {
 
   applyFilters = (
     query: QueryBuilder<UserAccountSecurity>,
-    filters: UserAccountSecurityFilters
+    filters: UserAccountSecurityFilters | undefined
   ) => {
     query.joinRelated('[userAccount, security]')
 
-    if (filters.ticker) {
+    if (filters?.ticker) {
       query.where('security.ticker', filters.ticker)
     }
-    if (filters.userId) {
+    if (filters?.userId) {
       query.where('userAccount.userId', filters.userId)
     }
-    if (filters.accountId) {
+    if (filters?.accountId) {
       query.whereIn('userAccountId', filters.accountId)
     }
 

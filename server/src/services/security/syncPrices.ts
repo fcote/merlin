@@ -47,10 +47,10 @@ class SecuritySyncPricesMethod extends ServiceMethod {
   }
 
   private getWeekChangeQuote = (
-    quote: SecurityQuoteResult,
-    lastWeekPrice: HistoricalPrice
+    quote?: SecurityQuoteResult,
+    lastWeekPrice?: HistoricalPrice
   ) => {
-    if (!lastWeekPrice) return null
+    if (!lastWeekPrice || !quote?.price) return null
 
     return {
       weekChange: quote.price - lastWeekPrice.close,

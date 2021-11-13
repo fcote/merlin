@@ -11,15 +11,15 @@ import { ServiceMethod } from '@services/service'
 import { ApolloBadRequest } from '@typings/errors/apolloErrors'
 
 class CompanySyncMethod extends ServiceMethod {
-  run = async (inputs: CompanySyncFields): Promise<Company> => {
+  run = async (inputs: CompanySyncFields): Promise<Company | undefined> => {
     if (!inputs.ticker && !inputs.overview) {
       throw new ApolloBadRequest('COMPANY_SYNC_MISSING_TICKER_OR_OVERVIEW')
     }
 
     const rawCompanyOverview =
       inputs.overview ??
-      (await companyOverviewLink.companyOverview(inputs.ticker))
-    if (!rawCompanyOverview) return null
+      (await companyOverviewLink.companyOverview(inputs.ticker as string))
+    if (!rawCompanyOverview) return
 
     const company = await Company.query(this.trx).findOne({
       name: rawCompanyOverview.name,
@@ -52,7 +52,7 @@ class CompanySyncMethod extends ServiceMethod {
 
   private getSector = async (
     companyOverview: Partial<SecurityCompanyOverviewResult>
-  ): Promise<Sector> => {
+  ): Promise<Sector | undefined> => {
     if (!companyOverview.sector) return
 
     const sector = await Sector.query(this.trx).findOne({
@@ -60,7 +60,7 @@ class CompanySyncMethod extends ServiceMethod {
     })
     if (sector) return sector
 
-    await Sector.acquireLock(`sector.${companyOverview.sector}`, this.trx)
+    await Sector.acquireLock(`sector.${companyOverview.sector}`, this.trx!)
     return Sector.query(this.trx)
       .insert({ name: companyOverview.sector })
       .returning('*')
@@ -68,7 +68,7 @@ class CompanySyncMethod extends ServiceMethod {
 
   private getIndustry = async (
     companyOverview: Partial<SecurityCompanyOverviewResult>
-  ): Promise<Industry> => {
+  ): Promise<Industry | undefined> => {
     if (!companyOverview.industry) return
 
     const industry = await Industry.query(this.trx).findOne({
@@ -76,7 +76,10 @@ class CompanySyncMethod extends ServiceMethod {
     })
     if (industry) return industry
 
-    await Industry.acquireLock(`industry.${companyOverview.industry}`, this.trx)
+    await Industry.acquireLock(
+      `industry.${companyOverview.industry}`,
+      this.trx!
+    )
     return Industry.query(this.trx)
       .insert({ name: companyOverview.industry })
       .returning('*')

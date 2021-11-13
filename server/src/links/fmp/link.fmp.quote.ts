@@ -48,7 +48,7 @@ const toSecurityQuoteResult = (quote: FMPQuote): SecurityQuoteResult => ({
 async function fmpQuote(
   this: FMPLink,
   ticker: string
-): Promise<SecurityQuoteResult> {
+): Promise<SecurityQuoteResult | undefined> {
   const response = await this.batchQuotes([ticker])
   return response?.shift()
 }

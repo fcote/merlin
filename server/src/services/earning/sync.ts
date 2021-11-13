@@ -1,4 +1,5 @@
 import { keyBy } from 'lodash'
+import { PartialModelObject } from 'objection'
 
 import { earningsLink } from '@links/links'
 import { SecurityEarningResult } from '@links/types'
@@ -6,13 +7,15 @@ import { Earning } from '@models/earning'
 import { Security } from '@models/security'
 import { SecuritySyncEmitter } from '@services/security/sync'
 import { ServiceMethod } from '@services/service'
+import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
+import { DefaultErrorCodes } from '@typings/errors/errorCodes'
 
 class EarningSyncMethod extends ServiceMethod {
   private security: Security
-  private currentEarnings: Record<string, Partial<Earning>>
+  private currentEarnings: Record<string, Earning>
   private securitySyncEmitter?: SecuritySyncEmitter
-  private startProgress?: number
-  private targetProgress?: number
+  private startProgress: number = 0
+  private targetProgress: number = 0
 
   private setCurrentEarnings = async () => {
     const earnings = await Earning.query(this.trx)
@@ -31,19 +34,24 @@ class EarningSyncMethod extends ServiceMethod {
     securitySyncEmitter?: SecuritySyncEmitter,
     targetProgress?: number
   ) => {
-    this.securitySyncEmitter = securitySyncEmitter
-    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
-    this.targetProgress = targetProgress
-    this.security = await Security.query(this.trx)
+    const security = await Security.query(this.trx)
       .select('id', 'fiscalYearEndMonth')
       .findOne('ticker', ticker)
+    if (!security) {
+      throw new ApolloResourceNotFound(DefaultErrorCodes.RESOURCE_NOT_FOUND, {
+        ticker,
+      })
+    }
+
+    this.security = security
+    this.securitySyncEmitter = securitySyncEmitter
+    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
+    this.targetProgress = targetProgress ?? 0
+
     await this.setCurrentEarnings()
     securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 5))
 
-    const earningList = await earningsLink.earnings(
-      ticker,
-      this.security.fiscalYearEndMonth
-    )
+    const earningList = await earningsLink.earnings(ticker)
     securitySyncEmitter?.sendProgress(this.getTargetProgress(2 / 5))
 
     const inputs = this.getEarningInputs(earningList)
@@ -77,7 +85,7 @@ class EarningSyncMethod extends ServiceMethod {
 
   getEarningInputs = (
     rawEarnings: SecurityEarningResult[]
-  ): Partial<Earning>[] => {
+  ): PartialModelObject<Earning>[] => {
     return rawEarnings.map((rhd) => {
       const existingEarning = this.currentEarnings[rhd.date]
       return {

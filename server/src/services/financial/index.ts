@@ -14,14 +14,14 @@ import { Service } from '@services/service'
 
 class FinancialService extends Service {
   attributes = {
-    performance: async (financialIds: (number | string)[]) =>
+    performance: async (financialIds: readonly (number | string)[]) =>
       new FinancialPerformanceMethod(this).run(financialIds),
   }
 
   find = async (
-    filters: FinancialFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: FinancialFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => new FinancialFindMethod(this).run(filters, paginate, orderBy, fields)
 

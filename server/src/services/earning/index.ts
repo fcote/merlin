@@ -8,9 +8,9 @@ import { Service } from '@services/service'
 
 class EarningService extends Service {
   find = async (
-    filters: EarningFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: EarningFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) => new EarningFindMethod(this).run(filters, paginate, orderBy)
 
   callTranscript = (earningId: number | string) =>

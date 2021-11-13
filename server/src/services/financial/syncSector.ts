@@ -15,7 +15,10 @@ class FinancialSyncSectorMethod extends ServiceMethod {
   private ratioFinancialItems: FinancialItem[]
 
   run = async (inputs: FinancialSyncSectorFields) => {
-    this.sector = await Sector.query(this.trx).findOne({ name: inputs.name })
+    const sector = await Sector.query(this.trx).findOne({ name: inputs.name })
+    if (!sector) return
+
+    this.sector = sector
     this.ratioFinancialItems = await FinancialItem.query(this.trx).where({
       type: FinancialItemType.ratio,
     })
@@ -61,7 +64,7 @@ class FinancialSyncSectorMethod extends ServiceMethod {
         (fi) => fi.id === baseFinancial.financialItemId
       )
       const existingFinancial = this.currentSectorFinancials.find(
-        (f) => f.financialItemId === financialItem.id
+        (f) => f.financialItemId === financialItem?.id
       )
       return {
         ...(existingFinancial && { id: existingFinancial.id }),
@@ -69,9 +72,9 @@ class FinancialSyncSectorMethod extends ServiceMethod {
         year: baseFinancial.year,
         reportDate: baseFinancial.reportDate,
         value: median(
-          periodFinancials.map((f) => f.value).filter((v) => v >= 0)
+          periodFinancials.map((f) => f.value ?? 0).filter((v) => v >= 0)
         ),
-        financialItemId: financialItem.id,
+        financialItemId: financialItem?.id,
         sectorId: this.sector.id,
       }
     })

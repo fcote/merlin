@@ -1,9 +1,6 @@
 import { groupBy, sumBy, sortBy } from 'lodash'
 
-import {
-  SecurityFinancialResult,
-  SecurityFinancialBaseResult,
-} from '@links/types'
+import { SecurityFinancialResult } from '@links/types'
 import { Financial } from '@models/financial'
 import { FinancialBaseStatement } from '@models/financialItem'
 import {
@@ -14,7 +11,7 @@ import {
 class FinancialTTMProcessor {
   private readonly financials: { [key: string]: Financial[] }
 
-  private values: Partial<Record<StatementKeys, number>> = {}
+  private values: Partial<Record<StatementKeys, number | null>> = {}
 
   constructor(quarterFinancials: Financial[]) {
     this.financials = groupBy(
@@ -27,22 +24,28 @@ class FinancialTTMProcessor {
   public ttm = (): SecurityFinancialResult[] => {
     return Object.values(FinancialBaseStatement).flatMap((statement) => {
       return Object.entries(FinancialStatementConfig[statement]).flatMap(
-        ([slug, baseResult]: [StatementKeys, SecurityFinancialBaseResult]) => ({
-          statement,
-          slug,
-          reportDate: 'TTM',
-          unit: this.last(slug)?.financialItem?.unit ?? baseResult.unit,
-          unitType:
-            this.last(slug)?.financialItem?.unitType ?? baseResult.unitType,
-          value: Number.isFinite(this.values[slug]) ? this.values[slug] : null,
-          ...baseResult,
-        })
+        ([slug, baseResult]) => {
+          const value = this.values[slug as StatementKeys]
+          return {
+            statement,
+            slug,
+            reportDate: 'TTM',
+            unit:
+              this.last(slug as StatementKeys)?.financialItem?.unit ??
+              baseResult.unit,
+            unitType:
+              this.last(slug as StatementKeys)?.financialItem?.unitType ??
+              baseResult.unitType,
+            value: value && Number.isFinite(value) ? value : null,
+            ...baseResult,
+          }
+        }
       )
     })
   }
 
   private sum = (key: StatementKeys) => {
-    return sumBy(this.financials[key], (f) => f.value)
+    return sumBy(this.financials[key], (f) => f.value ?? 0)
   }
 
   private last = (key: StatementKeys) => {
@@ -82,9 +85,12 @@ class FinancialTTMProcessor {
     this.values.sharesOutstandingDiluted = this.lastValue(
       'sharesOutstandingDiluted'
     )
-    this.values.eps = this.values.netIncome / this.values.sharesOutstanding
-    this.values.epsDiluted =
-      this.values.netIncome / this.values.sharesOutstandingDiluted
+    this.values.eps = this.values.sharesOutstanding
+      ? this.values.netIncome / this.values.sharesOutstanding
+      : NaN
+    this.values.epsDiluted = this.values.sharesOutstandingDiluted
+      ? this.values.netIncome / this.values.sharesOutstandingDiluted
+      : NaN
 
     // Balance sheet
     this.values.cashAndCashEquivalents = this.lastValue(

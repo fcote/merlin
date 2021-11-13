@@ -15,7 +15,7 @@ import { Service } from '@services/service'
 
 class SecurityService extends Service {
   attributes = {
-    followedIn: async (securityIds: (number | string)[]) =>
+    followedIn: async (securityIds: readonly (number | string)[]) =>
       new SecurityFollowedInMethod(this).run(securityIds),
   }
 

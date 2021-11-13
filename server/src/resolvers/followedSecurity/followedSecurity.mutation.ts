@@ -23,10 +23,10 @@ class SelfFollowedSecurityQueryResolver {
     @Arg('inputs', (_) => FollowedSecurityFields)
     inputs: FollowedSecurityFields,
     @Ctx() ctx: RequestContext
-  ): Promise<FollowedSecurity> {
+  ) {
     await FollowedSecurityGroup.checkOwnership(
       inputs.followedSecurityGroupId,
-      ctx.user.id,
+      ctx.user?.id,
       ctx.trx
     )
     return new FollowedSecurityService(ctx).link(inputs)
@@ -38,10 +38,10 @@ class SelfFollowedSecurityQueryResolver {
     @Arg('inputs', (_) => FollowedSecurityFields)
     inputs: FollowedSecurityFields,
     @Ctx() ctx: RequestContext
-  ): Promise<number> {
+  ) {
     await FollowedSecurityGroup.checkOwnership(
       inputs.followedSecurityGroupId,
-      ctx.user.id,
+      ctx.user?.id,
       ctx.trx
     )
     return new FollowedSecurityService(ctx).unlink(inputs)

@@ -43,22 +43,22 @@ const subscriptionJobs: Record<
 namespace SubscriptionChannel {
   export const onCancel =
     (channel: SubscriptionChannel) =>
-    async (context: RequestContext, args: { tickers: string[] }) => {
+    async (context: RequestContext, args: { tickers?: string[] }) => {
       const subscriptionStorage = subscriptionStorages[channel]
-      if (!subscriptionStorage[context.user.id]) return
-      subscriptionStorage[context.user.id] = subscriptionStorage[
-        context.user.id
-      ].filter((ticker) => !args.tickers.includes(ticker))
+      if (!subscriptionStorage[context.user!.id]) return
+      subscriptionStorage[context.user!.id] = subscriptionStorage[
+        context.user!.id
+      ].filter((ticker) => !args.tickers?.includes(ticker))
     }
 
   export const onSubscribe =
     (channel: SubscriptionChannel) =>
-    async (context: RequestContext, args: { tickers: string[] }) => {
+    async (context: RequestContext, args: { tickers?: string[] }) => {
       const subscriptionStorage = subscriptionStorages[channel]
-      if (!subscriptionStorage[context.user.id]) {
-        subscriptionStorage[context.user.id] = []
+      if (!subscriptionStorage[context.user!.id]) {
+        subscriptionStorage[context.user!.id] = []
       }
-      subscriptionStorage[context.user.id].push(...args.tickers)
+      subscriptionStorage[context.user!.id].push(...(args.tickers ?? []))
       subscriptionJobs[channel](context).then()
     }
 }

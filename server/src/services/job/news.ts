@@ -12,7 +12,10 @@ import { ServiceMethod } from '@services/service'
 class JobNewsMethod extends ServiceMethod {
   run = async (): Promise<void> => {
     // Retrieve the update news list
-    const newsList = await newsLink.news()
+    const newsList = await newsLink?.news()
+    if (!newsList) {
+      return
+    }
 
     // Retrieve existing securities & the latest existing news
     const securities = await Security.query(this.trx).whereIn(
@@ -30,7 +33,7 @@ class JobNewsMethod extends ServiceMethod {
     const filterNews = (n: SecurityNewsResult) =>
       !currentNews.find(
         (current) =>
-          current.security.ticker === n.ticker &&
+          current.security?.ticker === n.ticker &&
           current.title === n.title &&
           current.type === n.type
       )

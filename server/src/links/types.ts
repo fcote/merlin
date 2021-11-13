@@ -22,23 +22,23 @@ export type SecurityListResult = {
 
 export type SecurityQuoteResult = {
   symbol: string
-  price?: number
-  open?: number
-  dayLow?: number
-  dayHigh?: number
-  volume?: number
-  dayChange?: number
-  dayChangePercent?: number
-  weekChange?: number
-  weekChangePercent?: number
-  extendedHoursPrice?: number
-  extendedHoursChangePercentage?: number
-  high52w?: number
-  low52w?: number
-  marketCap?: number
-  sharesOutstanding?: number
-  securityType?: SecurityType
-  marketStatus?: SecurityMarketStatus
+  price?: number | null
+  open?: number | null
+  dayLow?: number | null
+  dayHigh?: number | null
+  volume?: number | null
+  dayChange?: number | null
+  dayChangePercent?: number | null
+  weekChange?: number | null
+  weekChangePercent?: number | null
+  extendedHoursPrice?: number | null
+  extendedHoursChangePercentage?: number | null
+  high52w?: number | null
+  low52w?: number | null
+  marketCap?: number | null
+  sharesOutstanding?: number | null
+  securityType?: SecurityType | null
+  marketStatus?: SecurityMarketStatus | null
 }
 
 export type SecurityCompanyOverviewResult = {
@@ -49,8 +49,8 @@ export type SecurityCompanyOverviewResult = {
   name: string
   currency: string
   description: string
-  sector: string
-  industry: string
+  sector: string | null
+  industry: string | null
   address: string
   employees: number
   securityType?: SecurityType
@@ -62,7 +62,7 @@ export type SecurityFinancialResult = SecurityFinancialBaseResult & {
   reportDate: string
   period?: FinancialPeriod
   isEstimate?: boolean
-  value: number
+  value: number | null
 }
 
 export type SecurityFinancialBaseResult = {
@@ -92,15 +92,15 @@ export type SecurityHistoricalPriceResult = {
 
 export type SecurityEarningResult = {
   date: string
-  fiscalYear?: number
-  fiscalQuarter?: number
-  time?: EarningTime
-  epsEstimate?: number
-  eps?: number
-  revenueEstimate?: number
-  revenue?: number
-  epsSurprisePercent?: number
-  revenueSurprisePercent?: number
+  fiscalYear?: number | null
+  fiscalQuarter?: number | null
+  time?: EarningTime | null
+  epsEstimate?: number | null
+  eps?: number | null
+  revenueEstimate?: number | null
+  revenue?: number | null
+  epsSurprisePercent?: number | null
+  revenueSurprisePercent?: number | null
 }
 
 export type SecurityNewsResult = {

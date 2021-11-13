@@ -41,7 +41,7 @@ class UserMutationResolver {
   async userSignUp(
     @Arg('inputs', (_) => SignUpFields) { username, password }: SignUpFields,
     @Ctx() ctx: RequestContext
-  ): Promise<Partial<AuthResponse>> {
+  ) {
     if (!config.get('features.allowUserSignUp')) {
       throw new ApolloUnauthorized('USER_SIGN_UP_NOT_ALLOWED')
     }
@@ -69,7 +69,7 @@ class UserMutationResolver {
   async userSignIn(
     @Arg('inputs', (_) => SignInFields) { username, password }: SignInFields,
     @Ctx() ctx: RequestContext
-  ): Promise<AuthResponse> {
+  ) {
     if (!username || !password) {
       throw new ApolloUnauthorized('MISSING_INPUTS')
     }
@@ -103,8 +103,8 @@ class SelfUserMutationResolver {
   async updateUser(
     @Arg('inputs', (_) => UserFields) inputs: UserFields,
     @Ctx() ctx: RequestContext
-  ): Promise<User> {
-    return new UserService(ctx).update({ ...inputs, id: ctx.user.id })
+  ) {
+    return new UserService(ctx).update({ ...inputs, id: ctx.user!.id })
   }
 }
 

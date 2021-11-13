@@ -1,12 +1,8 @@
 import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
 
-import { UserAccount, PaginatedUserAccount } from '@models/userAccount'
+import { PaginatedUserAccount } from '@models/userAccount'
 import { Right } from '@resolvers'
-import {
-  OrderOptions,
-  PaginationOptions,
-  Paginated,
-} from '@resolvers/paginated'
+import { OrderOptions, PaginationOptions } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'
 import { UserAccountFilters } from '@resolvers/userAccount/userAccount.inputs'
 import { UserAccountService } from '@services/userAccount'
@@ -24,11 +20,11 @@ class SelfUserAccountQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<Paginated<UserAccount>> {
+  ) {
     return new UserAccountService(ctx).find(
       {
         ...filters,
-        userId: ctx.user.id,
+        userId: ctx.user!.id,
       },
       paginate,
       orderBy

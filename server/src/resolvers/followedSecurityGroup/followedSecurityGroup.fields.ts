@@ -18,8 +18,8 @@ class FollowedSecurityGroupFieldsResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedFollowedSecurity> {
-    return ctx.loaders.followedSecurityGroupFollowedSecurities.load({
+  ) {
+    return ctx.loaders!.followedSecurityGroupFollowedSecurities.load({
       followedSecurityGroupId: followedSecurityGroup.id,
       filters,
       paginate,

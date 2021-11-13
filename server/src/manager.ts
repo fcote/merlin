@@ -18,7 +18,7 @@ const DEFAULT_MANAGER_CONFIG: ManagerConfig = {
 }
 
 const DEFAULT_EVENT_CONFIG: EventConfig = {
-  logLevel: 'log',
+  logLevel: 'info',
   strategy: 'graceful',
   exitStatus: 1,
 }
@@ -29,7 +29,7 @@ const DEFAULT_DRIVER_CONFIG: DriverConfig = {
 }
 
 class TimeoutError extends Error {
-  constructor(name) {
+  constructor(name: string) {
     super(`Error closing ${name} timeout exceeded`)
   }
 }
@@ -49,14 +49,14 @@ class ServiceManager {
 
   exit = (code: number) => {
     if (this.config.safeExit) {
-      setTimeout(() => this.config.exitFunction(code), this.config.safeExit)
+      setTimeout(() => this.config.exitFunction?.(code), this.config.safeExit)
     } else {
-      this.config.exitFunction(code)
+      this.config.exitFunction?.(code)
     }
   }
 
   listen = () => {
-    this.config.subscribe.forEach((event) => {
+    this.config.subscribe?.forEach((event) => {
       let eventName
       let eventConfig = DEFAULT_EVENT_CONFIG
 
@@ -69,13 +69,13 @@ class ServiceManager {
 
       process.on(eventName, async (...args) => {
         if (eventConfig.log) {
-          logger[eventConfig.logLevel](...args)
+          logger[eventConfig.logLevel!](...args)
         }
 
         if (eventConfig.strategy === 'graceful') {
           await this.disconnect()
         }
-        this.exit(eventConfig.exitStatus)
+        this.exit(eventConfig.exitStatus!)
       })
     })
   }
@@ -83,7 +83,7 @@ class ServiceManager {
   private execTimeout = (promise: Promise<void>, delay: number) => {
     return new Promise<void>((resolve, reject) => {
       let resolved = false
-      let timeout
+      let timeout: NodeJS.Timeout | null
 
       timeout = setTimeout(() => {
         timeout = null
@@ -160,7 +160,7 @@ class ServiceManager {
       try {
         await this.execTimeout(driver.connector[to](), driver.config.timeout)
         success = true
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(`Failed to ${to} driver ${driver.name}, retrying...`, {
           err: {
             message: error.message,
@@ -170,10 +170,10 @@ class ServiceManager {
       }
     }
 
-    while (!success && nTries <= driver.config.maxRetry) {
+    while (!success && nTries <= driver.config.maxRetry!) {
       nTries += 1
       await tryTo()
-      if (!success && nTries <= driver.config.maxRetry) await this.sleep(5000)
+      if (!success && nTries <= driver.config.maxRetry!) await this.sleep(5000)
     }
 
     if (!success) {

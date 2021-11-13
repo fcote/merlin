@@ -6,9 +6,9 @@ import { Service } from '@services/service'
 
 class FinancialItemService extends Service {
   find = async (
-    filters: FinancialItemFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: FinancialItemFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => new FinancialItemFindMethod(this).run(filters, paginate, orderBy, fields)
 }

@@ -2,7 +2,7 @@ import { init, setExtras, captureException } from '@sentry/node'
 import { ApolloError } from 'apollo-server-core'
 import { get, isNumber, pick, cloneDeep } from 'lodash'
 import os from 'os'
-import winston from 'winston'
+import winston, { LogCallback } from 'winston'
 import Transport from 'winston-transport'
 import { ConsoleTransportOptions } from 'winston/lib/winston/transports'
 
@@ -46,7 +46,7 @@ class SentryTransport extends Transport {
 
   constructor(
     token: string,
-    level: string,
+    level: 'crit' | 'error' | 'warn' | 'info' | 'debug',
     options: { env: string; version: string }
   ) {
     super()
@@ -76,8 +76,8 @@ class SentryTransport extends Transport {
     })
   }
 
-  getCode(err) {
-    function isHttpCode(code) {
+  getCode(err: any) {
+    function isHttpCode(code: number) {
       return isNumber(code) && code > 100 && code < 600
     }
 
@@ -97,7 +97,7 @@ class SentryTransport extends Transport {
     return 500
   }
 
-  getError(data) {
+  getError(data: Omit<LogInfo, 'level'>) {
     if (data.message instanceof Error) return data.message
 
     return data.err ?? data.error
@@ -106,7 +106,7 @@ class SentryTransport extends Transport {
   /**
    * Log events from winston
    */
-  log(info, callback) {
+  log(info: LogInfo, callback: LogCallback) {
     setImmediate(() => this.emit('logged', info))
 
     const { level, ...data } = info
@@ -135,7 +135,7 @@ class SentryTransport extends Transport {
 }
 
 type LogInfo = Record<string, any> & {
-  level: string
+  level: 'crit' | 'error' | 'warn' | 'info' | 'debug'
   message: string
   timestamp: string
 }
@@ -172,7 +172,7 @@ class ConsoleTransport extends winston.transports.Console {
   }
 
   log(info: LogInfo, next: () => void) {
-    return super.log(serializeErrors(info), next)
+    return super.log?.(serializeErrors(info), next)
   }
 }
 
@@ -184,7 +184,7 @@ const transports: Transport[] = [
 if (config.get('sentry.enabled')) {
   const sentryTransport = new SentryTransport(
     config.get('sentry.dsn'),
-    config.get('sentry.level'),
+    config.get('sentry.level') as 'crit' | 'error' | 'warn' | 'info' | 'debug',
     {
       version: config.get('app.version'),
       env: config.get('env'),

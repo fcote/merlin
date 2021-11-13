@@ -14,7 +14,10 @@ import { FinancialService } from '@services/financial'
 import { HistoricalPriceService } from '@services/historicalPrice'
 import { SecurityService } from '@services/security/index'
 import { ServiceMethod } from '@services/service'
-import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
+import {
+  ApolloResourceNotFound,
+  ApolloUnprocessableEntity,
+} from '@typings/errors/apolloErrors'
 import {
   KnexEventObject,
   KnexEventBuilderObject,
@@ -101,7 +104,7 @@ class SecuritySyncMethod extends ServiceMethod {
   }
 
   run = async (inputs: SecurityFields) => {
-    this.syncEmitter = new SecuritySyncEmitter(inputs.ticker, this.trx)
+    this.syncEmitter = new SecuritySyncEmitter(inputs.ticker, this.trx!)
     this.ticker = inputs.ticker
 
     const overview =
@@ -118,6 +121,9 @@ class SecuritySyncMethod extends ServiceMethod {
 
     // Security type
     const securityType = this.getSecurityType(overview, quote)
+    if (!securityType) {
+      throw new ApolloUnprocessableEntity('COULD_NOT_FIND_SECURITY_TYPE')
+    }
 
     // Sync parent data
     const company = overview && (await this.companyService.sync({ overview }))
@@ -166,12 +172,12 @@ class SecuritySyncMethod extends ServiceMethod {
   }
 
   private getSecurityType = (
-    overview: SecurityCompanyOverviewResult,
+    overview: SecurityCompanyOverviewResult | undefined,
     quote: SecurityQuoteResult
   ) => {
-    if (quote.securityType === SecurityType.commonStock)
-      return overview.securityType
-    return quote.securityType
+    if (!overview || quote.securityType !== SecurityType.commonStock)
+      return quote.securityType
+    return overview.securityType
   }
 }
 

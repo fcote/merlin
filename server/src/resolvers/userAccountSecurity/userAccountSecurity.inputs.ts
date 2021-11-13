@@ -13,25 +13,25 @@ class UserAccountSecurityFilters {
 @InputType('UserAccountSecurityFields')
 class UserAccountSecurityFields {
   @Field((_) => ID, { nullable: true })
-  id: number | string
+  id?: number | string
   @Field((_) => String, { nullable: true })
-  name: string
+  name?: string
   @Field((_) => Float, { nullable: true })
-  volume: number
+  volume?: number
   @Field((_) => Float, { nullable: true })
-  openPrice: number
+  openPrice?: number
   @Field((_) => String, { nullable: true })
-  openedAt: Date
+  openedAt?: Date
   @Field((_) => String, { nullable: true })
-  currency: string
+  currency?: string
   @Field((_) => ID, { nullable: true })
-  securityId: number | string
+  securityId?: number | string
   @Field((_) => String, { nullable: true })
-  securityTicker: string
+  securityTicker?: string
   @Field((_) => ID, { nullable: true })
-  userAccountId: number | string
+  userAccountId?: number | string
   @Field((_) => GraphQLDateTime, { nullable: true })
-  deletedAt: Date
+  deletedAt?: Date
 }
 
 export { UserAccountSecurityFilters, UserAccountSecurityFields }

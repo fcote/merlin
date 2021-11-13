@@ -27,7 +27,7 @@ class FinancialRatioProcessor {
 
   constructor(
     private reportDate: string,
-    private price: number,
+    private price: number | null,
     financials: Financial[],
     freq: FinancialFreq
   ) {
@@ -39,15 +39,18 @@ class FinancialRatioProcessor {
   public ratios = (): SecurityFinancialResult[] => {
     return Object.values(FinancialRatioStatement).flatMap((statement) => {
       return Object.entries(FinancialRatioConfig[statement]).flatMap(
-        ([slug, baseResult]: [string, SecurityFinancialBaseResult]) => ({
-          statement,
-          reportDate: this.reportDate,
-          slug: slug,
-          unit: FinancialRatioProcessor.defaultUnit,
-          unitType: FinancialRatioProcessor.defaultUnitType,
-          value: Number.isFinite(this.values[slug]) ? this.values[slug] : null,
-          ...baseResult,
-        })
+        ([slug, baseResult]: [string, SecurityFinancialBaseResult]) => {
+          const value = this.values[slug as RatioKeys]
+          return {
+            statement,
+            reportDate: this.reportDate,
+            slug: slug,
+            unit: FinancialRatioProcessor.defaultUnit,
+            unitType: FinancialRatioProcessor.defaultUnitType,
+            value: value && Number.isFinite(value) ? value : null,
+            ...baseResult,
+          }
+        }
       )
     })
   }

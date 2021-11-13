@@ -74,7 +74,7 @@ async function fmpBatchCompanyOverview(
 async function fmpCompanyOverview(
   this: FMPLink,
   ticker: string
-): Promise<SecurityCompanyOverviewResult> {
+): Promise<SecurityCompanyOverviewResult | undefined> {
   const response = await this.batchCompanyOverview([ticker])
   return response?.shift()
 }

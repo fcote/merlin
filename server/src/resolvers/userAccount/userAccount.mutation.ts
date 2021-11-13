@@ -17,8 +17,8 @@ class SelfUserAccountMutationResolver {
   async syncUserAccount(
     @Arg('inputs', (_) => UserAccountSyncFields) inputs: UserAccountSyncFields,
     @Ctx() ctx: RequestContext
-  ): Promise<UserAccount> {
-    await UserAccount.checkOwnership(inputs.id, ctx.user.id, ctx.trx)
+  ) {
+    await UserAccount.checkOwnership(inputs.id, ctx.user?.id, ctx.trx)
     return new UserAccountService(ctx).sync(inputs)
   }
 
@@ -27,11 +27,11 @@ class SelfUserAccountMutationResolver {
   async upsertUserAccount(
     @Arg('inputs', (_) => UserAccountFields) inputs: UserAccountFields,
     @Ctx() ctx: RequestContext
-  ): Promise<UserAccount> {
-    await UserAccount.checkOwnership(inputs.id, ctx.user.id, ctx.trx)
+  ) {
+    await UserAccount.checkOwnership(inputs.id, ctx.user?.id, ctx.trx)
     return new UserAccountService(ctx).upsert({
       ...inputs,
-      userId: ctx.user.id,
+      userId: ctx.user!.id,
     })
   }
 }

@@ -21,7 +21,7 @@ class HistoricalPriceQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedHistoricalPrice> {
+  ) {
     return new HistoricalPriceService(ctx).find(
       filters,
       paginate,

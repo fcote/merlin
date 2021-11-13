@@ -9,9 +9,9 @@ import { ServiceMethod } from '@services/service'
 
 class FinancialItemFindMethod extends ServiceMethod {
   run = async (
-    filters: FinancialItemFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: FinancialItemFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => {
     const query = FinancialItem.query(this.trx).select(
@@ -26,9 +26,9 @@ class FinancialItemFindMethod extends ServiceMethod {
 
   static applyFilters = (
     query: QueryBuilder<FinancialItem>,
-    filters: FinancialItemFilters
+    filters?: FinancialItemFilters
   ) => {
-    if (filters.type) {
+    if (filters?.type) {
       query.where('financial_items.type', filters.type)
     }
     return query

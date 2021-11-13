@@ -32,17 +32,19 @@ export interface APILinkConfig {
 
 export interface SearchLink {
   search: (ticker: string) => Promise<SecuritySearchResult[]>
-  get: (ticker: string) => Promise<SecuritySearchResult>
+  get: (ticker: string) => Promise<SecuritySearchResult | undefined>
   list: () => Promise<SecurityListResult[]>
 }
 
 export interface QuoteLink {
-  quote: (ticker: string) => Promise<SecurityQuoteResult>
+  quote: (ticker: string) => Promise<SecurityQuoteResult | undefined>
   batchQuotes: (tickers: string[]) => Promise<SecurityQuoteResult[]>
 }
 
 export interface CompanyOverviewLink {
-  companyOverview: (ticker: string) => Promise<SecurityCompanyOverviewResult>
+  companyOverview: (
+    ticker: string
+  ) => Promise<SecurityCompanyOverviewResult | undefined>
   batchCompanyOverview: (
     tickers: string[]
   ) => Promise<SecurityCompanyOverviewResult[]>
@@ -75,7 +77,7 @@ export interface EarningLink {
     ticker: string,
     fiscalYear: number,
     fiscalQuarter: number
-  ) => Promise<string>
+  ) => Promise<string | undefined>
 }
 
 export interface NewsLink {
@@ -119,7 +121,7 @@ export class APILink {
     }
     try {
       return await this.client(encodeURI(url.toString()), options).json<T>()
-    } catch (err) {
+    } catch (err: any) {
       if (err?.response?.statusCode === 429) {
         await this.handleTooManyRequestsError(url, method, body)
       }
@@ -141,14 +143,17 @@ export class APILink {
     return response.text()
   }
 
-  getEndpoint = (path: string, params: Record<string, string> = {}) => {
+  getEndpoint = (
+    path: string,
+    params: Record<string, string | undefined> = {}
+  ) => {
     const url = new URL(`${this.conf.base}${path}`, this.conf.endpoint)
 
     if (this.conf.apiKey?.mode === 'param') {
       url.searchParams.append(this.conf.apiKey.param, this.conf.apiKey.value)
     }
     Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.append(key, value)
+      value && url.searchParams.append(key, value)
     })
 
     return url

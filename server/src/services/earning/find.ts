@@ -7,9 +7,9 @@ import { ServiceMethod } from '@services/service'
 
 class EarningFindMethod extends ServiceMethod {
   run = async (
-    filters: EarningFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: EarningFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) => {
     return Earning.paginate(
       EarningFindMethod.applyFilters(
@@ -23,7 +23,7 @@ class EarningFindMethod extends ServiceMethod {
 
   static applyFilters = (
     query: QueryBuilder<Earning>,
-    filters: EarningFilters
+    filters: EarningFilters = {}
   ) => {
     if (filters.userId) {
       query.leftJoinRelated(
@@ -50,11 +50,11 @@ class EarningFindMethod extends ServiceMethod {
         q
           .where(
             'security:followedSecurities:followedSecurityGroup.userId',
-            filters.userId
+            filters.userId!
           )
           .orWhere(
             'security:userAccountSecurities:userAccount.userId',
-            filters.userId
+            filters.userId!
           )
       )
     }

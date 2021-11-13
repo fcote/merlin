@@ -3,7 +3,7 @@ import { UserFilters } from '@resolvers/user/user.inputs'
 import { ServiceMethod } from '@services/service'
 
 class UserFindOneMethod extends ServiceMethod {
-  run = (filters: UserFilters) => {
+  run = async (filters: UserFilters) => {
     if (!filters.apiToken && !filters.username && !filters.userId) return null
 
     const query = User.query(this.trx)
@@ -16,7 +16,11 @@ class UserFindOneMethod extends ServiceMethod {
       return query.findOne('apiToken', filters.apiToken)
     }
 
-    return query.findOne('username', filters.username)
+    if (filters.username) {
+      return query.findOne('username', filters.username)
+    }
+
+    return
   }
 }
 

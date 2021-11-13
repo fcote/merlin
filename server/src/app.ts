@@ -45,7 +45,8 @@ class App implements Connectable {
           schema,
           execute,
           subscribe,
-          onConnect: (connectionParams) => graphqlContext({ connectionParams }),
+          onConnect: (connectionParams: any) =>
+            graphqlContext({ connectionParams }),
         },
         {
           server: this.server,

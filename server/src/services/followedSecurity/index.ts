@@ -11,16 +11,16 @@ import { Service } from '@services/service'
 
 class FollowedSecurityService extends Service {
   find = async (
-    filters: FollowedSecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: FollowedSecurityFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) => new FollowedSecurityFindMethod(this).run(filters, paginate, orderBy)
   findRelations = (
     relationKey: string,
     keys: (string | number)[],
-    filters: FollowedSecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: FollowedSecurityFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) =>
     new FollowedSecurityFindRelationsMethod(this).run(
       relationKey,

@@ -1,7 +1,10 @@
 import convict from 'convict'
 import fs from 'fs'
 
-const pkg = require('../../package.json')
+const {
+  name: packageName,
+  version: packageVersion,
+}: Record<string, string> = require('../../package.json')
 
 const schema = {
   env: {
@@ -12,10 +15,10 @@ const schema = {
   },
   app: {
     id: {
-      default: pkg.name,
+      default: packageName,
     },
     version: {
-      default: pkg.version,
+      default: packageVersion,
     },
   },
   endpoint: {

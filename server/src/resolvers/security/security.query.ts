@@ -10,7 +10,7 @@ import { RequestContext } from '@typings/context'
 class SecurityQueryResolver {
   @Authorized([Right.authenticated])
   @Query((_) => [SecuritySearch])
-  searchSecurity(@Arg('ticker') ticker: string): Promise<SecuritySearch[]> {
+  searchSecurity(@Arg('ticker') ticker: string) {
     return searchLink.search(ticker)
   }
 

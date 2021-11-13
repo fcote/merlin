@@ -7,7 +7,7 @@ import { ApolloBadRequest } from '@typings/errors/apolloErrors'
 const reformatError = (err: GraphQLError) => {
   const validationErrors = ['VariableDefinition']
   const errorKinds = err.nodes ? err.nodes.map((n) => n.kind) : []
-  const isValidationError = (k) => validationErrors.includes(k)
+  const isValidationError = (k: string) => validationErrors.includes(k)
 
   if (errorKinds.every(isValidationError)) {
     const formatted = new ApolloBadRequest(err.message)

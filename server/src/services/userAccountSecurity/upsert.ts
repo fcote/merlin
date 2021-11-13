@@ -2,6 +2,8 @@ import { UserAccountSecurity } from '@models/userAccountSecurity'
 import { UserAccountSecurityFields } from '@resolvers/userAccountSecurity/userAccountSecurity.inputs'
 import { SecurityService } from '@services/security'
 import { ServiceMethod } from '@services/service'
+import { ApolloBadRequest } from '@typings/errors/apolloErrors'
+import { DefaultErrorCodes } from '@typings/errors/errorCodes'
 
 class UserAccountSecurityUpsertMethod extends ServiceMethod {
   run = async (inputs: UserAccountSecurityFields) => {
@@ -16,6 +18,11 @@ class UserAccountSecurityUpsertMethod extends ServiceMethod {
             ticker: inputs.securityTicker,
           })
         )?.security
+      }
+      if (!security) {
+        throw new ApolloBadRequest(DefaultErrorCodes.BAD_REQUEST, {
+          ticker: inputs.securityTicker,
+        })
       }
       inputs.securityId = security.id
       delete inputs.securityTicker

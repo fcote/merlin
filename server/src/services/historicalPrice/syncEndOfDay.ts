@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { ref } from 'objection'
+import { ref, PartialModelObject } from 'objection'
 import pmap from 'p-map'
 
 import { quoteLink } from '@links/links'
@@ -42,9 +42,9 @@ class HistoricalPriceSyncEndOfDayMethod extends ServiceMethod {
           close: quote.price,
           change: quote.dayChange,
           changePercent: quote.dayChangePercent,
-          volume: quote.volume / 1e6,
+          volume: quote.volume && quote.volume / 1e6,
           securityId: security.id,
-        })
+        } as PartialModelObject<HistoricalPrice>)
       },
       { concurrency: 10 }
     )

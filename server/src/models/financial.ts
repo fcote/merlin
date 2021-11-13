@@ -1,6 +1,6 @@
 import { CacheScope } from 'apollo-server-types'
 import { round } from 'lodash'
-import { JSONSchema, Model } from 'objection'
+import { JSONSchema, Model, PartialModelObject } from 'objection'
 import {
   registerEnumType,
   ObjectType,
@@ -37,11 +37,11 @@ registerEnumType(FinancialPerformanceGrade, {
 @ObjectType('FinancialPerformance')
 class FinancialPerformance {
   @Field((_) => FinancialPerformanceGrade, { nullable: true })
-  grade: FinancialPerformanceGrade
+  grade?: FinancialPerformanceGrade | null
   @Field((_) => Float)
   sectorValue: number
-  @Field((_) => Float)
-  diffPercent: number
+  @Field((_) => Float, { nullable: true })
+  diffPercent?: number | null
 }
 
 enum FinancialFreq {
@@ -71,9 +71,9 @@ registerEnumType(FinancialPeriod, {
 @ObjectType('Financial')
 class Financial extends BaseModel {
   @Field((_) => Float, { nullable: true })
-  value: number
+  value?: number | null
   @Field((_) => Int)
-  year: number
+  year: number | null
   @Field((_) => FinancialPeriod)
   period: FinancialPeriod
   @Field((_) => String)
@@ -132,12 +132,12 @@ class Financial extends BaseModel {
 
   static format(
     rawFinancial: SecurityFinancialResult,
-    year: number,
+    year: number | null,
     period: string,
     security: Security,
-    existingFinancial: Partial<Financial>,
-    existingFinancialItem: Partial<FinancialItem>
-  ) {
+    existingFinancial?: Financial,
+    existingFinancialItem?: Partial<FinancialItem>
+  ): PartialModelObject<Financial> | undefined {
     const isNoOp = () => {
       if (
         !existingFinancial ||
@@ -149,23 +149,23 @@ class Financial extends BaseModel {
         return true
       }
       return (
-        round(rawFinancial.value ?? null, 2) ===
-        round(existingFinancial.value ?? null, 2)
+        round(rawFinancial.value ?? NaN, 2) ===
+        round(existingFinancial.value ?? NaN, 2)
       )
     }
 
     const noOp = isNoOp()
-    if (noOp) return undefined
+    if (noOp) return
 
     return {
       ...(existingFinancial && { id: existingFinancial.id }),
       value: rawFinancial.value,
       isEstimate: rawFinancial.isEstimate,
       year: year,
-      period: period,
+      period: period as FinancialPeriod,
       reportDate: rawFinancial.reportDate,
       securityId: security.id,
-      financialItemId: existingFinancialItem.id,
+      financialItemId: existingFinancialItem?.id,
     }
   }
 }

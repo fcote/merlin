@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class FollowedSecurityFindMethod extends ServiceMethod {
   run = async (
-    filters: FollowedSecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: FollowedSecurityFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ): Promise<Paginated<FollowedSecurity>> => {
     return FollowedSecurity.paginate(
       FollowedSecurityFindMethod.applyFilters(

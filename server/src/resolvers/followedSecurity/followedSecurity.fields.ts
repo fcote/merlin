@@ -11,10 +11,9 @@ class FollowedSecurityFieldsResolver {
   async security(
     @Root() followedSecurity: FollowedSecurity,
     @Ctx() ctx: RequestContext
-  ): Promise<Security> {
-    return (
-      followedSecurity.securityId &&
-      ctx.loaders.followedSecuritySecurity.load(followedSecurity.securityId)
+  ) {
+    return ctx.loaders!.followedSecuritySecurity.load(
+      followedSecurity.securityId
     )
   }
 
@@ -22,12 +21,9 @@ class FollowedSecurityFieldsResolver {
   async followedSecurityGroup(
     @Root() followedSecurity: FollowedSecurity,
     @Ctx() ctx: RequestContext
-  ): Promise<FollowedSecurityGroup> {
-    return (
-      followedSecurity.followedSecurityGroupId &&
-      ctx.loaders.followedSecurityFollowedSecurityGroup.load(
-        followedSecurity.followedSecurityGroupId
-      )
+  ) {
+    return ctx.loaders!.followedSecurityFollowedSecurityGroup.load(
+      followedSecurity.followedSecurityGroupId
     )
   }
 }

@@ -19,7 +19,7 @@ async function fmpExchangeRates(
   )
   if (!quotes?.length) {
     logger.warn('fmp > exchangeRate > could not find forex quotes')
-    return null
+    return []
   }
   return quotes.map(toForexExchangeRateResult)
 }

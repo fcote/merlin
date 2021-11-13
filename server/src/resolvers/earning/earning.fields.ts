@@ -10,13 +10,8 @@ import { RequestContext } from '@typings/context'
 class EarningFieldsResolver {
   @CacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
   @FieldResolver((_) => Security)
-  async security(
-    @Root() earning: Earning,
-    @Ctx() ctx: RequestContext
-  ): Promise<Security> {
-    return (
-      earning.securityId && ctx.loaders.earningSecurity.load(earning.securityId)
-    )
+  async security(@Root() earning: Earning, @Ctx() ctx: RequestContext) {
+    return ctx.loaders!.earningSecurity.load(earning.securityId)
   }
 }
 

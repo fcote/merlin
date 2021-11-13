@@ -21,7 +21,7 @@ class NewsQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedNews> {
+  ) {
     return new NewsService(ctx).find(filters, paginate, orderBy, fields)
   }
 }

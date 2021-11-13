@@ -11,13 +11,13 @@ type FollowedSecurity = Security & {
 
 class SecurityFollowedInMethod extends ServiceMethod {
   run = async (
-    securityIds: (number | string)[]
-  ): Promise<('watchlist' | 'account')[]> => {
+    securityIds: readonly (number | string)[]
+  ): Promise<('watchlist' | 'account' | null)[]> => {
     const followedSecurityGroupCondition = (q: QueryBuilder<Security>) => {
       return q
         .where(
           'followedSecurities:followedSecurityGroup.userId',
-          this.ctx.user.id
+          this.ctx.user!.id
         )
         .where(
           'followedSecurities:followedSecurityGroup.type',
@@ -37,7 +37,10 @@ class SecurityFollowedInMethod extends ServiceMethod {
       .where((q) =>
         q
           .where(followedSecurityGroupCondition)
-          .orWhere('userAccountSecurities:userAccount.userId', this.ctx.user.id)
+          .orWhere(
+            'userAccountSecurities:userAccount.userId',
+            this.ctx.user!.id
+          )
       )) as FollowedSecurity[]
 
     return securityIds.map((id) => {
