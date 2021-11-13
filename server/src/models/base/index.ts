@@ -1,6 +1,6 @@
 import stringHash from '@sindresorhus/string-hash'
 import { GraphQLDateTime } from 'graphql-scalars'
-import { without } from 'lodash'
+import { without, get } from 'lodash'
 import {
   Model,
   ModelOptions,
@@ -36,28 +36,28 @@ class BaseModel extends Model {
 
   static async findByIds<M extends typeof BaseModel>(
     this: M,
-    ids: (number | string)[],
+    ids: readonly (number | string)[],
     withArchived: boolean = false,
     trx?: Transaction
-  ): Promise<InstanceType<M>[]> {
+  ): Promise<(InstanceType<M> | undefined)[]> {
     return this.findBy('id', ids, withArchived, trx)
   }
 
   static async findBy<M extends typeof BaseModel>(
     this: M,
     key: string,
-    values: any[],
+    values: readonly any[],
     withArchived: boolean = false,
     trx?: Transaction
-  ): Promise<InstanceType<M>[]> {
+  ): Promise<(InstanceType<M> | undefined)[]> {
     const rows = (await this.query(trx)
       .context({ withArchived })
       .select('*')
-      .whereIn(key, values)) as InstanceType<M>[]
+      .whereIn(key, values as any[])) as InstanceType<M>[]
 
     // Reorder rows is required by the Dataloader
     return values.map((val) =>
-      rows.find((row) => String(row[key]) === String(val))
+      rows.find((row) => String(get(row, key)) === String(val))
     )
   }
 
@@ -79,8 +79,8 @@ class BaseModel extends Model {
   static async paginate<M extends typeof BaseModel>(
     this: M,
     query: QueryBuilder<InstanceType<M>>,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    paginate?: PaginationOptions | undefined,
+    orderBy?: OrderOptions[] | undefined
   ): Promise<Paginated<InstanceType<M>>> {
     if (orderBy) {
       orderBy.forEach((o) => query.orderBy(o.field, o.direction ?? 'asc'))
@@ -101,16 +101,16 @@ class BaseModel extends Model {
   static async paginateRelation<M extends typeof BaseModel>(
     this: M,
     query: QueryBuilder<InstanceType<M>>,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
     groupBy: string,
-    keys: (string | number)[]
+    keys: readonly (string | number)[],
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ): Promise<Paginated<InstanceType<M>>[]> {
     keys = keys.map((k) => k.toString())
     const idColumn = `${this.tableName}.id`
     const groupColumn = `${this.tableName}.${camelToSnakeCase(groupBy)}`
 
-    query.whereIn(groupColumn, keys)
+    query.whereIn(groupColumn, keys as (string | number)[])
 
     // Count query by group key
     const countQuery = this.query()
@@ -145,16 +145,22 @@ class BaseModel extends Model {
     // Paginate children
     query.innerJoin(ranked, (q) => {
       q.andOn(idColumn, '=', 'ranked.id')
+      // @ts-ignore
       q.andOn('ranked.rank', '>', offset)
-      if (limit) q.andOn('ranked.rank', '<=', offset + limit)
+      if (limit) {
+        // @ts-ignore
+        q.andOn('ranked.rank', '<=', offset + limit)
+      }
     })
 
     const flatNodes = await query
     const totals = (await countQuery) as unknown as { count: number }[]
 
     return keys.map((k) => {
-      const total = totals.find((t) => t[groupBy].toString() === k)?.count ?? 0
-      const nodes = flatNodes.filter((n) => n[groupBy].toString() === k) ?? []
+      const total =
+        totals.find((t) => get(t, groupBy).toString() === k)?.count ?? 0
+      const nodes =
+        flatNodes.filter((n) => get(n, groupBy).toString() === k) ?? []
       return {
         total: Number(total),
         nodes,
@@ -171,7 +177,7 @@ class BaseModel extends Model {
    * @returns
    * @memberOf BaseModel
    */
-  protected async validate(databaseRules: Promise<string>[]) {
+  protected async validate(databaseRules: Promise<string | undefined>[]) {
     const validations = without(await Promise.all(databaseRules), undefined)
     const errors = validations.join(', ')
     if (validations.length) {
@@ -190,7 +196,7 @@ class BaseModel extends Model {
   $validate(json: Pojo, opt: ModelOptions): Pojo {
     try {
       return super.$validate(json, opt)
-    } catch (e) {
+    } catch (e: any) {
       // Throw an apollo error instead of the objection one
       const error = new BadRequest(e.message, { data: e.data })
       error.stack = e.stack

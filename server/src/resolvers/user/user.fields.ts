@@ -40,8 +40,8 @@ class UserFieldsResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedUserTransaction> {
-    return ctx.loaders.userTransactions.load({
+  ) {
+    return ctx.loaders!.userTransactions.load({
       userId: user.id,
       filters,
       paginate,
@@ -59,8 +59,8 @@ class UserFieldsResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedUserAccount> {
-    return ctx.loaders.userAccounts.load({
+  ) {
+    return ctx.loaders!.userAccounts.load({
       userId: user.id,
       filters,
       paginate,
@@ -78,7 +78,7 @@ class UserFieldsResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedUserAccountSecurity> {
+  ) {
     return new UserAccountSecurityService(ctx).find(
       {
         ...filters,
@@ -94,7 +94,7 @@ class UserFieldsResolver {
     @Root() user: User,
     @Ctx() ctx: RequestContext,
     @Arg('nMonth', (_) => Int) nMonth: number
-  ): Promise<any> {
+  ) {
     const currentDate = () => {
       return dayjs().startOf('month').hour(0).minute(0).second(0)
     }
@@ -105,15 +105,11 @@ class UserFieldsResolver {
     const { left: incomeLeftPerMonth } =
       await userTransactionService.monthlyExpenses(user.id)
 
-    const transactions = await userTransactionService.find(
-      {
-        userId: user.id,
-        frequencies: [UserTransactionFrequency.punctual],
-        since: currentDate().toISOString(),
-      },
-      null,
-      null
-    )
+    const transactions = await userTransactionService.find({
+      userId: user.id,
+      frequencies: [UserTransactionFrequency.punctual],
+      since: currentDate().toISOString(),
+    })
 
     const getTotal = (forecastDate: Dayjs, type: UserTransactionType) => {
       const trs = transactions.nodes.filter(
@@ -151,28 +147,22 @@ class UserFieldsResolver {
   }
 
   @FieldResolver((_) => UserMonthlyExpenses)
-  async monthlyExpenses(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext
-  ): Promise<UserMonthlyExpenses> {
+  async monthlyExpenses(@Root() user: User, @Ctx() ctx: RequestContext) {
     return new UserTransactionService(ctx).monthlyExpenses(user.id)
   }
 
   @FieldResolver((_) => Float)
-  async accountTotalBalance(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext
-  ): Promise<number> {
+  async accountTotalBalance(@Root() user: User, @Ctx() ctx: RequestContext) {
     return new UserAccountService(ctx).totalBalance(user.id)
   }
 
   @FieldResolver((_) => Float)
-  incomePerMonthBeforeTaxes(@Root() user: User): number {
+  incomePerMonthBeforeTaxes(@Root() user: User) {
     return user.incomePerMonthBeforeTaxes
   }
 
   @FieldResolver((_) => Float)
-  netIncomePerMonth(@Root() user: User): number {
+  netIncomePerMonth(@Root() user: User) {
     return user.netIncomePerMonth
   }
 }

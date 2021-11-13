@@ -66,17 +66,19 @@ class HistoricalPrice extends BaseModel {
     rawHistoricalPrice: SecurityHistoricalPriceResult,
     security: Security,
     existingHistoricalPrice?: Partial<HistoricalPrice>
-  ): Partial<HistoricalPrice> {
+  ): Partial<HistoricalPrice | undefined> {
     const isNoOp = () => {
       if (!existingHistoricalPrice) return false
-      return ['open', 'low', 'high', 'close', 'volume'].every(
-        (key) =>
-          round(rawHistoricalPrice[key], 2) ===
-          round(existingHistoricalPrice[key], 2)
-      )
+      return ['open', 'low', 'high', 'close', 'volume'].every((key) => {
+        const k = key as 'open' | 'low' | 'high' | 'close' | 'volume'
+        return (
+          round(rawHistoricalPrice[k], 2) ===
+          round(existingHistoricalPrice[k]!, 2)
+        )
+      })
     }
 
-    if (isNoOp()) return undefined
+    if (isNoOp()) return
 
     return {
       ...(existingHistoricalPrice && { id: existingHistoricalPrice.id }),

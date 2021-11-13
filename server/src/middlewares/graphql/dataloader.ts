@@ -17,7 +17,7 @@ type BaseContext<L extends DefaultDataloader = DefaultDataloader> =
 type DataloaderPluginConfig<
   L extends typeof DefaultDataloader = typeof DefaultDataloader
 > = {
-  class?: L
+  class: L
 }
 
 class DataloaderPlugin<

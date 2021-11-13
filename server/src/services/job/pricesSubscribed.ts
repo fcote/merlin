@@ -23,7 +23,9 @@ class JobPricesSubscribedMethod extends ServiceMethod {
       async (tickerChunk) => {
         try {
           const securities = await transaction(Model.knex(), async (trx) => {
-            return new SecurityService({ trx }).syncPrices(tickerChunk)
+            return new SecurityService({ ...this.ctx, trx }).syncPrices(
+              tickerChunk
+            )
           })
           await pmap(securities, async (security) => {
             await pubSub.publish(

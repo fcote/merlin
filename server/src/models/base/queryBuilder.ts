@@ -9,7 +9,7 @@ class SoftDeleteQueryBuilder<M extends Model, R = M[]> extends QueryBuilder<
   NumberQueryBuilderType!: SoftDeleteQueryBuilder<M, number>
   PageQueryBuilderType!: SoftDeleteQueryBuilder<M, Page<M>>
 
-  constructor(modelClass) {
+  constructor(modelClass: any) {
     // @ts-ignore objection.js QueryBuilder typing is missing constructor definition
     super(modelClass)
     const { tableName } = super.modelClass()

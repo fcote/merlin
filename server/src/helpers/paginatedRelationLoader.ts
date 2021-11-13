@@ -5,22 +5,22 @@ import pmap from 'p-map'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'
 
 type FindKey<T> = {
-  filters: T
-  paginate: PaginationOptions
-  orderBy: OrderOptions[]
+  filters?: T
+  paginate?: PaginationOptions
+  orderBy?: OrderOptions[]
 }
 
 type FindRelationMethod<FT, RT> = (
   groupKey: string,
   keys: (number | string)[],
-  filters: FT,
-  paginate: PaginationOptions,
-  orderBy: OrderOptions[]
+  filters?: FT,
+  paginate?: PaginationOptions,
+  orderBy?: OrderOptions[]
 ) => Promise<RT[]>
 
 const paginatedRelationLoader = async <FT, RT>(
   relationKey: string,
-  keys: FindKey<FT>[],
+  keys: readonly FindKey<FT>[],
   serviceMethod: FindRelationMethod<FT, RT>
 ) => {
   const hashedKeys = keys.map((k) => ({

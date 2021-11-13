@@ -34,66 +34,81 @@ type FollowedSecuritiesKey = FindKey<FollowedSecurityFilters> & {
 class DataloaderService {
   constructor(public ctx: RequestContext) {}
 
-  securityFollowedIn: Dataloader<number | string, 'account' | 'watchlist'> =
-    new Dataloader((ids: (number | string)[]) =>
-      new SecurityService(this.ctx).attributes.followedIn(ids)
-    )
+  securityFollowedIn: Dataloader<
+    number | string,
+    'account' | 'watchlist' | undefined | null
+  > = new Dataloader((ids: readonly (number | string)[]) =>
+    new SecurityService(this.ctx).attributes.followedIn(ids)
+  )
 
   userTransactions: Dataloader<
     UserTransactionsKey,
-    Paginated<UserTransaction>
-  > = new Dataloader(async (keys: UserTransactionsKey[]) => {
+    Paginated<UserTransaction> | undefined
+  > = new Dataloader(async (keys: readonly UserTransactionsKey[]) => {
     return paginatedRelationLoader(
       'userId',
       keys,
       new UserTransactionService(this.ctx).findRelations
     )
   })
-  userAccounts: Dataloader<UserAccountsKey, Paginated<UserAccount>> =
-    new Dataloader((keys: UserAccountsKey[]) => {
-      return paginatedRelationLoader(
-        'userId',
-        keys,
-        new UserAccountService(this.ctx).findRelations
-      )
-    })
+  userAccounts: Dataloader<
+    UserAccountsKey,
+    Paginated<UserAccount> | undefined
+  > = new Dataloader((keys: readonly UserAccountsKey[]) => {
+    return paginatedRelationLoader(
+      'userId',
+      keys,
+      new UserAccountService(this.ctx).findRelations
+    )
+  })
 
-  userAccountSecuritySecurity: Dataloader<number | string, Security> =
-    new Dataloader((ids: (number | string)[]) =>
+  userAccountSecuritySecurity: Dataloader<
+    number | string,
+    Security | undefined
+  > = new Dataloader((ids: readonly (number | string)[]) =>
+    Security.findByIds(ids, true, this.ctx.trx)
+  )
+
+  companySector: Dataloader<number | string, Sector | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
+      Sector.findByIds(ids, true, this.ctx.trx)
+    )
+  companyIndustry: Dataloader<number | string, Industry | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
+      Industry.findByIds(ids, true, this.ctx.trx)
+    )
+
+  securityCompany: Dataloader<number | string, Company | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
+      Company.findByIds(ids, true, this.ctx.trx)
+    )
+
+  financialSecurity: Dataloader<number | string, Security | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
+      Security.findByIds(ids, true, this.ctx.trx)
+    )
+  financialFinancialItem: Dataloader<
+    number | string,
+    FinancialItem | undefined
+  > = new Dataloader((ids: readonly (number | string)[]) =>
+    FinancialItem.findByIds(ids, true, this.ctx.trx)
+  )
+  financialPerformance: Dataloader<
+    number | string,
+    FinancialPerformance | undefined
+  > = new Dataloader((ids: readonly (number | string)[]) =>
+    new FinancialService(this.ctx).attributes.performance(ids)
+  )
+
+  earningSecurity: Dataloader<number | string, Security | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
       Security.findByIds(ids, true, this.ctx.trx)
     )
 
-  companySector: Dataloader<number | string, Sector> = new Dataloader(
-    (ids: (number | string)[]) => Sector.findByIds(ids, true, this.ctx.trx)
-  )
-  companyIndustry: Dataloader<number | string, Industry> = new Dataloader(
-    (ids: (number | string)[]) => Industry.findByIds(ids, true, this.ctx.trx)
-  )
-
-  securityCompany: Dataloader<number | string, Company> = new Dataloader(
-    (ids: (number | string)[]) => Company.findByIds(ids, true, this.ctx.trx)
-  )
-
-  financialSecurity: Dataloader<number | string, Security> = new Dataloader(
-    (ids: (number | string)[]) => Security.findByIds(ids, true, this.ctx.trx)
-  )
-  financialFinancialItem: Dataloader<number | string, FinancialItem> =
-    new Dataloader((ids: (number | string)[]) =>
-      FinancialItem.findByIds(ids, true, this.ctx.trx)
-    )
-  financialPerformance: Dataloader<number | string, FinancialPerformance> =
-    new Dataloader((ids: (number | string)[]) =>
-      new FinancialService(this.ctx).attributes.performance(ids)
-    )
-
-  earningSecurity: Dataloader<number | string, Security> = new Dataloader(
-    (ids: (number | string)[]) => Security.findByIds(ids, true, this.ctx.trx)
-  )
-
   followedSecurityGroupFollowedSecurities: Dataloader<
     FollowedSecuritiesKey,
-    Paginated<FollowedSecurity>
-  > = new Dataloader((keys: FollowedSecuritiesKey[]) => {
+    Paginated<FollowedSecurity> | undefined
+  > = new Dataloader((keys: readonly FollowedSecuritiesKey[]) => {
     return paginatedRelationLoader(
       'followedSecurityGroupId',
       keys,
@@ -101,14 +116,14 @@ class DataloaderService {
     )
   })
 
-  followedSecuritySecurity: Dataloader<number | string, Security> =
-    new Dataloader((ids: (number | string)[]) =>
+  followedSecuritySecurity: Dataloader<number | string, Security | undefined> =
+    new Dataloader((ids: readonly (number | string)[]) =>
       Security.findByIds(ids, true, this.ctx.trx)
     )
   followedSecurityFollowedSecurityGroup: Dataloader<
     number | string,
-    FollowedSecurityGroup
-  > = new Dataloader((ids: (number | string)[]) =>
+    FollowedSecurityGroup | undefined
+  > = new Dataloader((ids: readonly (number | string)[]) =>
     FollowedSecurityGroup.findByIds(ids, true, this.ctx.trx)
   )
 }

@@ -24,7 +24,7 @@ class FinancialQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedFinancial> {
+  ) {
     return new FinancialService(ctx).find(filters, paginate, orderBy, fields)
   }
 }

@@ -9,9 +9,9 @@ import { Service } from '@services/service'
 
 class HistoricalPriceService extends Service {
   find = async (
-    filters: HistoricalPriceFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: HistoricalPriceFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) =>
     new HistoricalPriceFindMethod(this).run(filters, paginate, orderBy, fields)

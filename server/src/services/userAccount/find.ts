@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class UserAccountFindMethod extends ServiceMethod {
   run = async (
-    filters: UserAccountFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserAccountFilters | undefined,
+    paginate?: PaginationOptions | undefined,
+    orderBy?: OrderOptions[] | undefined
   ): Promise<Paginated<UserAccount>> => {
     return UserAccount.paginate(
       UserAccountFindMethod.applyFilters(UserAccount.query(this.trx), filters),

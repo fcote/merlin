@@ -10,12 +10,12 @@ const selectableFields = (modelClass: typeof BaseModel) => {
     [BaseModel.name, SoftDeleteModel.name, modelClass.name].includes(o.name)
   )
   return models.flatMap((c) =>
-    c.fields.filter((f) => !f.params.length).map((f) => f.name)
+    c.fields?.filter((f) => !f.params?.length).map((f) => f.name)
   )
 }
 
 const selectFields = (
-  fields: FieldList,
+  fields: FieldList | undefined,
   modelClass: typeof BaseModel
 ): string[] => {
   if (!fields) return [`${modelClass.tableName}.*`]

@@ -14,16 +14,16 @@ class UserTransactionService extends Service {
     new UserTransactionUpsertMethod(this).run(inputs)
 
   find = async (
-    filters: UserTransactionFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserTransactionFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) => new UserTransactionFindMethod(this).run(filters, paginate, orderBy)
   findRelations = (
     relationKey: string,
     keys: (string | number)[],
-    filters: UserTransactionFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserTransactionFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) =>
     new UserTransactionFindRelationsMethod(this).run(
       relationKey,

@@ -77,7 +77,7 @@ class XTBProvider extends SecurityProvider {
     this.client = new WebsocketClient(XTBProvider.endpoint, this.loginCommand)
   }
 
-  getBalance = async (): Promise<number> => {
+  getBalance = async () => {
     const response = await this.sendGetBalanceCommand()
     return response?.returnData?.equity
   }
@@ -90,7 +90,7 @@ class XTBProvider extends SecurityProvider {
       concurrency: 1,
     })
     const symbolsData: XTBSymbol[] =
-      symbolsResponse?.flatMap((r) => r.returnData || []) || []
+      symbolsResponse?.flatMap((r) => r?.returnData || []) || []
 
     const tradeToAccountSecurity = (
       trade: XTBTrade

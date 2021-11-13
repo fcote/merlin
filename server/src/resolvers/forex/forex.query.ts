@@ -21,7 +21,7 @@ class ForexQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<PaginatedForex> {
+  ) {
     return new ForexService(ctx).find(filters, paginate, orderBy, fields)
   }
 }

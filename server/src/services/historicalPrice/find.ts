@@ -9,9 +9,9 @@ import { ServiceMethod } from '@services/service'
 
 class HistoricalPriceFindMethod extends ServiceMethod {
   run = async (
-    filters: HistoricalPriceFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: HistoricalPriceFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => {
     const query = HistoricalPrice.query(this.trx).select(
@@ -26,11 +26,11 @@ class HistoricalPriceFindMethod extends ServiceMethod {
 
   static applyFilters = (
     query: QueryBuilder<HistoricalPrice>,
-    filters: HistoricalPriceFilters
+    filters?: HistoricalPriceFilters
   ) => {
     query.joinRelated('security')
 
-    if (filters.ticker) {
+    if (filters?.ticker) {
       query.where('security.ticker', filters.ticker)
     }
 

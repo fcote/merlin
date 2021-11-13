@@ -11,9 +11,9 @@ class FollowedSecurityGroupService extends Service {
   upsert = async (inputs: FollowedSecurityGroupFields) =>
     new FollowedSecurityGroupUpsertMethod(this).run(inputs)
   find = async (
-    filters: FollowedSecurityGroupFilters,
-    pagination: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: FollowedSecurityGroupFilters,
+    pagination?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) =>
     new FollowedSecurityGroupFindMethod(this).run(filters, pagination, orderBy)
 }

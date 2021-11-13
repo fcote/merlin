@@ -13,9 +13,9 @@ import { ServiceMethod } from '@services/service'
 
 class NewsFindMethod extends ServiceMethod {
   run = async (
-    filters: NewsFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: NewsFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ): Promise<Paginated<News>> => {
     const query = News.query(this.trx).select(selectFields(fields, News))
@@ -26,10 +26,10 @@ class NewsFindMethod extends ServiceMethod {
     )
   }
 
-  static applyFilters = (query: QueryBuilder<News>, filters: NewsFilters) => {
+  static applyFilters = (query: QueryBuilder<News>, filters?: NewsFilters) => {
     query.joinRelated('security')
 
-    if (filters.ticker) {
+    if (filters?.ticker) {
       query.where('security.ticker', filters.ticker)
     }
 

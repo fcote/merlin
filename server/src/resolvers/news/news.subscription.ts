@@ -15,13 +15,13 @@ class NewsSubscriptionResolver {
       ),
       onCancel: SubscriptionChannel.onCancel(SubscriptionChannel.newsChanges),
       filter: async (payload: News, args: { tickers: string[] }) =>
-        args.tickers.includes(payload.security.ticker),
+        args.tickers.includes(payload.security!.ticker),
     }),
   })
   newsChanges(
     @Root() payload: News,
     @Arg('tickers', (_) => [String], { nullable: true }) _: string[]
-  ): News {
+  ) {
     return payload
   }
 }

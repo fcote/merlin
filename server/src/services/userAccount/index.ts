@@ -18,16 +18,16 @@ class UserAccountService extends Service {
     new UserAccountSyncMethod(this).run(inputs)
 
   find = async (
-    filters: UserAccountFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserAccountFilters | undefined,
+    paginate?: PaginationOptions | undefined,
+    orderBy?: OrderOptions[] | undefined
   ) => new UserAccountFindMethod(this).run(filters, paginate, orderBy)
   findRelations = (
     relationKey: string,
     keys: (string | number)[],
-    filters: UserAccountFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: UserAccountFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ) =>
     new UserAccountFindRelationsMethod(this).run(
       relationKey,

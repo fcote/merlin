@@ -13,7 +13,7 @@ const isValidOrigin = (validOrigins: Origin[], origin: string) => {
 
 const validateOrigin = (validOrigins: Origin[]) => (ctx: Context) => {
   const origin = ctx.headers.origin
-  if (!isValidOrigin(validOrigins, origin)) return false
+  if (!origin || !isValidOrigin(validOrigins, origin)) return false
   return origin
 }
 

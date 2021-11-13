@@ -80,8 +80,8 @@ class UserAccount extends SoftDeleteModel {
   }
 
   static checkOwnership = async (
-    id: number | string,
-    userId: string,
+    id?: number | string,
+    userId?: string,
     trx?: Transaction
   ) => {
     if (!id) return

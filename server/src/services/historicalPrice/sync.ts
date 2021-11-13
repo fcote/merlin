@@ -1,4 +1,5 @@
 import { keyBy } from 'lodash'
+import { PartialModelObject } from 'objection'
 
 import { historicalPricesLink } from '@links/links'
 import { SecurityHistoricalPriceResult } from '@links/types'
@@ -6,13 +7,15 @@ import { HistoricalPrice } from '@models/historicalPrice'
 import { Security } from '@models/security'
 import { SecuritySyncEmitter } from '@services/security/sync'
 import { ServiceMethod } from '@services/service'
+import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
+import { DefaultErrorCodes } from '@typings/errors/errorCodes'
 
 class HistoricalPriceSyncMethod extends ServiceMethod {
   private security: Security
   private currentHistoricalPrices: Record<string, Partial<HistoricalPrice>>
   private securitySyncEmitter?: SecuritySyncEmitter
-  private startProgress?: number
-  private targetProgress?: number
+  private startProgress: number = 0
+  private targetProgress: number = 0
   private nSynced: number = 0
 
   private setCurrentHistoricalPrices = async () => {
@@ -32,12 +35,20 @@ class HistoricalPriceSyncMethod extends ServiceMethod {
     securitySyncEmitter?: SecuritySyncEmitter,
     targetProgress?: number
   ) => {
-    this.securitySyncEmitter = securitySyncEmitter
-    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
-    this.targetProgress = targetProgress
-    this.security = await Security.query(this.trx)
+    const security = await Security.query(this.trx)
       .select('id')
       .findOne('ticker', ticker)
+    if (!security) {
+      throw new ApolloResourceNotFound(DefaultErrorCodes.RESOURCE_NOT_FOUND, {
+        ticker,
+      })
+    }
+
+    this.security = security
+    this.securitySyncEmitter = securitySyncEmitter
+    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
+    this.targetProgress = targetProgress ?? 0
+
     await this.setCurrentHistoricalPrices()
     securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 10))
 
@@ -67,7 +78,7 @@ class HistoricalPriceSyncMethod extends ServiceMethod {
 
   getHistoricalPriceInputs = (
     rawHistoricalPrices: SecurityHistoricalPriceResult[]
-  ): Partial<HistoricalPrice>[] => {
+  ): PartialModelObject<HistoricalPrice>[] => {
     return rawHistoricalPrices
       .map((rhp) => {
         const existingHistoricalPrice = this.currentHistoricalPrices[rhp.date]
@@ -77,7 +88,7 @@ class HistoricalPriceSyncMethod extends ServiceMethod {
           existingHistoricalPrice
         )
       })
-      .filter((hp) => hp)
+      .filter((hp) => hp) as PartialModelObject<HistoricalPrice>[]
   }
 }
 

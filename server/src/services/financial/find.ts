@@ -9,9 +9,9 @@ import { ServiceMethod } from '@services/service'
 
 class FinancialFindMethod extends ServiceMethod {
   run = async (
-    filters: FinancialFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: FinancialFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => {
     const query = Financial.query(this.trx).select(
@@ -26,11 +26,11 @@ class FinancialFindMethod extends ServiceMethod {
 
   static applyFilters = (
     query: QueryBuilder<Financial>,
-    filters: FinancialFilters
+    filters?: FinancialFilters
   ) => {
     query.joinRelated('[security, financialItem]')
 
-    if (filters.freq) {
+    if (filters?.freq) {
       const periodFilter =
         filters.freq === FinancialFreq.Q
           ? [
@@ -42,16 +42,16 @@ class FinancialFindMethod extends ServiceMethod {
           : [filters.freq]
       query.whereIn('financials.period', periodFilter)
     }
-    if (filters.estimate !== undefined) {
+    if (filters?.estimate !== undefined) {
       query.where('financials.isEstimate', filters.estimate)
     }
-    if (filters.ticker) {
+    if (filters?.ticker) {
       query.where('security.ticker', filters.ticker)
     }
-    if (filters.statement) {
+    if (filters?.statement) {
       query.where('financialItem.statement', filters.statement)
     }
-    if (filters.type) {
+    if (filters?.type) {
       query.where('financialItem.type', filters.type)
     }
 

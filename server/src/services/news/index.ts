@@ -8,9 +8,9 @@ import { Service } from '@services/service'
 
 class NewsService extends Service {
   find = async (
-    filters: NewsFilters,
-    pagination: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: NewsFilters,
+    pagination?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => new NewsFindMethod(this).run(filters, pagination, orderBy, fields)
 

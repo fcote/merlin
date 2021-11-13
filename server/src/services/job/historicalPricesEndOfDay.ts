@@ -23,7 +23,7 @@ class JobHistoricalPricesEndOfDayMethod extends ServiceMethod {
 
         try {
           await transaction(Model.knex(), async (trx) => {
-            await new HistoricalPriceService({ trx }).syncEndOfDay(
+            await new HistoricalPriceService({ ...this.ctx, trx }).syncEndOfDay(
               securityTickers
             )
           })

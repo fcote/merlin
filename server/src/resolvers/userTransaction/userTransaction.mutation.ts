@@ -14,11 +14,11 @@ class SelfUserTransactionQueryResolver {
   async upsertUserTransaction(
     @Arg('inputs', (_) => UserTransactionFields) inputs: UserTransactionFields,
     @Ctx() ctx: RequestContext
-  ): Promise<UserTransaction> {
-    await UserTransaction.checkOwnership(inputs.id, ctx.user.id, ctx.trx)
+  ) {
+    await UserTransaction.checkOwnership(inputs.id, ctx.user?.id, ctx.trx)
     return new UserTransactionService(ctx).upsert({
       ...inputs,
-      userId: ctx.user.id,
+      userId: ctx.user!.id,
     })
   }
 }

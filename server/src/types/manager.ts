@@ -15,7 +15,7 @@ export type ManagerConfig = {
 
 export type EventConfig = {
   log?: boolean
-  logLevel?: string
+  logLevel?: 'error' | 'warn' | 'info'
   strategy?: string
   exitStatus?: number
 }
@@ -27,6 +27,6 @@ export type Driver = {
 }
 
 export type DriverConfig = {
-  timeout?: number
+  timeout: number
   maxRetry?: number
 }

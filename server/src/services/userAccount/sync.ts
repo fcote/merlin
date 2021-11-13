@@ -66,7 +66,7 @@ class UserAccountSyncMethod extends ServiceMethod {
     accountSecurities: Partial<UserAccountSecurity>[]
   ) => {
     const getTradeTicker = (trade: Partial<UserAccountSecurity>) =>
-      trade.name.split('.').shift()
+      trade.name!.split('.').shift() as string
 
     const existingSecurities = await Security.query(this.ctx.trx)
       .select('id', 'ticker')

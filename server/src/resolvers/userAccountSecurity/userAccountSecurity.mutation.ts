@@ -15,8 +15,8 @@ class SelfUserAccountSecurityQueryResolver {
     @Arg('inputs', (_) => UserAccountSecurityFields)
     inputs: UserAccountSecurityFields,
     @Ctx() ctx: RequestContext
-  ): Promise<UserAccountSecurity> {
-    await UserAccountSecurity.checkOwnership(inputs.id, ctx.user.id, ctx.trx)
+  ) {
+    await UserAccountSecurity.checkOwnership(inputs.id, ctx.user?.id, ctx.trx)
     return new UserAccountSecurityService(ctx).upsert({
       ...inputs,
     })

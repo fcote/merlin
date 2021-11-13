@@ -1,13 +1,17 @@
-import { groupBy, omit, keyBy, sumBy } from 'lodash'
+import { groupBy, omit, keyBy, sumBy, get } from 'lodash'
 import pmap from 'p-map'
 
 import { MacroTrendsLink } from '@links/macrotrends/link.macrotrends'
-import { SecurityFinancialResult } from '@links/types'
+import {
+  SecurityFinancialResult,
+  SecurityFinancialBaseResult,
+} from '@links/types'
 import { FinancialFreq } from '@models/financial'
 import { FinancialBaseStatement, FinancialUnit } from '@models/financialItem'
 import {
   FinancialStatementConfig,
   FinancialStatementMap,
+  StatementKeys,
 } from '@typings/financial/financialStatement'
 
 interface MacroTrendsFinancial {
@@ -17,7 +21,7 @@ interface MacroTrendsFinancial {
   [key: string]: string | number
 }
 
-const statementMaps: FinancialStatementMap<string[]> = {
+const statementMaps: FinancialStatementMap<string[] | null> = {
   [FinancialBaseStatement.incomeStatement]: {
     revenue: ['Revenue'],
     costOfRevenue: ['Cost Of Goods Sold'],
@@ -133,37 +137,42 @@ const parseMacroTrendsFinancials = (
   const reportDates = Object.keys(formattedRawFinancials)
 
   // Statement types
-  return Object.values(FinancialBaseStatement).flatMap((statement) => {
-    const statementMap = statementMaps[statement]
-    const statementKeys = Object.keys(statementMap)
+  return Object.values(FinancialBaseStatement).flatMap(
+    (statement: FinancialBaseStatement) => {
+      const statementMap = statementMaps[statement]
+      const statementKeys = Object.keys(statementMap) as StatementKeys[]
 
-    // Report dates
-    return reportDates.flatMap((reportDate) => {
-      const reportRawFinancials = keyBy(
-        formattedRawFinancials[reportDate],
-        (rf) => rf.label
-      )
-
-      // Statement keys
-      return statementKeys.flatMap((financialSlug) => {
-        const baseSecurityItem =
-          FinancialStatementConfig[statement][financialSlug]
-        const value = sumBy(
-          statementMap[financialSlug],
-          (label: string) => reportRawFinancials[label]?.value
+      // Report dates
+      return reportDates.flatMap((reportDate) => {
+        const reportRawFinancials = keyBy(
+          formattedRawFinancials[reportDate],
+          (rf) => rf.label
         )
 
-        return {
-          reportDate,
-          slug: financialSlug,
-          statement,
-          unit: defaultUnit,
-          ...(value !== 0 && { value }),
-          ...baseSecurityItem,
-        } as SecurityFinancialResult
+        // Statement keys
+        return statementKeys.flatMap((financialSlug) => {
+          const baseSecurityItem: SecurityFinancialBaseResult = get(
+            FinancialStatementConfig[statement],
+            financialSlug
+          )
+          const items: string[] | null = get(statementMap, financialSlug)
+          const value = sumBy(
+            items,
+            (label: string) => reportRawFinancials[label]?.value ?? 0
+          )
+
+          return {
+            reportDate,
+            slug: financialSlug,
+            statement,
+            unit: defaultUnit,
+            ...(value !== 0 && { value }),
+            ...baseSecurityItem,
+          } as SecurityFinancialResult
+        })
       })
-    })
-  })
+    }
+  )
 }
 
 const baseUrl = (
@@ -171,12 +180,12 @@ const baseUrl = (
   statement: FinancialBaseStatement,
   freq: FinancialFreq
 ) => {
-  const statementComponents = {
+  const statementComponents: Record<FinancialBaseStatement, string> = {
     [FinancialBaseStatement.incomeStatement]: 'income-statement',
     [FinancialBaseStatement.balanceSheet]: 'balance-sheet',
     [FinancialBaseStatement.cashFlowStatement]: 'cash-flow-statement',
   }
-  const periodComponents = {
+  const periodComponents: Partial<Record<FinancialFreq, string>> = {
     [FinancialFreq.Y]: 'A',
     [FinancialFreq.Q]: 'Q',
   }

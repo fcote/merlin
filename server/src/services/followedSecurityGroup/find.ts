@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class FollowedSecurityGroupFindMethod extends ServiceMethod {
   run = async (
-    filters: FollowedSecurityGroupFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: FollowedSecurityGroupFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ): Promise<Paginated<FollowedSecurityGroup>> => {
     return FollowedSecurityGroup.paginate(
       this.applyFilters(FollowedSecurityGroup.query(this.trx), filters),
@@ -24,7 +24,7 @@ class FollowedSecurityGroupFindMethod extends ServiceMethod {
 
   applyFilters = (
     query: QueryBuilder<FollowedSecurityGroup>,
-    filters: FollowedSecurityGroupFilters
+    filters: FollowedSecurityGroupFilters = {}
   ) => {
     if (filters.userId) {
       query.where('userId', filters.userId)

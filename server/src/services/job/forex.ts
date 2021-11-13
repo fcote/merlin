@@ -17,7 +17,7 @@ class JobForexMethod extends ServiceMethod {
       async (exchangeRate) => {
         try {
           await transaction(Model.knex(), async (trx) => {
-            return new ForexService({ trx }).sync(exchangeRate)
+            return new ForexService({ ...this.ctx, trx }).sync(exchangeRate)
           })
         } catch (err) {
           logger.error('job > forex > failed to sync forex', {

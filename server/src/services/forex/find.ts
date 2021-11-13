@@ -9,9 +9,9 @@ import { ServiceMethod } from '@services/service'
 
 class ForexFindMethod extends ServiceMethod {
   run = async (
-    filters: ForexFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: ForexFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => {
     const query = Forex.query(this.trx).select(selectFields(fields, Forex))
@@ -22,8 +22,11 @@ class ForexFindMethod extends ServiceMethod {
     )
   }
 
-  static applyFilters = (query: QueryBuilder<Forex>, filters: ForexFilters) => {
-    if (filters.currencyPairs) {
+  static applyFilters = (
+    query: QueryBuilder<Forex>,
+    filters?: ForexFilters
+  ) => {
+    if (filters?.currencyPairs) {
       query.whereIn(
         fn.concat(ref('forex.fromCurrency'), ref('forex.toCurrency')),
         filters.currencyPairs.map((p) => `${p.fromCurrency}${p.toCurrency}`)

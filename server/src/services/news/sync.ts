@@ -6,13 +6,15 @@ import { News } from '@models/news'
 import { Security } from '@models/security'
 import { SecuritySyncEmitter } from '@services/security/sync'
 import { ServiceMethod } from '@services/service'
+import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
+import { DefaultErrorCodes } from '@typings/errors/errorCodes'
 
 class NewsSyncMethod extends ServiceMethod {
   private security: Security
   private currentNews: News[]
   private securitySyncEmitter?: SecuritySyncEmitter
-  private startProgress?: number
-  private targetProgress?: number
+  private startProgress: number = 0
+  private targetProgress: number = 0
 
   private setCurrentNews = async () => {
     this.currentNews = await News.query(this.trx)
@@ -30,16 +32,25 @@ class NewsSyncMethod extends ServiceMethod {
     securitySyncEmitter?: SecuritySyncEmitter,
     targetProgress?: number
   ) => {
-    this.securitySyncEmitter = securitySyncEmitter
-    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
-    this.targetProgress = targetProgress
-    this.security = await Security.query(this.trx)
+    const security = await Security.query(this.trx)
       .select('id')
       .findOne('ticker', ticker)
+    if (!security) {
+      throw new ApolloResourceNotFound(DefaultErrorCodes.RESOURCE_NOT_FOUND, {
+        ticker,
+      })
+    }
+
+    this.security = security
+    this.securitySyncEmitter = securitySyncEmitter
+    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
+    this.targetProgress = targetProgress ?? 0
+
     await this.setCurrentNews()
     securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 5))
 
-    const newsList = await newsLink.news(ticker)
+    const newsList = await newsLink?.news(ticker)
+    if (!newsList) return
     securitySyncEmitter?.sendProgress(this.getTargetProgress(2 / 5))
 
     const inputs = this.getNewsInputs(newsList)

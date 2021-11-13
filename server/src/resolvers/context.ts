@@ -13,9 +13,10 @@ const graphqlContext = ({
   const isSubscription = !!connectionParams
   const state = ctx?.state ?? connectionParams
 
-  const c: RequestContext = {}
-  c.user = state.user
-  c.userToken = state['x-api-token']
+  const c: RequestContext = {
+    user: state.user,
+    userToken: state['x-api-token'],
+  }
 
   if (isSubscription) {
     c.loaders = new DataloaderService(c)

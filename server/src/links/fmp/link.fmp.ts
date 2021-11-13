@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 import { config } from '@config'
 import {
   APILink,
@@ -74,24 +76,27 @@ class FMPLink
   static getSecurityType = (
     item: FMPSearch | FMPQuote | FMPCompanyOverview
   ): SecurityType => {
-    if (item['exchangeShortName'] === 'INDEX' || item['exchange'] === 'INDEX') {
+    if (
+      get(item, 'exchangeShortName') === 'INDEX' ||
+      get(item, 'exchange') === 'INDEX'
+    ) {
       return SecurityType.index
     }
     if (
-      item['exchangeShortName'] === 'MUTUAL_FUND' ||
-      item['exchange'] === 'MUTUAL_FUND'
+      get(item, 'exchangeShortName') === 'MUTUAL_FUND' ||
+      get(item, 'exchange') === 'MUTUAL_FUND'
     ) {
       return SecurityType.mutualFund
     }
     if (
-      item['exchangeShortName'] === 'COMMODITY' ||
-      item['exchange'] === 'COMMODITY'
+      get(item, 'exchangeShortName') === 'COMMODITY' ||
+      get(item, 'exchange') === 'COMMODITY'
     ) {
       return SecurityType.commodity
     }
     if (
-      new RegExp('ETF|ETN|Index|Fund|Trust').test(item['name']) ||
-      item['isEtf']
+      new RegExp('ETF|ETN|Index|Fund|Trust').test(get(item, 'name')) ||
+      get(item, 'isEtf')
     ) {
       return SecurityType.etf
     }
@@ -102,7 +107,7 @@ class FMPLink
   search = async (ticker: string): Promise<SecuritySearchResult[]> => {
     return fmpSearch.bind(this, ticker)()
   }
-  get = async (ticker: string): Promise<SecuritySearchResult> => {
+  get = async (ticker: string): Promise<SecuritySearchResult | undefined> => {
     return fmpGet.bind(this, ticker)()
   }
   list = async (): Promise<SecurityListResult[]> => {
@@ -110,7 +115,7 @@ class FMPLink
   }
 
   // Quotes
-  quote = async (ticker: string): Promise<SecurityQuoteResult> => {
+  quote = async (ticker: string): Promise<SecurityQuoteResult | undefined> => {
     return fmpQuote.bind(this, ticker)()
   }
 
@@ -121,7 +126,7 @@ class FMPLink
   // Company
   companyOverview = async (
     ticker: string
-  ): Promise<SecurityCompanyOverviewResult> => {
+  ): Promise<SecurityCompanyOverviewResult | undefined> => {
     return fmpCompanyOverview.bind(this, ticker)()
   }
   batchCompanyOverview = async (
@@ -154,17 +159,14 @@ class FMPLink
   }
 
   // Earning dates
-  earnings = async (
-    ticker: string,
-    fiscalYearEndMonth?: number
-  ): Promise<SecurityEarningResult[]> => {
-    return fmpEarnings.bind(this, ticker, fiscalYearEndMonth)()
+  earnings = async (ticker: string): Promise<SecurityEarningResult[]> => {
+    return fmpEarnings.bind(this, ticker)()
   }
   earningCallTranscript = async (
     ticker: string,
     fiscalYear: number,
     fiscalQuarter: number
-  ): Promise<string> => {
+  ): Promise<string | undefined> => {
     return fmpEarningCallTranscript.bind(
       this,
       ticker,

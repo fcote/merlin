@@ -9,9 +9,9 @@ import { RequestContext } from '@typings/context'
 @Resolver(SelfQuery)
 class SelfUserQueryResolver {
   @Authorized([Right.authenticated])
-  @FieldResolver((_) => User)
-  async user(@Ctx() ctx: RequestContext): Promise<User> {
-    return new UserService(ctx).findOne({ userId: ctx.user.id })
+  @FieldResolver((_) => User, { nullable: true })
+  async user(@Ctx() ctx: RequestContext) {
+    return new UserService(ctx).findOne({ userId: ctx.user?.id })
   }
 }
 

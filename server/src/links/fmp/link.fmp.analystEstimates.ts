@@ -1,3 +1,5 @@
+import { get } from 'lodash'
+
 import { dayjs } from '@helpers/dayjs'
 import { FMPLink } from '@links/fmp/link.fmp'
 import { SecurityFinancialResult } from '@links/types'
@@ -68,7 +70,7 @@ const toSecurityFinancialResult = (
         reportDate: item.date,
         unit: defaultUnit,
         isEstimate: true,
-        value: item[k],
+        value: get(item, k),
         period,
         ...baseSecurityItem,
       }
@@ -86,7 +88,7 @@ async function fmpAnalystEstimates(
   ticker: string,
   freq: FinancialFreq
 ): Promise<SecurityFinancialResult[]> {
-  const periodComponents = {
+  const periodComponents: Partial<Record<FinancialFreq, string>> = {
     [FinancialFreq.Y]: 'year',
     [FinancialFreq.Q]: 'quarter',
   }

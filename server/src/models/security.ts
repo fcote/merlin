@@ -1,5 +1,5 @@
 import { isUndefined } from 'lodash'
-import { JSONSchema, QueryContext, Model } from 'objection'
+import { JSONSchema, QueryContext, Model, PartialModelObject } from 'objection'
 import {
   registerEnumType,
   ObjectType,
@@ -47,39 +47,39 @@ class Security extends BaseModel {
   @Field((_) => String)
   ticker: string
   @Field((_) => String, { nullable: true })
-  currency: string
+  currency?: string | null
   @Field((_) => SecurityType)
   type: SecurityType
   @Field((_) => SecurityMarketStatus, { nullable: true })
-  marketStatus?: SecurityMarketStatus
+  marketStatus?: SecurityMarketStatus | null
   @Field((_) => Int, { nullable: true })
-  fiscalYearEndMonth?: number
+  fiscalYearEndMonth?: number | null
 
   @Field((_) => Float, { nullable: true })
-  currentPrice: number
+  currentPrice?: number | null
   @Field((_) => Float, { nullable: true })
-  dayChange: number
+  dayChange?: number | null
   @Field((_) => Float, { nullable: true })
-  dayChangePercent: number
+  dayChangePercent?: number | null
   @Field((_) => Float, { nullable: true })
-  weekChange: number
+  weekChange?: number | null
   @Field((_) => Float, { nullable: true })
-  weekChangePercent: number
+  weekChangePercent?: number | null
   @Field((_) => Float, { nullable: true })
-  extendedHoursPrice: number
+  extendedHoursPrice?: number | null
   @Field((_) => Float, { nullable: true })
-  extendedHoursChangePercent: number
+  extendedHoursChangePercent?: number | null
   @Field((_) => Float, { nullable: true })
-  high52Week: number
+  high52Week?: number | null
   @Field((_) => Float, { nullable: true })
-  low52Week: number
+  low52Week?: number | null
   @Field((_) => Float, { nullable: true })
-  marketCapitalization: number
+  marketCapitalization?: number | null
   @Field((_) => Float, { nullable: true })
-  sharesOutstanding: number
+  sharesOutstanding?: number | null
 
   @Field((_) => ID, { nullable: true })
-  companyId: number | string
+  companyId: number | string | null
 
   company: Company
 
@@ -139,7 +139,7 @@ class Security extends BaseModel {
 
   static getPriceUpdateFromQuote(
     quote: Partial<SecurityQuoteResult> = {}
-  ): Partial<Security> {
+  ): PartialModelObject<Security> {
     return {
       ...(quote.price && { currentPrice: quote.price }),
       ...(quote.dayChange && { dayChange: quote.dayChange }),

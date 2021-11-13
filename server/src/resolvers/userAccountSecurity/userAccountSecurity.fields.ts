@@ -10,12 +10,9 @@ class UserAccountSecurityFieldsResolver {
   async security(
     @Root() userAccountSecurity: UserAccountSecurity,
     @Ctx() ctx: RequestContext
-  ): Promise<Security> {
-    return (
-      userAccountSecurity.securityId &&
-      ctx.loaders.userAccountSecuritySecurity.load(
-        userAccountSecurity.securityId
-      )
+  ) {
+    return ctx.loaders!.userAccountSecuritySecurity.load(
+      userAccountSecurity.securityId
     )
   }
 }

@@ -8,9 +8,9 @@ import { Service } from '@services/service'
 
 class ForexService extends Service {
   find = async (
-    filters: ForexFilters,
-    pagination: PaginationOptions,
-    orderBy: OrderOptions[],
+    filters?: ForexFilters,
+    pagination?: PaginationOptions,
+    orderBy?: OrderOptions[],
     fields?: FieldList
   ) => new ForexFindMethod(this).run(filters, pagination, orderBy, fields)
 

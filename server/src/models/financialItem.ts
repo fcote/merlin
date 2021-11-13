@@ -1,4 +1,4 @@
-import { JSONSchema, QueryContext, Model } from 'objection'
+import { JSONSchema, QueryContext, Model, PartialModelObject } from 'objection'
 import { registerEnumType, ObjectType, Field, Int } from 'type-graphql'
 
 import { SecurityFinancialResult } from '@links/types'
@@ -133,8 +133,8 @@ class FinancialItem extends BaseModel {
   static format(
     rawFinancialItem: SecurityFinancialResult,
     type: FinancialItemType,
-    existingFinancialItem: Partial<FinancialItem>
-  ) {
+    existingFinancialItem?: Partial<FinancialItem>
+  ): PartialModelObject<FinancialItem> | undefined {
     const isNoOp = () => {
       if (!existingFinancialItem) return false
       return [
@@ -147,12 +147,22 @@ class FinancialItem extends BaseModel {
         'isMain',
         'latexDescription',
         'direction',
-      ].every(
-        (key) => (rawFinancialItem[key] ?? null) === existingFinancialItem[key]
-      )
+      ].every((key) => {
+        const k = key as
+          | 'slug'
+          | 'label'
+          | 'statement'
+          | 'index'
+          | 'unit'
+          | 'unitType'
+          | 'isMain'
+          | 'latexDescription'
+          | 'direction'
+        return (rawFinancialItem[k] ?? null) === existingFinancialItem[k]
+      })
     }
 
-    if (isNoOp()) return undefined
+    if (isNoOp()) return
 
     return {
       ...(existingFinancialItem && { id: existingFinancialItem.id }),

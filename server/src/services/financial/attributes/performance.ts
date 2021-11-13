@@ -1,10 +1,6 @@
 import { uniq } from 'lodash'
 
-import {
-  Financial,
-  FinancialPerformance,
-  FinancialPerformanceGrade,
-} from '@models/financial'
+import { Financial, FinancialPerformanceGrade } from '@models/financial'
 import {
   FinancialItem,
   FinancialItemType,
@@ -35,15 +31,13 @@ const financialGradeRanges: Record<
 }
 
 class FinancialPerformanceMethod extends ServiceMethod {
-  run = async (
-    financialIds: (number | string)[]
-  ): Promise<FinancialPerformance[]> => {
+  run = async (financialIds: readonly (number | string)[]) => {
     const financials = await Financial.query(this.trx)
       .joinRelated('financialItem')
       .where('financialItem.type', FinancialItemType.ratio)
-      .findByIds(financialIds)
+      .findByIds(financialIds as (number | string)[])
     if (!financials.length) {
-      return financialIds.map(() => null)
+      return financialIds.map(() => undefined)
     }
 
     const financialRatioItems = await FinancialItem.query(this.trx).where({
@@ -66,10 +60,10 @@ class FinancialPerformanceMethod extends ServiceMethod {
         (f) => f.id.toString() === financialId.toString()
       )
       const financialItem = financialRatioItems.find(
-        (fi) => fi.id === financialRatio.financialItemId
+        (fi) => fi.id === financialRatio?.financialItemId
       )
       const security = securities.find(
-        (s) => s.id === financialRatio.securityId
+        (s) => s.id === financialRatio?.securityId
       )
       const sectorRatio = sectorRatios.find(
         (sr) =>
@@ -78,10 +72,12 @@ class FinancialPerformanceMethod extends ServiceMethod {
           sr.period === financialRatio?.period &&
           sr.sectorId === security?.company?.sectorId
       )
-      if (!sectorRatio?.value || !financialRatio.value) return null
+      if (!sectorRatio?.value || !financialRatio?.value || !financialItem) {
+        return
+      }
 
       const diffPercent = this.getDiffPercent(financialRatio, sectorRatio)
-      let grade = this.getGrade(diffPercent, financialItem.direction)
+      let grade = this.getGrade(diffPercent, financialItem.direction!)
 
       // Handle descending ratio negative value edge case
       if (
@@ -103,21 +99,23 @@ class FinancialPerformanceMethod extends ServiceMethod {
   private getDiffPercent = (
     financial: Financial,
     sectorRatio: Financial
-  ): number => {
+  ): number | null => {
+    if (!financial.value || !sectorRatio.value) return null
     return (financial.value - sectorRatio.value) / Math.abs(sectorRatio.value)
   }
 
   private getGrade = (
-    diffPercent: number,
+    diffPercent: number | null,
     direction: FinancialItemDirection
-  ): FinancialPerformanceGrade => {
+  ) => {
+    if (!diffPercent) return null
     if (direction === FinancialItemDirection.descending) {
       diffPercent = -diffPercent
     }
     return Object.values(FinancialPerformanceGrade).find((grade) => {
       const range = financialGradeRanges[grade]
-      return diffPercent >= range.min && diffPercent <= range.max
-    })
+      return diffPercent! >= range.min && diffPercent! <= range.max
+    }) as FinancialPerformanceGrade
   }
 }
 

@@ -24,11 +24,11 @@ export const companyOverviewLink: CompanyOverviewLink = fmp
 export const extendedHoursQuotesLink: QuoteLink = seekingAlpha
 export const historicalPricesLink: HistoricalPriceLink = fmp
 export const forexLink: ForexLink = fmp
-export const newsLink: NewsLink =
+export const newsLink: NewsLink | null =
   config.get('datasource.fmp.plan') === 'premium' ? fmp : null
 export const earningsLink: EarningLink =
   config.get('links.earnings') === 'fmp' ? fmp : yahooFinance
 export const financialsLink: FinancialLink =
   config.get('links.financials') === 'fmp' ? fmp : macrotrends
-export const analystEstimatesLink: AnalystEstimatesLink =
+export const analystEstimatesLink: AnalystEstimatesLink | null =
   config.get('datasource.fmp.plan') === 'premium' ? fmp : null

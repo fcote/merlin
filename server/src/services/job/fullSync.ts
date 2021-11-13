@@ -10,7 +10,7 @@ import {
   SecurityCompanyOverviewResult,
 } from '@links/types'
 import { logger } from '@logger'
-import { Financial } from '@models/financial'
+import { Financial, FinancialPeriod } from '@models/financial'
 import { FinancialItemType } from '@models/financialItem'
 import { Sector } from '@models/sector'
 import { FinancialPeriodFields } from '@resolvers/financial/financial.inputs'
@@ -33,11 +33,14 @@ class JobFullSyncMethod extends ServiceMethod {
 
     // Sync sectors financials
     const sectors = await Sector.query()
-    const periods = await Financial.query()
+    const periods = (await Financial.query()
       .distinct('financials.year', 'financials.period')
       .joinRelated('financialItem')
       .whereNull('financials.sectorId')
-      .where('financialItem.type', FinancialItemType.ratio)
+      .where('financialItem.type', FinancialItemType.ratio)) as {
+      year: number
+      period: FinancialPeriod
+    }[]
     this.totalNumberOfSectors = sectors.length
     await pmap(
       sectors,
@@ -53,7 +56,7 @@ class JobFullSyncMethod extends ServiceMethod {
 
   private processSecurityGroup = async (
     securityGroup: SecurityListResult[],
-    groupIndex
+    groupIndex: number
   ) => {
     const tickers = securityGroup.map((s) => s.ticker)
     const quotes = await quoteLink.batchQuotes(tickers)
@@ -131,7 +134,10 @@ class JobFullSyncMethod extends ServiceMethod {
     const progress = `${index}/${this.totalNumberOfSectors}`
     try {
       await transaction(Model.knex(), async (trx) => {
-        await new FinancialService({ trx }).syncSector({ name, periods })
+        await new FinancialService({ ...this.ctx, trx }).syncSector({
+          name,
+          periods,
+        })
       })
       logger.info('security > syncAll > successfully synced sector', {
         name,

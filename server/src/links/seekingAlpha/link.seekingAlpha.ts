@@ -48,7 +48,7 @@ class SeekingAlphaLink extends APILink implements QuoteLink {
     })
   }
 
-  quote = async (ticker: string): Promise<SecurityQuoteResult> => {
+  quote = async (ticker: string): Promise<SecurityQuoteResult | undefined> => {
     return seekingAlphaQuote.bind(this, ticker)()
   }
 

@@ -1,15 +1,8 @@
 import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
 
-import {
-  UserAccountSecurity,
-  PaginatedUserAccountSecurity,
-} from '@models/userAccountSecurity'
+import { PaginatedUserAccountSecurity } from '@models/userAccountSecurity'
 import { Right } from '@resolvers'
-import {
-  OrderOptions,
-  PaginationOptions,
-  Paginated,
-} from '@resolvers/paginated'
+import { OrderOptions, PaginationOptions } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'
 import { UserAccountSecurityFilters } from '@resolvers/userAccountSecurity/userAccountSecurity.inputs'
 import { UserAccountSecurityService } from '@services/userAccountSecurity'
@@ -27,11 +20,11 @@ class SelfUserAccountSecurityQueryResolver {
     paginate?: PaginationOptions,
     @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
     orderBy?: OrderOptions[]
-  ): Promise<Paginated<UserAccountSecurity>> {
+  ) {
     return new UserAccountSecurityService(ctx).find(
       {
         ...filters,
-        userId: ctx.user.id,
+        userId: ctx.user!.id,
       },
       paginate,
       orderBy

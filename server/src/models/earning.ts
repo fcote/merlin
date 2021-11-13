@@ -24,7 +24,7 @@ registerEnumType(EarningTime, {
 @ObjectType('EarningStatement')
 class EarningStatement {
   @Field((_) => String)
-  speaker: string
+  speaker?: string
   @Field((_) => String)
   statement: string
 }
@@ -34,25 +34,25 @@ class Earning extends BaseModel {
   @Field((_) => String)
   date: string
   @Field((_) => Int, { nullable: true })
-  fiscalYear?: number
+  fiscalYear?: number | null
   @Field((_) => Int, { nullable: true })
-  fiscalQuarter?: number
+  fiscalQuarter?: number | null
   @Field((_) => EarningTime, { nullable: true })
-  time: EarningTime
+  time: EarningTime | null
   @Field((_) => Float, { nullable: true })
-  epsEstimate: number
+  epsEstimate?: number | null
   @Field((_) => Float, { nullable: true })
-  eps: number
+  eps?: number | null
   @Field((_) => Float, { nullable: true })
-  revenue: number
+  revenue?: number | null
   @Field((_) => Float, { nullable: true })
-  revenueEstimate: number
+  revenueEstimate?: number | null
   @Field((_) => Float, { nullable: true })
-  epsSurprisePercent: number
+  epsSurprisePercent?: number | null
   @Field((_) => Float, { nullable: true })
-  revenueSurprisePercent: number
+  revenueSurprisePercent?: number | null
   @Field((_) => [EarningStatement], { nullable: true })
-  callTranscript: EarningStatement[]
+  callTranscript?: EarningStatement[] | null
 
   @Field((_) => ID)
   securityId: number | string
@@ -76,10 +76,12 @@ class Earning extends BaseModel {
 
       const speaker = splitEarningsCall[i - 1].split(/[.?!]/).pop()?.trim()
       const nextSpeaker = splitEarningsCall[i].split(/[.?!]/).pop()
-      const cleanStatement = statement
-        .replace(nextSpeaker, '') // trim the next speaker at the end of the statement
-        .replace(/ ([$\d.,%]+) /g, ' **$1** ') // all numbers to bold
-        .trim()
+
+      let cleanStatement = statement.replace(/ ([$\d.,%]+) /g, ' **$1** ')
+      if (nextSpeaker) {
+        cleanStatement.replace(nextSpeaker, '')
+      }
+      cleanStatement = cleanStatement.trim()
 
       return [...res, { speaker, statement: cleanStatement }]
     }, [] as EarningStatement[])

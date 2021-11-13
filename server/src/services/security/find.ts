@@ -11,9 +11,9 @@ import { ServiceMethod } from '@services/service'
 
 class SecurityFindMethod extends ServiceMethod {
   run = async (
-    filters: SecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters?: SecurityFilters,
+    paginate?: PaginationOptions,
+    orderBy?: OrderOptions[]
   ): Promise<Paginated<Security>> => {
     return Security.paginate(
       this.applyFilters(Security.query(this.trx), filters),
@@ -22,7 +22,10 @@ class SecurityFindMethod extends ServiceMethod {
     )
   }
 
-  applyFilters = (query: QueryBuilder<Security>, filters: SecurityFilters) => {
+  applyFilters = (
+    query: QueryBuilder<Security>,
+    filters: SecurityFilters = {}
+  ) => {
     query.leftJoinRelated('followedSecurities')
 
     if (filters.ticker) {

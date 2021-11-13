@@ -11,9 +11,9 @@ import { UserAccountSecurityLinkMethod } from './link'
 
 class UserAccountSecurityService extends Service {
   find = async (
-    filters: UserAccountSecurityFilters,
-    paginate: PaginationOptions,
-    orderBy: OrderOptions[]
+    filters: UserAccountSecurityFilters | undefined,
+    paginate: PaginationOptions | undefined,
+    orderBy: OrderOptions[] | undefined
   ) => new UserAccountSecurityFindMethod(this).run(filters, paginate, orderBy)
 
   link = async (

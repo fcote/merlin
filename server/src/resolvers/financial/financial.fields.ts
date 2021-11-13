@@ -11,14 +11,8 @@ import { RequestContext } from '@typings/context'
 class FinancialFieldsResolver {
   @CacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
   @FieldResolver((_) => Security)
-  async security(
-    @Root() financial: Financial,
-    @Ctx() ctx: RequestContext
-  ): Promise<Security> {
-    return (
-      financial.securityId &&
-      ctx.loaders.financialSecurity.load(financial.securityId)
-    )
+  async security(@Root() financial: Financial, @Ctx() ctx: RequestContext) {
+    return ctx.loaders!.financialSecurity.load(financial.securityId)
   }
 
   @CacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
@@ -26,20 +20,14 @@ class FinancialFieldsResolver {
   async financialItem(
     @Root() financial: Financial,
     @Ctx() ctx: RequestContext
-  ): Promise<FinancialItem> {
-    return (
-      financial.financialItemId &&
-      ctx.loaders.financialFinancialItem.load(financial.financialItemId)
-    )
+  ) {
+    return ctx.loaders!.financialFinancialItem.load(financial.financialItemId)
   }
 
   @CacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
   @FieldResolver((_) => FinancialPerformance, { nullable: true })
-  async performance(
-    @Root() financial: Financial,
-    @Ctx() ctx: RequestContext
-  ): Promise<FinancialPerformance> {
-    return ctx.loaders.financialPerformance.load(financial.id)
+  async performance(@Root() financial: Financial, @Ctx() ctx: RequestContext) {
+    return ctx.loaders!.financialPerformance.load(financial.id)
   }
 }
 

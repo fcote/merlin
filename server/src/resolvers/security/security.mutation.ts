@@ -12,7 +12,7 @@ class SecurityMutationResolver {
   async syncSecurity(
     @Arg('ticker') ticker: string,
     @Ctx() ctx: RequestContext
-  ): Promise<Security> {
+  ) {
     const result = await new SecurityService(ctx).sync({ ticker })
     return result.security
   }
@@ -22,7 +22,7 @@ class SecurityMutationResolver {
   async syncSecurityPrices(
     @Arg('tickers', (_) => [String]) tickers: string[],
     @Ctx() ctx: RequestContext
-  ): Promise<Security[]> {
+  ) {
     return new SecurityService(ctx).syncPrices(tickers)
   }
 }

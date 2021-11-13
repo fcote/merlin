@@ -5,14 +5,14 @@ import { RequestContext } from '@typings/context'
 export abstract class Service {
   public trx?: Transaction
 
-  constructor(public ctx: Partial<RequestContext>) {
+  constructor(public ctx: RequestContext) {
     this.trx = ctx.trx
   }
 }
 
 export abstract class ServiceMethod {
-  public ctx: Partial<RequestContext>
-  public trx: Transaction
+  public ctx: RequestContext
+  public trx?: Transaction
 
   constructor(protected service: Service) {
     this.ctx = service.ctx

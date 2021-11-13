@@ -38,17 +38,15 @@ const computeFiscalPeriod = (
 ) => {
   const quarterDuration = daysDiff > 0 ? -90 : 90
   const [quarter, year] = closestEarningCall
-  const callDate = dayjs()
-    .year(year)
-    .quarter(quarter)
-    .add(min([-daysDiff, quarterDuration]), 'day')
+  const nQuarterToAdd = min([-daysDiff, quarterDuration]) as number
+  const callDate = dayjs().year(year).quarter(quarter).add(nQuarterToAdd, 'day')
   return { year: callDate.year(), quarter: callDate.quarter() }
 }
 
 const getEarningCall = (
   item: FMPEarning,
   earningCallItems: FMPEarningCall[]
-): FMPEarningCall => {
+): FMPEarningCall | undefined => {
   const earningDate = dayjs(item.date)
   const earningCallDaysDiffs = earningCallItems.map((earningCall) => {
     const [_, __, callDate] = earningCall
@@ -127,7 +125,7 @@ async function fmpEarningCallTranscript(
   ticker: string,
   fiscalYear: number,
   fiscalQuarter: number
-): Promise<string> {
+): Promise<string | undefined> {
   const response = await this.query<FMPEarningCallTranscript[]>(
     this.getEndpoint(`/v3/earning_call_transcript/${ticker}`, {
       quarter: fiscalQuarter.toString(),
@@ -140,7 +138,7 @@ async function fmpEarningCallTranscript(
       fiscalYear,
       fiscalQuarter,
     })
-    return null
+    return
   }
   return response?.shift()?.content
 }

@@ -1,4 +1,5 @@
 import { uniqBy, groupBy, mean } from 'lodash'
+import { PartialModelObject } from 'objection'
 
 import { dayjs } from '@helpers/dayjs'
 import { fiscalPeriodFromDate } from '@helpers/fiscalPeriodFromDate'
@@ -19,6 +20,8 @@ import { FinancialRatioProcessor } from '@services/financial/processors/ratio'
 import { FinancialTTMProcessor } from '@services/financial/processors/ttm'
 import { SecuritySyncEmitter } from '@services/security/sync'
 import { ServiceMethod } from '@services/service'
+import { ApolloResourceNotFound } from '@typings/errors/apolloErrors'
+import { DefaultErrorCodes } from '@typings/errors/errorCodes'
 
 class FinancialSyncSecurityMethod extends ServiceMethod {
   protected service: FinancialService
@@ -29,8 +32,8 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
   private currentHistoricalPrices: HistoricalPrice[]
   private fiscalYearEndMonth: number
   private securitySyncEmitter?: SecuritySyncEmitter
-  private startProgress?: number
-  private targetProgress?: number
+  private startProgress: number = 0
+  private targetProgress: number = 0
   private nSynced: number = 0
 
   private setCurrentFinancials = async (freq: FinancialFreq) => {
@@ -59,7 +62,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
 
   private getAveragePrice = (freq: FinancialFreq, reportDate: string) => {
     if (freq === FinancialFreq.TTM) {
-      return this.currentHistoricalPrices.slice(0, 2).shift()?.close
+      return this.currentHistoricalPrices.slice(0, 2).shift()?.close ?? null
     }
     const startIndex = this.currentHistoricalPrices.findIndex(
       (hp) => hp.date <= reportDate
@@ -80,13 +83,20 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
     securitySyncEmitter?: SecuritySyncEmitter,
     targetProgress: number = 1
   ) => {
-    this.securitySyncEmitter = securitySyncEmitter
-    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
-    this.targetProgress = targetProgress
-    this.security = await Security.query(this.trx).findOne(
+    const security = await Security.query(this.trx).findOne(
       'ticker',
       inputs.ticker
     )
+    if (!security) {
+      throw new ApolloResourceNotFound(DefaultErrorCodes.RESOURCE_NOT_FOUND, {
+        ticker: inputs.ticker,
+      })
+    }
+
+    this.security = security
+    this.securitySyncEmitter = securitySyncEmitter
+    this.startProgress = this.securitySyncEmitter?.currentProgress ?? 0
+    this.targetProgress = targetProgress
 
     this.securitySyncEmitter?.sendProgress(this.getTargetProgress(1 / 10))
 
@@ -119,12 +129,12 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
         ticker: inputs.ticker,
       })
       this.securitySyncEmitter?.sendProgress(targetProgress)
-      return
+      return 0
     }
 
     // Compute the fiscal quarter offset of the company
     this.fiscalYearEndMonth =
-      dayjs(yearRawFinancials.slice(0, 1).shift().reportDate).month() + 1
+      dayjs(yearRawFinancials.slice(0, 1).shift()?.reportDate).month() + 1
 
     // Upsert reported yearly financials
     await this.upsertFinancials(
@@ -197,7 +207,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
   }
 
   private upsertFinancials = async (
-    rawFinancials: SecurityFinancialResult[],
+    rawFinancials: SecurityFinancialResult[] | undefined,
     freq: FinancialFreq,
     targetProgress: number
   ) => {
@@ -245,7 +255,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
           : FinancialItemType.ratio
         return FinancialItem.format(rf, type, existingFinancialItem)
       })
-      .filter((f) => f)
+      .filter((f) => f) as PartialModelObject<FinancialItem>[]
 
     return uniqBy(formattedFinancialItems, (f) => `${f.slug}-${f.statement}`)
   }
@@ -268,7 +278,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
           (f) =>
             f.year === rfYear &&
             f.period === rfPeriod &&
-            f.financialItemId === existingFinancialItem.id
+            f.financialItemId === existingFinancialItem?.id
         )
         return Financial.format(
           rf,
@@ -279,7 +289,7 @@ class FinancialSyncSecurityMethod extends ServiceMethod {
           existingFinancialItem
         )
       })
-      .filter((f) => f)
+      .filter((f) => f) as PartialModelObject<Financial>[]
 
     return uniqBy(
       formattedFinancials,

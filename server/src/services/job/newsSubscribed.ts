@@ -20,8 +20,9 @@ class JobNewsSubscribedMethod extends ServiceMethod {
       async (ticker) => {
         try {
           const news = await transaction(Model.knex(), async (trx) => {
-            return new NewsService({ trx }).sync(ticker)
+            return new NewsService({ ...this.ctx, trx }).sync(ticker)
           })
+          if (!news) return
           await pmap(news, async (n) => {
             await pubSub.publish(SubscriptionChannel.newsChanges, n)
           })
