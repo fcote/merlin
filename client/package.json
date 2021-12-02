@@ -25,7 +25,7 @@
     "@ant-design/icons": "4.7.0",
     "@apollo/client": "3.4.17",
     "antd": "4.17.2",
-    "crypto-hash": "2.0.0",
+    "crypto-hash": "2.0.1",
     "crypto-js": "4.1.1",
     "graphql": "15.7.2",
     "js-cookie": "3.0.1",
