@@ -78,7 +78,7 @@
     "@types/numeral": "2.0.2",
     "@types/object-hash": "2.2.1",
     "@types/p-map": "2.0.0",
-    "@types/pg": "8.6.1",
+    "@types/pg": "8.6.2",
     "@types/shelljs": "0.8.9",
     "@types/tough-cookie": "4.0.1",
     "@types/uuid": "8.3.3",
