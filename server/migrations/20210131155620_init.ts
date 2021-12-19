@@ -227,6 +227,7 @@ export async function up(knex: Knex): Promise<any> {
     t.integer('year').notNullable()
     t.string('period').notNullable()
     t.string('report_date').notNullable()
+    t.boolean('is_estimate').notNullable().defaultTo(false)
 
     t.integer('security_id')
     t.foreign('security_id').references(`${TABLES.SECURITIES}.id`)
@@ -238,13 +239,9 @@ export async function up(knex: Knex): Promise<any> {
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now())
 
-    t.unique([
-      'financial_item_id',
-      'security_id',
-      'sector_id',
-      'year',
-      'period',
-    ])
+    t.unique(['financial_item_id', 'security_id', 'period', 'year'])
+    t.unique(['financial_item_id', 'sector_id', 'period', 'year'])
+    t.index(['security_id', 'period'])
   })
 
   await knex.schema.createTable(TABLES.USER_TRANSACTIONS, (t) => {
