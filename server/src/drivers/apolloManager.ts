@@ -94,10 +94,6 @@ class ApolloManager implements Connectable {
       new DataloaderPlugin(ApolloManager.dataloaderOptions),
     ]
 
-    if (config.get('graphql.tracing')) {
-      plugins.push(require('apollo-tracing').plugin())
-    }
-
     return plugins
   }
 }

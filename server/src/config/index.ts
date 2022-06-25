@@ -45,11 +45,6 @@ const schema = {
       default: true,
       env: 'APOLLO_DEBUG',
     },
-    tracing: {
-      doc: 'Activate the apollo tracing feature',
-      default: false,
-      env: 'APOLLO_TRACING',
-    },
   },
   database: {
     host: {

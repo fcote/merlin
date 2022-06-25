@@ -1,3 +1,4 @@
+import { ApolloError } from 'apollo-server-core'
 import { GraphQLError } from 'graphql'
 import { Logger } from 'winston'
 
@@ -20,11 +21,11 @@ const reformatError = (err: GraphQLError) => {
 }
 
 const errorHandlerApollo = (logger: Logger) => (err: GraphQLError) => {
-  err = reformatError(err)
+  err = reformatError(err) as ApolloError
 
   const { code, status, message, ctx, ...properties } = err.extensions
 
-  const level = getLevel(status, code)
+  const level = getLevel(status as number, code as string)
 
   err.stack = err.extensions.exception.stacktrace.join('\n')
 

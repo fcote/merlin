@@ -97,7 +97,9 @@ export class APILink {
     this.client = got.extend({
       cookieJar: new CookieJar(),
       responseType: 'json',
-      timeout: APILink.timeout,
+      timeout: {
+        request: APILink.timeout,
+      },
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -131,13 +133,13 @@ export class APILink {
   }
 
   page = async (url: URL): Promise<string> => {
-    let response = await fetch(url)
+    let response = await fetch(url.toString())
     const responseUrl = new URL(response.url)
 
     // Re-fetch if there was a redirection
     if (url.search !== responseUrl.search) {
       responseUrl.search = url.search
-      response = await fetch(responseUrl)
+      response = await fetch(responseUrl.toString())
     }
 
     return response.text()
