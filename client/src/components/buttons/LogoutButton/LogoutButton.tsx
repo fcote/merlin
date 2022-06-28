@@ -1,7 +1,7 @@
 import { LogoutOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import useAuth from '@hooks/auth/useAuth'
 
@@ -9,14 +9,14 @@ import './LogoutButton.style.less'
 
 const LogoutButton = () => {
   const auth = useAuth()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
   const logout = async () => {
     setIsLoading(true)
     await auth.signout(auth.user.apiToken)
     setIsLoading(false)
-    history.replace({ pathname: '/login' })
+    navigate({ pathname: '/login' }, { replace: true })
   }
 
   return (

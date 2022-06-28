@@ -2,7 +2,7 @@ import { BarChartOutlined, LoginOutlined } from '@ant-design/icons'
 import { Space, Card, Form, Input, Button } from 'antd'
 import Title from 'antd/lib/typography/Title'
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import useAuth from '@hooks/auth/useAuth'
 import { useDocumentTitle } from '@hooks/useDocumentTitle'
@@ -19,7 +19,7 @@ const LoginForm = () => {
 
   let [isLoading, setIsLoading] = useState(false)
   const { signin } = useAuth()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleSubmitLogin = async (values: LoginFormType) => {
     setIsLoading(true)
@@ -27,7 +27,7 @@ const LoginForm = () => {
     setIsLoading(false)
 
     if (res) {
-      history.replace({ pathname: '/home' })
+      navigate({ pathname: '/home' }, { replace: true })
     }
   }
 

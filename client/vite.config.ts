@@ -1,4 +1,6 @@
+import react from '@vitejs/plugin-react'
 import reactRefresh from '@vitejs/plugin-react-refresh'
+// @ts-ignore
 import path from 'path'
 import { defineConfig } from 'vite'
 
@@ -66,7 +68,7 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 2048,
   },
-  plugins: [reactRefresh()],
+  plugins: [react(), reactRefresh()],
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/components'),

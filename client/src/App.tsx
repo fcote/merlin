@@ -2,7 +2,7 @@ import { Layout } from 'antd'
 import { Content } from 'antd/es/layout/layout'
 import 'katex/dist/katex.min.css'
 import React from 'react'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 
 import '@style/main.less'
 
@@ -24,60 +24,52 @@ import Watchlist from '@pages/Watchlist/Watchlist'
 
 const App = () => {
   const Router = (
-    <Switch>
-      <PrivateRoute path="/home">
-        <Home />
-      </PrivateRoute>
-      <PrivateRoute path="/portfolio">
-        <Portfolio />
-      </PrivateRoute>
-      <PrivateRoute path="/watchlist">
-        <Watchlist />
-      </PrivateRoute>
-      <PrivateRoute path="/security/:ticker">
-        <SecurityDetail />
-      </PrivateRoute>
-      <PrivateRoute path="/tracker">
-        <Tracker />
-      </PrivateRoute>
-      <PrivateRoute path="/earnings-calendar">
-        <EarningsCalendar />
-      </PrivateRoute>
-      <PrivateRoute path="/profile">
-        <Profile />
-      </PrivateRoute>
-      <PrivateRoute path="/logs">
-        <Logs />
-      </PrivateRoute>
-    </Switch>
+    <Routes>
+      <Route element={<PrivateRoute />}>
+        <Route path="/home" element={<Home />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/security/:ticker" element={<SecurityDetail />} />
+        <Route path="/tracker" element={<Tracker />} />
+        <Route path="/earnings-calendar" element={<EarningsCalendar />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/logs" element={<Logs />} />
+      </Route>
+    </Routes>
   )
+
+  if (window.location.pathname === '/') {
+    return <Navigate to={{ pathname: '/home' }} />
+  }
 
   return (
     <ProvideAuth>
       <BrowserRouter>
         <Layout style={{ minHeight: '100vh' }}>
-          <Switch>
-            <Route path="/login">
-              <Login />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<PrivateRoute />}>
+              <Route
+                path="/"
+                element={
+                  <div>
+                    <SpotlightSearch openKey="alt+KeyR" closeKey="Escape" />
+                    <SiderMenu />
+                    <Layout className="site-layout">
+                      <Content
+                        style={{
+                          margin: '24px 16px 0',
+                          overflow: 'initial',
+                        }}
+                      >
+                        <Scrollbar>{Router}</Scrollbar>
+                      </Content>
+                    </Layout>
+                  </div>
+                }
+              />
             </Route>
-            <PrivateRoute path="/">
-              {window.location.pathname === '/' && (
-                <Redirect to={{ pathname: '/home' }} />
-              )}
-              <SpotlightSearch openKey="alt+KeyR" closeKey="Escape" />
-              <SiderMenu />
-              <Layout className="site-layout">
-                <Content
-                  style={{
-                    margin: '24px 16px 0',
-                    overflow: 'initial',
-                  }}
-                >
-                  <Scrollbar>{Router}</Scrollbar>
-                </Content>
-              </Layout>
-            </PrivateRoute>
-          </Switch>
+          </Routes>
         </Layout>
       </BrowserRouter>
     </ProvideAuth>

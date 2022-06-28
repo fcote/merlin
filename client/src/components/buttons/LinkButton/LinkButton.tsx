@@ -1,6 +1,6 @@
 import { Button } from 'antd'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import './LinkButton.style.less'
 
@@ -10,10 +10,10 @@ export type LinkButtonProps = {
 }
 
 const LinkButton: React.FC<LinkButtonProps> = ({ to, icon }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const goToLink = async () => {
-    history.push({ pathname: to })
+    navigate({ pathname: to })
   }
 
   return (

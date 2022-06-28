@@ -1,4 +1,4 @@
-import { Input, Button, Select, Divider } from 'antd'
+import { Input, Button, Select, Divider, InputRef } from 'antd'
 import React, { useState, ChangeEvent, useRef, useMemo } from 'react'
 
 import { useSelfUserAccountUpsert } from '@hooks/api/mutations/useSelfUserAccountUpsert'
@@ -17,7 +17,7 @@ const UserAccountSelect: React.FC<UserAccountSelectProps> = ({
   onChange,
   type,
 }) => {
-  const newAccountInputRef = useRef<Input>()
+  const newAccountInputRef = useRef<InputRef>()
   const [selectedUserAccountId, setSelectedUserAccountId] = useState<string>()
   const [newUserAccountName, setNewUserAccountName] = useState<string>()
 
@@ -50,7 +50,7 @@ const UserAccountSelect: React.FC<UserAccountSelectProps> = ({
     await refetch({
       filters: { types: [type] },
     })
-    newAccountInputRef.current.setValue(null)
+    newAccountInputRef.current.input.setAttribute('value', null)
   }
 
   const SelectOptions = userAccounts.map((ua) => (

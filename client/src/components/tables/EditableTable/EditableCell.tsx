@@ -1,4 +1,4 @@
-import { Form, Input } from 'antd'
+import { Form, Input, InputRef } from 'antd'
 import React, { useContext, useRef, useState, useEffect } from 'react'
 
 import { editableContext } from '@components/tables/EditableTable/EditableRow'
@@ -24,7 +24,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
   ...restProps
 }) => {
   const [editing, setEditing] = useState(!record?.[dataIndex])
-  const inputRef = useRef<Input>(null)
+  const inputRef = useRef<InputRef>(null)
   const form = useContext(editableContext)!
 
   useEffect(() => {

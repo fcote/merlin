@@ -7,7 +7,7 @@ interface EditableRowProps {
 
 export const editableContext = createContext<FormInstance<any> | null>(null)
 
-const EditableRow: React.FC<EditableRowProps> = ({ ...props }) => {
+const EditableRow: React.FC<EditableRowProps> = ({ index: _m, ...props }) => {
   const [form] = Form.useForm()
   return (
     <Form form={form} component={false}>

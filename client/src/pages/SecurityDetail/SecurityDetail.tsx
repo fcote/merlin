@@ -5,7 +5,7 @@ import {
 } from '@ant-design/icons'
 import { PageHeader, Progress, Descriptions, Button, Tag, Modal } from 'antd'
 import React, { useState, useMemo } from 'react'
-import { useParams, Switch, useHistory } from 'react-router-dom'
+import { useParams, Routes, useNavigate, Route } from 'react-router-dom'
 
 import PrivateRoute from '@components/PrivateRoute'
 import SecurityDetailMenu from '@components/menus/SecurityDetailMenu/SecurityDetailMenu'
@@ -43,12 +43,13 @@ const SecurityExternalSiteUrl: { [key: string]: string } = {
 }
 
 export interface SecurityDetailParams {
+  [key: string]: string
   ticker: string
 }
 
 const SecurityDetail = () => {
   const { ticker } = useParams<SecurityDetailParams>()
-  const history = useHistory()
+  const navigate = useNavigate()
   useDocumentTitle(ticker)
 
   const { security, securitySyncProgress, securityLoading, syncSecurity } =
@@ -62,7 +63,10 @@ const SecurityDetail = () => {
   useMemo(() => {
     if (!security?.type || security.type === 'commonStock') return
 
-    history.replace({ pathname: `/security/${security.ticker}/chart` })
+    navigate(
+      { pathname: `/security/${security.ticker}/chart` },
+      { replace: true }
+    )
   }, [security])
 
   const handleExternalLink = (site: SecurityExternalSite) => {
@@ -193,26 +197,34 @@ const SecurityDetail = () => {
         style={{ height: 'calc(100% - 36px)' }}
       >
         <SecurityDetailMenu security={security} />
-        <Switch>
-          <PrivateRoute path="/security/:ticker/statement/:freq">
-            <SecurityDetailStatements security={security} />
-          </PrivateRoute>
-          <PrivateRoute path="/security/:ticker/ratio/:freq">
-            <SecurityDetailRatios security={security} />
-          </PrivateRoute>
-          <PrivateRoute path="/security/:ticker/estimate/:freq">
-            <SecurityDetailEstimates security={security} />
-          </PrivateRoute>
-          <PrivateRoute path="/security/:ticker/chart">
-            <SecurityDetailChart security={security} />
-          </PrivateRoute>
-          <PrivateRoute path="/security/:ticker/earnings-calendar">
-            <SecurityDetailEarnings security={security} />
-          </PrivateRoute>
-          <PrivateRoute path="/security/:ticker/news">
-            <SecurityDetailNews security={security} />
-          </PrivateRoute>
-        </Switch>
+        <Routes>
+          <Route element={<PrivateRoute />}>
+            <Route
+              path="/security/:ticker/statement/:freq"
+              element={<SecurityDetailStatements security={security} />}
+            />
+            <Route
+              path="/security/:ticker/ratio/:freq"
+              element={<SecurityDetailRatios security={security} />}
+            />
+            <Route
+              path="/security/:ticker/estimate/:freq"
+              element={<SecurityDetailEstimates security={security} />}
+            />
+            <Route
+              path="/security/:ticker/chart"
+              element={<SecurityDetailChart security={security} />}
+            />
+            <Route
+              path="/security/:ticker/earnings-calendar"
+              element={<SecurityDetailEarnings security={security} />}
+            />
+            <Route
+              path="/security/:ticker/news"
+              element={<SecurityDetailNews security={security} />}
+            />
+          </Route>
+        </Routes>
       </div>
     )
   }, [securitySyncProgress, security])

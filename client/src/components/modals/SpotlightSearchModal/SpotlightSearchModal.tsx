@@ -1,10 +1,10 @@
 import { LoadingOutlined, SearchOutlined } from '@ant-design/icons'
-import { Input, Modal, Table, Spin } from 'antd'
+import { Input, Modal, Table, Spin, InputRef } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import { ColumnType } from 'antd/lib/table'
 import { debounce, isEmpty } from 'lodash'
 import React, { useState, useRef, ChangeEvent, useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSecuritySearch } from '@hooks/api/queries/useSecuritySearch'
 import useKeyEventListener from '@hooks/useKeyEventListener'
@@ -23,8 +23,8 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
 
   const [isSearchVisible, setIsSearchVisible] = useState(false)
   const [selectedRow, setSelectedRow] = useState<number>(null)
-  const searchInput = useRef<Input>()
-  const history = useHistory()
+  const searchInput = useRef<InputRef>()
+  const navigate = useNavigate()
 
   const searchItems = useMemo(() => {
     if (!securitySearchResults?.length) return []
@@ -44,7 +44,7 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
   const handleClose = (_?: KeyboardEvent) => {
     if (!isSearchVisible) return
     setIsSearchVisible(false)
-    searchInput.current.setValue('') // Empty search input on close
+    searchInput.current.input.setAttribute('value', null) // Empty search input on close
   }
   const handleSelectRowDown = (_: KeyboardEvent) => {
     if (!isSearchVisible) return
@@ -68,7 +68,7 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
 
     handleClose()
 
-    history.push(`/security/${element.ticker}/statement/Y`)
+    navigate(`/security/${element.ticker}/statement/Y`)
   }
 
   const onSearch = async (event: ChangeEvent<HTMLInputElement>) => {
