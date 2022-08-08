@@ -141,6 +141,7 @@ const parseFMPFinancials = (
         value: value || null,
         unit: defaultUnit,
         period: formatPeriod(reportRawFinancials.period),
+        isEstimate: false,
         ...baseSecurityItem,
       } as SecurityFinancialResult
 
