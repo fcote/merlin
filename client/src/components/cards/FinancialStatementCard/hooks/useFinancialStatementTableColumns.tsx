@@ -1,7 +1,7 @@
 import { Tooltip } from 'antd'
 import { ColumnType } from 'antd/es/table'
 import katex from 'katex'
-import { uniqBy } from 'lodash'
+import { sortBy, uniqBy } from 'lodash'
 import React, { useMemo } from 'react'
 
 import {
@@ -74,6 +74,11 @@ const useFinancialStatementTableColumns = (financialItems: FinancialItem[]) => {
         render: renderValue,
       }))
 
+    const sortedStatementColumns = sortBy(
+      statementColumns,
+      (col) => col.dataIndex
+    ).reverse()
+
     return [
       {
         title: '',
@@ -81,7 +86,7 @@ const useFinancialStatementTableColumns = (financialItems: FinancialItem[]) => {
         width: 200,
         render: renderFinancialItemLabel,
       },
-      ...statementColumns,
+      ...sortedStatementColumns,
     ] as ColumnType<FinancialStatementTableItem>[]
   }, [financialItems])
 }

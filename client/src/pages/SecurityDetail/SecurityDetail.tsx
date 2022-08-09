@@ -3,11 +3,19 @@ import {
   InfoCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { PageHeader, Progress, Descriptions, Button, Tag, Modal } from 'antd'
+import {
+  PageHeader,
+  Progress,
+  Descriptions,
+  Button,
+  Tag,
+  Modal,
+  Layout,
+} from 'antd'
 import React, { useState, useMemo } from 'react'
 import { useParams, Routes, useNavigate, Route } from 'react-router-dom'
 
-import PrivateRoute from '@components/PrivateRoute'
+import PrivateRoutes from '@components/PrivateRoutes'
 import SecurityDetailMenu from '@components/menus/SecurityDetailMenu/SecurityDetailMenu'
 import SecurityMetricTable from '@components/tables/SecurityMetricTable/SecurityMetricTable'
 
@@ -192,45 +200,49 @@ const SecurityDetail = () => {
   const SecurityContent = useMemo(() => {
     if (securitySyncProgress) return null
     return (
-      <div
+      <Layout
         className="security-detail-content"
         style={{ height: 'calc(100% - 36px)' }}
       >
         <SecurityDetailMenu security={security} />
         <Routes>
-          <Route element={<PrivateRoute />}>
+          <Route element={<PrivateRoutes />}>
             <Route
-              path="/security/:ticker/statement/:freq"
+              path="/statement/:freq"
               element={<SecurityDetailStatements security={security} />}
             />
             <Route
-              path="/security/:ticker/ratio/:freq"
+              path="/ratio/:freq"
               element={<SecurityDetailRatios security={security} />}
             />
             <Route
-              path="/security/:ticker/estimate/:freq"
+              path="/estimate/:freq"
               element={<SecurityDetailEstimates security={security} />}
             />
             <Route
-              path="/security/:ticker/chart"
+              path="/chart"
               element={<SecurityDetailChart security={security} />}
             />
             <Route
-              path="/security/:ticker/earnings-calendar"
+              path="/earnings-calendar"
               element={<SecurityDetailEarnings security={security} />}
             />
             <Route
-              path="/security/:ticker/news"
+              path="/news"
               element={<SecurityDetailNews security={security} />}
             />
           </Route>
         </Routes>
-      </div>
+      </Layout>
     )
   }, [securitySyncProgress, security])
 
   return (
-    <div className="security-detail" style={{ height: 'calc(100% - 152px)' }}>
+    <Layout
+      className="security-detail"
+      style={{ height: 'calc(100% - 24px)' }}
+      dir="vertical"
+    >
       {CompanyDescriptionModal()}
       <PageHeader
         className="site-page-header"
@@ -241,7 +253,7 @@ const SecurityDetail = () => {
       </PageHeader>
       {SecurityMetrics()}
       {SecurityContent}
-    </div>
+    </Layout>
   )
 }
 

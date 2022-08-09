@@ -1,3 +1,4 @@
+import { Layout } from 'antd'
 import React, { useEffect } from 'react'
 
 import { SecurityChart } from '@components/charts/SecurityChart/SecurityChart'
@@ -30,9 +31,9 @@ const SecurityDetailChart: React.FC<SecurityDetailChartProps> = ({
   }, [security])
 
   return (
-    <div className="security-detail-chart">
+    <Layout className="security-detail-chart">
       <SecurityChart loading={loading} prices={historicalPrices} />
-    </div>
+    </Layout>
   )
 }
 

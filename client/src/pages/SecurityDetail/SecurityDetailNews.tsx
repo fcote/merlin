@@ -33,7 +33,7 @@ const SecurityDetailNews: React.FC<SecurityDetailNewsProps> = ({
   }, [security])
 
   useEffect(() => {
-    if (!subscribeToMore || subscribed) return
+    if (!subscribeToMore || subscribed || !security) return
     subscribeToMore?.(subscribeToMoreNews(security.ticker))
     setSubscribed(true)
   }, [news])

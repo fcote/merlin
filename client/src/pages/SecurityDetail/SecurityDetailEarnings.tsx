@@ -35,7 +35,7 @@ const SecurityDetailEarnings: React.FC<SecurityDetailEarningsProps> = ({
   }, [security])
 
   useEffect(() => {
-    if (!subscribeToMore || subscribed) return
+    if (!subscribeToMore || subscribed || !security) return
     subscribeToMore?.(subscribeToMoreEarnings(security.ticker))
     setSubscribed(true)
   }, [earnings])

@@ -1,21 +1,52 @@
 import React from 'react'
-import { Scrollbars, ScrollbarProps } from 'react-custom-scrollbars'
+import {
+  Scrollbar as CustomScrollbar,
+  ScrollbarProps,
+} from 'react-scrollbars-custom'
 
-const Scrollbar: React.FC<ScrollbarProps> = ({ children, ...rest }) => {
+const Scrollbar: React.FC<ScrollbarProps> = ({ children }) => {
   return (
-    <Scrollbars
-      autoHide={true}
+    <CustomScrollbar
       className="main-scrollbar-container"
-      renderThumbVertical={(props) => (
-        <div {...props} className="main-scrollbar" />
-      )}
-      renderThumbHorizontal={(props) => (
-        <div {...props} className="main-scrollbar" />
-      )}
-      {...rest}
+      wrapperProps={{
+        renderer: (props) => {
+          const { elementRef, ...restProps } = props
+          return (
+            <div
+              {...restProps}
+              ref={elementRef}
+              className="scrollbar-wrapper"
+            />
+          )
+        },
+      }}
+      contentProps={{
+        renderer: (props) => {
+          const { elementRef, ...restProps } = props
+          return (
+            <span
+              {...restProps}
+              ref={elementRef}
+              className="scrollbar-content"
+            />
+          )
+        },
+      }}
+      thumbYProps={{
+        renderer: (props) => {
+          const { elementRef, ...restProps } = props
+          return (
+            <div
+              {...restProps}
+              ref={elementRef}
+              className="scrollbar-thumb-y"
+            />
+          )
+        },
+      }}
     >
       {children}
-    </Scrollbars>
+    </CustomScrollbar>
   )
 }
 
