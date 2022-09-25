@@ -5,9 +5,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -88,6 +87,7 @@ func (uc EarningUsecase) worker(
 }
 
 func (uc EarningUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.Earnings, *domain.SyncError) {
+	log := glog.Get()
 	rawEarnings, err := uc.fetch.Earnings(ctx, ticker)
 	if err != nil {
 		return nil, domain.NewSyncError(ticker, "could not fetch earnings", err)
@@ -102,14 +102,14 @@ func (uc EarningUsecase) sync(ctx context.Context, ticker string, securityId int
 		result, err := s.
 			BatchInsertEarnings(ctx, earningInputs)
 		if err != nil {
-			log.Error().Msgf("%s | failed to sync earnings: %v", ticker, err)
 			return err
 		}
 
-		log.Info().
-			Str("ticker", ticker).
-			Int("n", len(result)).
-			Msg("successfully synced earnings")
+		log.Info().Msgf(
+			"%s | successfully synced earnings | count: %d",
+			ticker,
+			len(result),
+		)
 
 		return nil
 	})

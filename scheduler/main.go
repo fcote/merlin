@@ -2,13 +2,10 @@ package main
 
 import (
 	"context"
-	"os"
 	"time"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/rs/zerolog/log"
 
 	"github.com/fcote/merlin/sheduler/config"
 	"github.com/fcote/merlin/sheduler/internal/handler"
@@ -16,14 +13,13 @@ import (
 	"github.com/fcote/merlin/sheduler/internal/repository/pg"
 	"github.com/fcote/merlin/sheduler/internal/usecase"
 	fmpclient "github.com/fcote/merlin/sheduler/pkg/fmp"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/monitoring/newrelic"
 
 	"github.com/go-co-op/gocron"
 )
 
 func main() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
 	conf := config.New()
 
 	// Monitoring
@@ -32,14 +28,17 @@ func main() {
 		log.Fatal().Msgf("failed to initialize monitor: %v", err)
 	}
 
+	glog.InitLogger(monitor.App)
+	logger := glog.Get()
+
 	// DB
 	pgConf, err := pgxpool.ParseConfig(conf.Database.ConnectionString())
 	if err != nil {
-		log.Fatal().Msgf("failed to initialize database config: %v", err)
+		logger.Fatal().Msgf("failed to initialize database config: %v", err)
 	}
 	dbPool, err := pgxpool.ConnectConfig(context.Background(), pgConf)
 	if err != nil {
-		log.Fatal().Msgf("failed to initialize database: %v", err)
+		logger.Fatal().Msgf("failed to initialize database: %v", err)
 	}
 
 	// FMP
@@ -69,7 +68,7 @@ func main() {
 	// Load timezone
 	location, err := time.LoadLocation(conf.Timezone)
 	if err != nil {
-		log.Fatal().Msgf("failed to load timezone from config: %v", err)
+		logger.Fatal().Msgf("failed to load timezone from config: %v", err)
 	}
 
 	// Scheduler
@@ -78,7 +77,7 @@ func main() {
 	if conf.FullSync.Enabled {
 		_, err := s.CronWithSeconds(conf.FullSync.Rule).LimitRunsTo(1).Do(fullSyncHandler.Handle)
 		if err != nil {
-			log.Fatal().Msgf("failed to initialize full sync job: %v", err)
+			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
 	}
 

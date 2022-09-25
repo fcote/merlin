@@ -1,6 +1,10 @@
 package domain
 
-import "github.com/rs/zerolog/log"
+import (
+	"fmt"
+
+	"github.com/fcote/merlin/sheduler/pkg/glog"
+)
 
 type SyncSuccess struct {
 	tickers  []string
@@ -26,6 +30,10 @@ func (s SyncSuccess) Fields() map[string]interface{} {
 	}
 }
 
+func (s SyncSuccess) String() string {
+	return fmt.Sprintf("%d/%d | %s | %v", s.progress, s.total, s.message, s.tickers)
+}
+
 func (s SyncSuccess) Log() {
-	log.Info().Fields(s.Fields()).Msg(s.message)
+	glog.Get().Info().Msg(s.String())
 }

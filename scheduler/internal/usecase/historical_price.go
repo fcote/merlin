@@ -4,9 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -101,6 +100,7 @@ func (uc HistoricalPriceUsecase) worker(
 }
 
 func (uc HistoricalPriceUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.HistoricalPrices, *domain.SyncError) {
+	log := glog.Get()
 	rawHistoricalPrices, err := uc.fetch.HistoricalPrices(ctx, ticker)
 	if err != nil {
 		return nil, domain.NewSyncError(ticker, "could not fetch historical prices", err)
@@ -115,14 +115,14 @@ func (uc HistoricalPriceUsecase) sync(ctx context.Context, ticker string, securi
 		result, err := s.
 			BatchInsertHistoricalPrices(ctx, historicalPriceInputs)
 		if err != nil {
-			log.Error().Msgf("%s | failed to sync historical prices", ticker)
 			return err
 		}
 
-		log.Info().
-			Str("ticker", ticker).
-			Int("n", len(result)).
-			Msg("successfully synced historical prices")
+		log.Info().Msgf(
+			"%s | successfully synced historical prices | count: %d",
+			ticker,
+			len(result),
+		)
 
 		return nil
 	})

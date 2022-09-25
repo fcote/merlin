@@ -3,7 +3,7 @@ package domain
 import (
 	"fmt"
 
-	"github.com/rs/zerolog/log"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 )
 
 type SyncError struct {
@@ -26,12 +26,12 @@ func (e SyncError) Fields() map[string]interface{} {
 	}
 }
 
-func (e SyncError) Log() {
-	log.Error().Err(e.err).Fields(e.Fields()).Msg(e.message)
-}
-
 func (e SyncError) Error() string {
 	return fmt.Sprintf("%s | %s: %v", e.ticker, e.message, e.err)
+}
+
+func (e SyncError) Log() {
+	glog.Get().Error().Err(e.err).Msg(e.Error())
 }
 
 type SyncErrors []SyncError

@@ -2,6 +2,7 @@ package newrelic
 
 import (
 	"context"
+	"os"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
 
@@ -9,14 +10,16 @@ import (
 )
 
 type Monitoring struct {
-	app *newrelic.Application
+	App *newrelic.Application
 }
 
 func NewMonitor(name, license string) (*Monitoring, error) {
 	newRelicApp, err := newrelic.NewApplication(
 		newrelic.ConfigAppName(name),
 		newrelic.ConfigLicense(license),
-		newrelic.ConfigEnabled(true),
+		newrelic.ConfigAppLogForwardingEnabled(true),
+		newrelic.ConfigAppLogDecoratingEnabled(true),
+		newrelic.ConfigInfoLogger(os.Stdout),
 	)
 	if err != nil {
 		return nil, err
@@ -25,9 +28,9 @@ func NewMonitor(name, license string) (*Monitoring, error) {
 }
 
 func (m Monitoring) StartTransaction(name string) monitoring.Transactor {
-	return NewTransactor(m.app, name)
+	return NewTransactor(m.App, name)
 }
 
 func (m Monitoring) StartTransactionWithContext(name string) context.Context {
-	return NewTransactorWithContext(m.app, name)
+	return NewTransactorWithContext(m.App, name)
 }

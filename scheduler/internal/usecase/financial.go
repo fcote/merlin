@@ -5,9 +5,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -82,6 +81,7 @@ func (uc FinancialUsecase) sync(
 	financialItemMap map[string]domain.FinancialItem,
 	prices domain.HistoricalPrices,
 ) *domain.SyncError {
+	log := glog.Get()
 	rawFinancials, err := uc.fetch.Financials(ctx, ticker, financialItemMap)
 	if err != nil {
 		return domain.NewSyncError(ticker, "could not fetch financials", err)
@@ -93,7 +93,6 @@ func (uc FinancialUsecase) sync(
 		})
 		financialIds, err := s.BatchInsertSecurityFinancials(ctx, financialInputs)
 		if err != nil {
-			log.Error().Msgf("%s | failed to sync financials", ticker)
 			return err
 		}
 
@@ -101,7 +100,6 @@ func (uc FinancialUsecase) sync(
 		ttmFinancialInputs := ttmProcessor.Compute()
 		ttmFinancialIds, err := s.BatchInsertSecurityFinancials(ctx, ttmFinancialInputs)
 		if err != nil {
-			log.Error().Msgf("%s | failed to sync financials ttm", ticker)
 			return err
 		}
 
@@ -109,16 +107,16 @@ func (uc FinancialUsecase) sync(
 		ratioFinancialInputs := ratioProcessor.Compute()
 		ratioFinancialIds, err := s.BatchInsertSecurityFinancials(ctx, ratioFinancialInputs)
 		if err != nil {
-			log.Error().Msgf("%s | failed to sync financials ratios", ticker)
 			return err
 		}
 
-		log.Info().
-			Str("ticker", ticker).
-			Int("nFinancials", len(financialIds)).
-			Int("nRatios", len(ratioFinancialIds)).
-			Int("nTTM", len(ttmFinancialIds)).
-			Msg("successfully synced financials")
+		log.Info().Msgf(
+			"%s | successfully synced financials | count-financials: %d | count-ratios: %d | count-ttm: %d",
+			ticker,
+			len(financialIds),
+			len(ratioFinancialIds),
+			len(ttmFinancialIds),
+		)
 
 		return nil
 	})

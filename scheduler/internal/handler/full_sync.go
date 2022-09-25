@@ -4,8 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/monitoring"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
@@ -88,7 +86,7 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 
 	securities, err := fs.security.SyncSecurities(ctx, tickers)
 	if err != nil {
-		log.Printf("%d/%d | %v \n", progress, total, err)
+		err.Log()
 		return
 	}
 

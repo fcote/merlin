@@ -43,7 +43,7 @@ func (fmp FMP) request(ctx context.Context, url *url.URL, result interface{}) er
 		return fmt.Errorf("request initialization: %w", err)
 	}
 
-	txn := gmonitor.FromContext(ctx)
+	txn := gmonitor.FromContext(ctx).NewGoroutine()
 	segment := txn.StartExternalSegment(req)
 	resp, err := fmp.client.Do(req)
 	segment.End()
