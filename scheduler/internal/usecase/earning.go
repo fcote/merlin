@@ -7,6 +7,7 @@ import (
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -87,7 +88,10 @@ func (uc EarningUsecase) worker(
 }
 
 func (uc EarningUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.Earnings, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "sync.earning")
+	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
+
 	rawEarnings, err := uc.fetch.Earnings(ctx, ticker)
 	if err != nil {
 		return nil, domain.NewSyncError(ticker, "could not fetch earnings", err)

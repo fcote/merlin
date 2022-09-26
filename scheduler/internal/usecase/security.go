@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -24,6 +25,9 @@ func NewSecurityUsecase(
 }
 
 func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) (map[string]int, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "sync.security")
+	defer gmonitor.FromContext(ctx).End()
+
 	rawCompanies, err := uc.fetch.Companies(ctx, tickers)
 	if err != nil {
 		return nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch companies", err)

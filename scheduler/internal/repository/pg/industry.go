@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 func (r Repository) BatchInsertIndustries(ctx context.Context, industries domain.Industries) ([]int, error) {
@@ -19,6 +20,9 @@ on conflict (name) do update set
 	name = excluded.name
 returning id;
 	`
+
+	segment := gmonitor.StartDatastoreSegment(ctx, "industries", "insert", statement)
+	defer segment.End()
 
 	uniqueInputs := industries.Unique()
 	rows, err := r.db.Query(

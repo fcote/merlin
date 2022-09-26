@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 func (r Repository) BatchInsertHistoricalPrices(ctx context.Context, historicalPrices domain.HistoricalPrices) ([]int, error) {
@@ -41,6 +42,9 @@ on conflict (security_id, date) do update set
 	change_percent = excluded.change_percent
 returning id;
 	`
+
+	segment := gmonitor.StartAsyncDatastoreSegment(ctx, "historical_prices", "insert", statement)
+	defer segment.End()
 
 	uniqueInputs := historicalPrices.Unique()
 	rows, err := r.db.Query(

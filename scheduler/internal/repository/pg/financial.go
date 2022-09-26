@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v4"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 func (r Repository) BatchInsertSecurityFinancials(ctx context.Context, financials domain.Financials) ([]int, error) {
@@ -40,6 +41,9 @@ on conflict (financial_item_id, security_id, period, year) do update set
 	updated_at = now()
 returning id;
 	`
+
+	segment := gmonitor.StartAsyncDatastoreSegment(ctx, "financials", "insert", statement)
+	defer segment.End()
 
 	uniqueInputs := financials.Unique()
 	rows, err := r.db.Query(

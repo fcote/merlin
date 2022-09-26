@@ -6,6 +6,7 @@ import (
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -100,7 +101,10 @@ func (uc HistoricalPriceUsecase) worker(
 }
 
 func (uc HistoricalPriceUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.HistoricalPrices, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "sync.historicalprice")
+	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
+
 	rawHistoricalPrices, err := uc.fetch.HistoricalPrices(ctx, ticker)
 	if err != nil {
 		return nil, domain.NewSyncError(ticker, "could not fetch historical prices", err)

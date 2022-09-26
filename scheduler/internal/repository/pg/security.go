@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 func (r Repository) BatchInsertSecurities(ctx context.Context, securities domain.Securities) ([]int, error) {
@@ -50,6 +51,9 @@ on conflict (ticker) do update set
 	updated_at = now()
 returning id;
 	`
+
+	segment := gmonitor.StartDatastoreSegment(ctx, "securities", "insert", statement)
+	defer segment.End()
 
 	uniqueInputs := securities.Unique()
 	rows, err := r.db.Query(

@@ -7,6 +7,7 @@ import (
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -81,7 +82,10 @@ func (uc FinancialUsecase) sync(
 	financialItemMap map[string]domain.FinancialItem,
 	prices domain.HistoricalPrices,
 ) *domain.SyncError {
+	ctx = gmonitor.NewContext(ctx, "sync.financial")
+	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
+
 	rawFinancials, err := uc.fetch.Financials(ctx, ticker, financialItemMap)
 	if err != nil {
 		return domain.NewSyncError(ticker, "could not fetch financials", err)

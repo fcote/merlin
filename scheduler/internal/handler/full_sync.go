@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
-	"github.com/fcote/merlin/sheduler/pkg/monitoring"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -32,7 +31,6 @@ type TickerLister interface {
 }
 
 type FullSync struct {
-	monitor         monitoring.Monitor
 	ticker          TickerLister
 	security        SecuritySyncer
 	historicalPrice HistoricalPriceSyncer
@@ -41,7 +39,6 @@ type FullSync struct {
 }
 
 func NewFullSync(
-	monitor monitoring.Monitor,
 	tickerLister TickerLister,
 	companySyncer SecuritySyncer,
 	historicalPriceSyncer HistoricalPriceSyncer,
@@ -49,7 +46,6 @@ func NewFullSync(
 	earningSyncer EarningSyncer,
 ) FullSync {
 	return FullSync{
-		monitor:         monitor,
 		ticker:          tickerLister,
 		security:        companySyncer,
 		historicalPrice: historicalPriceSyncer,
@@ -59,7 +55,7 @@ func NewFullSync(
 }
 
 func (fs FullSync) Handle() error {
-	ctx := fs.monitor.StartTransactionWithContext("full-sync")
+	ctx := context.Background()
 
 	tickers, err := fs.ticker.ListTickers(ctx)
 	if err != nil {

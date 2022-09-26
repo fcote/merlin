@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/fcote/merlin/sheduler/pkg/monitoring/gmonitor"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 const fmpEndpoint = "https://financialmodelingprep.com/api"
@@ -43,8 +43,7 @@ func (fmp FMP) request(ctx context.Context, url *url.URL, result interface{}) er
 		return fmt.Errorf("request initialization: %w", err)
 	}
 
-	txn := gmonitor.FromContext(ctx).NewGoroutine()
-	segment := txn.StartExternalSegment(req)
+	segment := gmonitor.StartExternalSegment(ctx, req)
 	resp, err := fmp.client.Do(req)
 	segment.End()
 	if err != nil {

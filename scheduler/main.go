@@ -7,6 +7,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/rs/zerolog/log"
 
+	"github.com/go-co-op/gocron"
+
 	"github.com/fcote/merlin/sheduler/config"
 	"github.com/fcote/merlin/sheduler/internal/handler"
 	"github.com/fcote/merlin/sheduler/internal/repository/fmp"
@@ -14,21 +16,18 @@ import (
 	"github.com/fcote/merlin/sheduler/internal/usecase"
 	fmpclient "github.com/fcote/merlin/sheduler/pkg/fmp"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
-	"github.com/fcote/merlin/sheduler/pkg/monitoring/newrelic"
-
-	"github.com/go-co-op/gocron"
+	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
 func main() {
 	conf := config.New()
 
 	// Monitoring
-	monitor, err := newrelic.NewMonitor("merlin-scheduler", conf.NewRelic.License)
-	if err != nil {
+	if err := gmonitor.InitMonitor(conf.NewRelic.License); err != nil {
 		log.Fatal().Msgf("failed to initialize monitor: %v", err)
 	}
 
-	glog.InitLogger(monitor.App)
+	glog.InitLogger(gmonitor.Get())
 	logger := glog.Get()
 
 	// DB
@@ -57,7 +56,6 @@ func main() {
 
 	// Handlers
 	fullSyncHandler := handler.NewFullSync(
-		monitor,
 		tickerUsecase,
 		companyUsecase,
 		historicalPriceUsecase,

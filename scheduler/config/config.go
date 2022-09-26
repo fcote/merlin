@@ -80,6 +80,8 @@ func getBaseConfigMap() map[string]interface{} {
 	return baseConfigMap
 }
 
+var config Config
+
 func New() Config {
 	env := os.Getenv("ENV")
 	viper.SetConfigName(env)
@@ -93,9 +95,12 @@ func New() Config {
 		viper.SetDefault(key, value)
 	}
 
-	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Fatalf("unable to decode into struct, %v", err)
 	}
+	return config
+}
+
+func Get() Config {
 	return config
 }
