@@ -16,6 +16,7 @@ type DataStore interface {
 	BatchInsertIndustries(ctx context.Context, industries domain.Industries) ([]int, error)
 	BatchInsertSecurityFinancials(ctx context.Context, financialItems domain.Financials) ([]int, error)
 	BatchInsertEarnings(ctx context.Context, earnings domain.Earnings) ([]int, error)
+	BatchInsertNews(ctx context.Context, news domain.Newses) ([]int, error)
 }
 
 type DataFetch interface {
@@ -25,4 +26,5 @@ type DataFetch interface {
 	HistoricalPrices(ctx context.Context, ticker string) ([]domain.HistoricalPriceBase, error)
 	Financials(ctx context.Context, ticker string, financialItemMap map[string]domain.FinancialItem) ([]domain.FinancialBase, error)
 	Earnings(ctx context.Context, ticker string) ([]domain.EarningBase, error)
+	News(ctx context.Context, ticker string) ([]domain.NewsBase, error)
 }

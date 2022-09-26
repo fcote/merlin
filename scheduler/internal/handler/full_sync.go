@@ -26,6 +26,10 @@ type FinancialSyncer interface {
 	SyncFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors
 }
 
+type NewsSyncer interface {
+	SyncNews(ctx context.Context, securities map[string]int) domain.SyncErrors
+}
+
 type TickerLister interface {
 	ListTickers(ctx context.Context) ([]string, error)
 }
@@ -36,6 +40,7 @@ type FullSync struct {
 	historicalPrice HistoricalPriceSyncer
 	financial       FinancialSyncer
 	earning         EarningSyncer
+	news            NewsSyncer
 }
 
 func NewFullSync(
@@ -44,6 +49,7 @@ func NewFullSync(
 	historicalPriceSyncer HistoricalPriceSyncer,
 	financialSyncer FinancialSyncer,
 	earningSyncer EarningSyncer,
+	newsSyncer NewsSyncer,
 ) FullSync {
 	return FullSync{
 		ticker:          tickerLister,
@@ -51,6 +57,7 @@ func NewFullSync(
 		historicalPrice: historicalPriceSyncer,
 		financial:       financialSyncer,
 		earning:         earningSyncer,
+		news:            newsSyncer,
 	}
 }
 
@@ -86,7 +93,13 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 		return
 	}
 
-	syncerr := fs.earning.SyncEarnings(ctx, securities)
+	syncerr := fs.news.SyncNews(ctx, securities)
+	if syncerr != nil {
+		syncerr.Log()
+		return
+	}
+
+	syncerr = fs.earning.SyncEarnings(ctx, securities)
 	if syncerr != nil {
 		syncerr.Log()
 		return

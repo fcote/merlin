@@ -69,20 +69,20 @@ returning id;
 		uniqueInputs.SecurityIds(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to insert historical prices: %w", err)
+		return nil, fmt.Errorf("failed to insert earnings: %w", err)
 	}
 
 	uniqueIds := make([]int, 0, len(uniqueInputs))
 	for rows.Next() {
 		var id int
 		if err := rows.Scan(&id); err != nil {
-			return nil, fmt.Errorf("could not scan historical price id: %w", err)
+			return nil, fmt.Errorf("could not scan earning id: %w", err)
 		}
 		uniqueIds = append(uniqueIds, id)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("could not read historical price rows: %w", err)
+		return nil, fmt.Errorf("could not read earning rows: %w", err)
 	}
 
 	return earnings.IdsFromUniques(uniqueInputs, uniqueIds), nil

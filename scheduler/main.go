@@ -53,6 +53,7 @@ func main() {
 	historicalPriceUsecase := usecase.NewHistoricalPriceUsecase(pgRepository, fmpRepository)
 	financialUsecase := usecase.NewFinancialUsecase(pgRepository, fmpRepository)
 	earningUsecase := usecase.NewEarningUsecase(pgRepository, fmpRepository)
+	newsUsecase := usecase.NewNewsUsecase(pgRepository, fmpRepository)
 
 	// Handlers
 	fullSyncHandler := handler.NewFullSync(
@@ -61,6 +62,7 @@ func main() {
 		historicalPriceUsecase,
 		financialUsecase,
 		earningUsecase,
+		newsUsecase,
 	)
 
 	// Load timezone
