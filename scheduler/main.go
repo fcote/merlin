@@ -49,20 +49,28 @@ func main() {
 
 	// Usecases
 	tickerUsecase := usecase.NewTickerUsecase(fmpRepository)
-	companyUsecase := usecase.NewSecurityUsecase(pgRepository, fmpRepository)
+	securityUsecase := usecase.NewSecurityUsecase(pgRepository, fmpRepository)
 	historicalPriceUsecase := usecase.NewHistoricalPriceUsecase(pgRepository, fmpRepository)
 	financialUsecase := usecase.NewFinancialUsecase(pgRepository, fmpRepository)
 	earningUsecase := usecase.NewEarningUsecase(pgRepository, fmpRepository)
 	newsUsecase := usecase.NewNewsUsecase(pgRepository, fmpRepository)
+	forexUsecase := usecase.NewForexUsecase(pgRepository, fmpRepository)
 
 	// Handlers
 	fullSyncHandler := handler.NewFullSync(
 		tickerUsecase,
-		companyUsecase,
+		securityUsecase,
 		historicalPriceUsecase,
 		financialUsecase,
 		earningUsecase,
 		newsUsecase,
+	)
+	newsHandler := handler.NewNewsSync(
+		securityUsecase,
+		newsUsecase,
+	)
+	forexHandler := handler.NewForexSync(
+		forexUsecase,
 	)
 
 	// Load timezone
@@ -74,10 +82,22 @@ func main() {
 	// Scheduler
 	s := gocron.NewScheduler(location)
 
-	if conf.FullSync.Enabled {
-		_, err := s.CronWithSeconds(conf.FullSync.Rule).LimitRunsTo(1).Do(fullSyncHandler.Handle)
+	if conf.Job.FullSync.Enabled {
+		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
+		}
+	}
+	if conf.Job.NewsSync.Enabled {
+		_, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).LimitRunsTo(1).Do(newsHandler.Handle)
+		if err != nil {
+			logger.Fatal().Msgf("failed to initialize news sync job: %v", err)
+		}
+	}
+	if conf.Job.ForexSync.Enabled {
+		_, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).LimitRunsTo(1).Do(forexHandler.Handle)
+		if err != nil {
+			logger.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
 	}
 

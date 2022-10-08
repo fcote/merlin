@@ -311,7 +311,7 @@ export async function up(knex: Knex): Promise<any> {
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now())
 
-    t.index(['from_currency', 'to_currency'])
+    t.unique(['from_currency', 'to_currency'])
   })
 
   await knex.schema.createTable(TABLES.STD_LOGS, (t) => {

@@ -25,6 +25,7 @@ type SecurityBase struct {
 
 type Security struct {
 	SecurityBase
+	Id        int
 	CompanyId *int
 }
 

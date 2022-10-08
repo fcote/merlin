@@ -85,3 +85,28 @@ func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) 
 
 	return securities, nil
 }
+
+func (uc SecurityUsecase) GetSecurities(ctx context.Context) (map[string]int, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "get.security")
+	defer gmonitor.FromContext(ctx).End()
+
+	securities := make(map[string]int)
+
+	err := uc.store.Atomic(ctx, func(s DataStore) error {
+		storeSecurities, err := s.GetSecurities(ctx)
+		if err != nil {
+			return err
+		}
+
+		for _, s := range storeSecurities {
+			securities[s.Ticker] = s.Id
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, domain.NewSyncError("", "could not get securities", err)
+	}
+
+	return securities, nil
+}

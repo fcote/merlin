@@ -33,7 +33,7 @@ func NewNewsUsecase(
 	}
 }
 
-func (uc NewsUsecase) SyncNews(ctx context.Context, securities map[string]int) domain.SyncErrors {
+func (uc NewsUsecase) SyncSecurityNews(ctx context.Context, securities map[string]int) domain.SyncErrors {
 	var errors domain.SyncErrors
 
 	wg := &sync.WaitGroup{}
@@ -88,23 +88,21 @@ func (uc NewsUsecase) worker(
 }
 
 func (uc NewsUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.Newses, *domain.SyncError) {
-	ctx = gmonitor.NewContext(ctx, "sync.news")
+	ctx = gmonitor.NewContext(ctx, "sync.securityNews")
 	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
 
-	rawNews, err := uc.fetch.News(ctx, ticker)
+	rawNews, err := uc.fetch.SecurityNews(ctx, ticker)
 	if err != nil {
 		return nil, domain.NewSyncError(ticker, "could not fetch news", err)
 	}
 
 	var newsInputs domain.Newses
 	err = uc.store.Atomic(ctx, func(s DataStore) error {
-		newsInputs = slices.
-			Map(rawNews, func(p domain.NewsBase) domain.News {
-				return domain.NewsFromBase(p, securityId)
-			})
-		result, err := s.
-			BatchInsertNews(ctx, newsInputs)
+		newsInputs = slices.Map(rawNews, func(p domain.NewsBase) domain.News {
+			return domain.NewsFromBase(p, securityId)
+		})
+		result, err := s.BatchInsertNews(ctx, newsInputs)
 		if err != nil {
 			return err
 		}
@@ -122,4 +120,38 @@ func (uc NewsUsecase) sync(ctx context.Context, ticker string, securityId int) (
 	}
 
 	return newsInputs, nil
+}
+
+func (uc NewsUsecase) SyncNews(ctx context.Context, securities map[string]int) ([]int, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "sync.news")
+	defer gmonitor.FromContext(ctx).End()
+
+	rawNews, err := uc.fetch.News(ctx)
+	if err != nil {
+		return nil, domain.NewSyncError("", "could not fetch news", err)
+	}
+
+	var newsIds []int
+	err = uc.store.Atomic(ctx, func(s DataStore) error {
+		var newsInputs domain.Newses
+		for _, n := range rawNews {
+			securityId, ok := securities[n.Ticker]
+			if !ok {
+				continue
+			}
+			newsInputs = append(newsInputs, domain.NewsFromBase(n, securityId))
+		}
+
+		newsIds, err = s.BatchInsertNews(ctx, newsInputs)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, domain.NewSyncError("", "could not sync news", err)
+	}
+
+	return newsIds, nil
 }

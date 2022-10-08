@@ -90,3 +90,32 @@ returning id;
 
 	return securities.IdsFromUniques(uniqueInputs, uniqueIds), nil
 }
+
+func (r Repository) GetSecurities(ctx context.Context) (domain.Securities, error) {
+	statement := `
+select id, ticker
+from securities;
+`
+	segment := gmonitor.StartDatastoreSegment(ctx, "securities", "select", statement)
+	defer segment.End()
+
+	rows, err := r.db.Query(ctx, statement)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select securities: %w", err)
+	}
+
+	var securities domain.Securities
+	for rows.Next() {
+		var security domain.Security
+		if err := rows.Scan(&security.Id, &security.Ticker); err != nil {
+			return nil, fmt.Errorf("could not scan security id: %w", err)
+		}
+		securities = append(securities, security)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("could not read security rows: %w", err)
+	}
+
+	return securities, nil
+}

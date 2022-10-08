@@ -7,7 +7,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/fmp"
 )
 
-func (r Repository) News(ctx context.Context, ticker string) ([]domain.NewsBase, error) {
+func (r Repository) SecurityNews(ctx context.Context, ticker string) ([]domain.NewsBase, error) {
 	stockNews, err := r.client.StockNews(ctx, ticker)
 	if err != nil {
 		return nil, err
@@ -29,6 +29,20 @@ func (r Repository) News(ctx context.Context, ticker string) ([]domain.NewsBase,
 	return result, nil
 }
 
+func (r Repository) News(ctx context.Context) ([]domain.NewsBase, error) {
+	news, err := r.client.News(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []domain.NewsBase
+	for _, news := range news {
+		result = append(result, NewsBaseFromFMPStockNews(news))
+	}
+
+	return result, nil
+}
+
 func NewsBaseFromFMPStockNews(fmpNews fmp.StockNews) domain.NewsBase {
 	return domain.NewsBase{
 		Date:    fmpNews.PublishedDate,
@@ -37,13 +51,14 @@ func NewsBaseFromFMPStockNews(fmpNews fmp.StockNews) domain.NewsBase {
 		Content: fmpNews.Text,
 		Website: fmpNews.Site,
 		Url:     fmpNews.URL,
+		Ticker:  fmpNews.Symbol,
 	}
 }
 
 func NewsBaseFromFMPPressRelease(fmpNews fmp.PressRelease) domain.NewsBase {
 	return domain.NewsBase{
 		Date:    fmpNews.Date,
-		Type:    domain.NewsTypeStandard,
+		Type:    domain.NewsTypePressRelease,
 		Title:   fmpNews.Title,
 		Content: fmpNews.Text,
 	}

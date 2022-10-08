@@ -10,30 +10,6 @@ import (
 
 const chunkSize = 100
 
-type SecuritySyncer interface {
-	SyncSecurities(ctx context.Context, tickers []string) (map[string]int, *domain.SyncError)
-}
-
-type HistoricalPriceSyncer interface {
-	SyncHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors)
-}
-
-type EarningSyncer interface {
-	SyncEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors
-}
-
-type FinancialSyncer interface {
-	SyncFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors
-}
-
-type NewsSyncer interface {
-	SyncNews(ctx context.Context, securities map[string]int) domain.SyncErrors
-}
-
-type TickerLister interface {
-	ListTickers(ctx context.Context) ([]string, error)
-}
-
 type FullSync struct {
 	ticker          TickerLister
 	security        SecuritySyncer
@@ -93,7 +69,7 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 		return
 	}
 
-	syncerr := fs.news.SyncNews(ctx, securities)
+	syncerr := fs.news.SyncSecurityNews(ctx, securities)
 	if syncerr != nil {
 		syncerr.Log()
 		return

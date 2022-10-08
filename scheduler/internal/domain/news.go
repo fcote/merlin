@@ -25,6 +25,7 @@ type NewsBase struct {
 	Content string
 	Website string
 	Url     string
+	Ticker  string
 }
 
 type News struct {

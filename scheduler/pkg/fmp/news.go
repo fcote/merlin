@@ -1,6 +1,9 @@
 package fmp
 
-import "context"
+import (
+	"context"
+	"strconv"
+)
 
 type StockNews struct {
 	Symbol        string `json:"symbol"`
@@ -10,6 +13,19 @@ type StockNews struct {
 	Site          string `json:"site"`
 	Text          string `json:"text"`
 	URL           string `json:"url"`
+}
+
+func (fmp FMP) News(ctx context.Context) ([]StockNews, error) {
+	url := fmp.url.JoinPath("/v3/stock_news")
+	q := url.Query()
+	q.Add("limit", strconv.Itoa(200))
+	url.RawQuery = q.Encode()
+
+	var news []StockNews
+	if err := fmp.request(ctx, url, &news); err != nil {
+		return nil, err
+	}
+	return news, nil
 }
 
 func (fmp FMP) StockNews(ctx context.Context, ticker string) ([]StockNews, error) {

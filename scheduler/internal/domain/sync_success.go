@@ -31,6 +31,9 @@ func (s SyncSuccess) Fields() map[string]interface{} {
 }
 
 func (s SyncSuccess) String() string {
+	if s.tickers == nil {
+		return fmt.Sprintf("%d/%d | %s", s.progress, s.total, s.message)
+	}
 	return fmt.Sprintf("%d/%d | %s | %v", s.progress, s.total, s.message, s.tickers)
 }
 

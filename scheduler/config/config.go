@@ -39,9 +39,15 @@ type NewRelicConfig struct {
 	License string
 }
 
+type JobConfig struct {
+	FullSync  CronConfig
+	NewsSync  CronConfig
+	ForexSync CronConfig
+}
+
 type Config struct {
 	Timezone string
-	FullSync CronConfig
+	Job      JobConfig
 	Database DatabaseConfig
 	FMP      FMPConfig
 	NewRelic NewRelicConfig
@@ -50,9 +56,19 @@ type Config struct {
 func getBaseConfig() *Config {
 	return &Config{
 		Timezone: "Europe/Paris",
-		FullSync: CronConfig{
-			Enabled: true,
-			Rule:    "0 0 0 * * 1,2,3,4,5",
+		Job: JobConfig{
+			FullSync: CronConfig{
+				Enabled: true,
+				Rule:    "0 0 0 * * 1,2,3,4,5",
+			},
+			NewsSync: CronConfig{
+				Enabled: true,
+				Rule:    "0 * * * * *",
+			},
+			ForexSync: CronConfig{
+				Enabled: true,
+				Rule:    "0 * * * * *",
+			},
 		},
 		Database: DatabaseConfig{
 			Host:     "localhost:5432",
@@ -86,7 +102,6 @@ func New() Config {
 	env := os.Getenv("ENV")
 	viper.SetConfigName(env)
 	viper.SetConfigType("yaml")
-	viper.SetEnvPrefix("SCHEDULER")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 

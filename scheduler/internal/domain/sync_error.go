@@ -20,17 +20,17 @@ func NewSyncError(ticker string, description string, err error) *SyncError {
 	}
 }
 
-func (e SyncError) Fields() map[string]interface{} {
+func (e *SyncError) Fields() map[string]interface{} {
 	return map[string]interface{}{
 		"ticker": e.ticker,
 	}
 }
 
-func (e SyncError) Error() string {
+func (e *SyncError) Error() string {
 	return fmt.Sprintf("%s | %s: %v", e.ticker, e.message, e.err)
 }
 
-func (e SyncError) Log() {
+func (e *SyncError) Log() {
 	glog.Get().Error().Err(e.err).Msg(e.Error())
 }
 
