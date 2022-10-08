@@ -52,7 +52,7 @@ func getBaseConfig() *Config {
 		Timezone: "Europe/Paris",
 		FullSync: CronConfig{
 			Enabled: true,
-			Rule:    "0 0 22 * * 1,2,3,4,5",
+			Rule:    "0 0 0 * * 1,2,3,4,5",
 		},
 		Database: DatabaseConfig{
 			Host:     "localhost:5432",
