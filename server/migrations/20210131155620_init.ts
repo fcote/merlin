@@ -112,7 +112,7 @@ export async function up(knex: Knex): Promise<any> {
     t.double('high', 10, 2)
     t.double('low', 10, 2)
     t.double('close', 10, 2)
-    t.double('volume').notNullable()
+    t.double('volume', 10, 2)
     t.double('change', 10, 2)
     t.double('change_percent', 10, 2)
 
@@ -123,7 +123,7 @@ export async function up(knex: Knex): Promise<any> {
   })
 
   await knex.raw(
-    `create index historical_prices_security_id_date_index on ${TABLES.HISTORICAL_PRICES} (security_id, date desc)`
+    `create unique index historical_prices_security_id_date_unique on ${TABLES.HISTORICAL_PRICES} (security_id, date desc)`
   )
 
   await knex.schema.createTable(TABLES.EARNINGS, (t) => {
@@ -146,6 +146,10 @@ export async function up(knex: Knex): Promise<any> {
     t.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
     t.timestamp('updated_at').notNullable().defaultTo(knex.fn.now())
   })
+
+  await knex.raw(
+    `create unique index earnings_security_id_fiscal_year_fiscal_quarter_unique on ${TABLES.EARNINGS} (security_id, fiscal_year, fiscal_quarter)`
+  )
 
   await knex.schema.createTable(TABLES.NEWS, (t) => {
     t.increments('id')

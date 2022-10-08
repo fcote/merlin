@@ -16,7 +16,7 @@ RUN CGO_ENABLED=0 go build -o /merlin-scheduler
 ##
 ## Deploy
 ##
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base
 
 WORKDIR /
 
