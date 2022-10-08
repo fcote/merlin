@@ -86,6 +86,7 @@ func New() Config {
 	env := os.Getenv("ENV")
 	viper.SetConfigName(env)
 	viper.SetConfigType("yaml")
+	viper.SetEnvPrefix("SCHEDULER")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 

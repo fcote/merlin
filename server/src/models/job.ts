@@ -4,10 +4,6 @@ import { ObjectType, Field, registerEnumType } from 'type-graphql'
 import { BaseModel } from '@models/base'
 
 enum JobType {
-  fullSync = 'fullSync',
-  historicalPricesEndOfDay = 'historicalPricesEndOfDay',
-  forex = 'forex',
-  news = 'news',
   newsSubscribed = 'newsSubscribed',
   earningsSubscribed = 'earningsSubscribed',
   pricesSubscribed = 'pricesSubscribed',

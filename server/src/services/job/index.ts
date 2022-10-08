@@ -3,10 +3,6 @@ import { PartialModelGraph } from 'objection'
 import { handleError } from '@middlewares/http/errorHandler'
 import { Job, JobType } from '@models/job'
 import { JobEarningSubscribedMethod } from '@services/job/earningsSubscribed'
-import { JobForexMethod } from '@services/job/forex'
-import { JobFullSyncMethod } from '@services/job/fullSync'
-import { JobHistoricalPricesEndOfDayMethod } from '@services/job/historicalPricesEndOfDay'
-import { JobNewsMethod } from '@services/job/news'
 import { JobNewsSubscribedMethod } from '@services/job/newsSubscribed'
 import { JobPricesSubscribedMethod } from '@services/job/pricesSubscribed'
 import { Service } from '@services/service'
@@ -41,15 +37,6 @@ class JobService extends Service {
     return true
   }
 
-  fullSync = () =>
-    this.jobRunner(JobType.fullSync, new JobFullSyncMethod(this).run)
-  historicalPricesEndOfDay = () =>
-    this.jobRunner(
-      JobType.historicalPricesEndOfDay,
-      new JobHistoricalPricesEndOfDayMethod(this).run
-    )
-  forex = () => this.jobRunner(JobType.forex, new JobForexMethod(this).run)
-  news = () => this.jobRunner(JobType.news, new JobNewsMethod(this).run)
   newsSubscribed = () =>
     this.jobRunner(
       JobType.newsSubscribed,

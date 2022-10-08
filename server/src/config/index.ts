@@ -122,16 +122,6 @@ const schema = {
     },
   },
   scheduler: {
-    historicalPricesEndOfDay: {
-      enabled: {
-        env: 'SCHEDULER_HISTORICAL_PRICES_END_OF_DAY_ENABLED',
-        default: true,
-      },
-      rule: {
-        env: 'SCHEDULER_HISTORICAL_PRICES_END_OF_DAY_RULE',
-        default: '0 20 * * 1,2,3,4,5',
-      },
-    },
     pricesSubscribed: {
       enabled: {
         env: 'SCHEDULER_PRICES_SUBSCRIBED_ENABLED',
@@ -139,26 +129,6 @@ const schema = {
       },
       rule: {
         env: 'SCHEDULER_PRICES_SUBSCRIBED_RULE',
-        default: '* * * * *',
-      },
-    },
-    forex: {
-      enabled: {
-        env: 'SCHEDULER_FOREX_ENABLED',
-        default: true,
-      },
-      rule: {
-        env: 'SCHEDULER_FOREX_RULE',
-        default: '* * * * *',
-      },
-    },
-    news: {
-      enabled: {
-        env: 'SCHEDULER_NEWS_ENABLED',
-        default: true,
-      },
-      rule: {
-        env: 'SCHEDULER_NEWS_RULE',
         default: '* * * * *',
       },
     },
@@ -180,16 +150,6 @@ const schema = {
       rule: {
         env: 'SCHEDULER_EARNINGS_SUBSCRIBED_RULE',
         default: '* * * * *',
-      },
-    },
-    fullSync: {
-      enabled: {
-        env: 'SCHEDULER_FULL_SYNC_ENABLED',
-        default: true,
-      },
-      rule: {
-        env: 'SCHEDULER_FULL_SYNC_RULE',
-        default: '0 22 * * 1,2,3,4,5',
       },
     },
   },
