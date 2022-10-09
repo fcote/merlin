@@ -49,3 +49,36 @@ returning id;
 
 	return sectors.IdsFromUniques(uniqueInputs, uniqueIds), nil
 }
+
+func (r Repository) GetSectors(ctx context.Context) (domain.Sectors, error) {
+	statement := `
+select id, name
+from sectors;
+`
+
+	segment := gmonitor.StartDatastoreSegment(ctx, "sectors", "select", statement)
+	defer segment.End()
+
+	rows, err := r.db.Query(
+		ctx,
+		statement,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select sectors: %w", err)
+	}
+
+	var sectors domain.Sectors
+	for rows.Next() {
+		var sector domain.Sector
+		if err := rows.Scan(&sector.Id, &sector.Name); err != nil {
+			return nil, fmt.Errorf("could not scan sector row: %w", err)
+		}
+		sectors = append(sectors, sector)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("could not read sector rows: %w", err)
+	}
+
+	return sectors, nil
+}

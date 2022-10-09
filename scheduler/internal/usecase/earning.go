@@ -33,7 +33,7 @@ func NewEarningUsecase(
 	}
 }
 
-func (uc EarningUsecase) SyncEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors {
+func (uc EarningUsecase) SyncSecurityEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors {
 	var errors domain.SyncErrors
 
 	wg := &sync.WaitGroup{}
@@ -88,7 +88,7 @@ func (uc EarningUsecase) worker(
 }
 
 func (uc EarningUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.Earnings, *domain.SyncError) {
-	ctx = gmonitor.NewContext(ctx, "sync.earning")
+	ctx = gmonitor.NewContext(ctx, "sync.security.earning")
 	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
 

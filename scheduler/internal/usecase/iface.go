@@ -16,11 +16,15 @@ type DataStore interface {
 	BatchInsertSectors(ctx context.Context, sectors domain.Sectors) ([]int, error)
 	BatchInsertIndustries(ctx context.Context, industries domain.Industries) ([]int, error)
 	BatchInsertSecurityFinancials(ctx context.Context, financialItems domain.Financials) ([]int, error)
+	BatchInsertSectorFinancials(ctx context.Context, financials domain.Financials) ([]int, error)
 	BatchInsertEarnings(ctx context.Context, earnings domain.Earnings) ([]int, error)
 	BatchInsertNews(ctx context.Context, news domain.Newses) ([]int, error)
 	BatchInsertForex(ctx context.Context, forex domain.Forexes) ([]int, error)
 
+	GetSectors(ctx context.Context) (domain.Sectors, error)
 	GetSecurities(ctx context.Context) (domain.Securities, error)
+	GetSectorFinancials(ctx context.Context, sectorId int, statementType domain.FinancialType, year int, period domain.FinancialPeriod) (domain.Financials, error)
+	GetSectorFinancialPeriods(ctx context.Context, sectorId int) ([]domain.FinancialYearPeriod, error)
 }
 
 type DataFetch interface {

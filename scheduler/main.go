@@ -49,9 +49,11 @@ func main() {
 
 	// Usecases
 	tickerUsecase := usecase.NewTickerUsecase(fmpRepository)
+	sectorUsecase := usecase.NewSectorUsecase(pgRepository)
 	securityUsecase := usecase.NewSecurityUsecase(pgRepository, fmpRepository)
 	historicalPriceUsecase := usecase.NewHistoricalPriceUsecase(pgRepository, fmpRepository)
 	financialUsecase := usecase.NewFinancialUsecase(pgRepository, fmpRepository)
+	financialSectorUsecase := usecase.NewFinancialSectorUsecase(pgRepository)
 	earningUsecase := usecase.NewEarningUsecase(pgRepository, fmpRepository)
 	newsUsecase := usecase.NewNewsUsecase(pgRepository, fmpRepository)
 	forexUsecase := usecase.NewForexUsecase(pgRepository, fmpRepository)
@@ -59,9 +61,11 @@ func main() {
 	// Handlers
 	fullSyncHandler := handler.NewFullSync(
 		tickerUsecase,
+		sectorUsecase,
 		securityUsecase,
 		historicalPriceUsecase,
 		financialUsecase,
+		financialSectorUsecase,
 		earningUsecase,
 		newsUsecase,
 	)
@@ -83,7 +87,7 @@ func main() {
 	s := gocron.NewScheduler(location)
 
 	if conf.Job.FullSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
+		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).LimitRunsTo(1).Do(fullSyncHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}

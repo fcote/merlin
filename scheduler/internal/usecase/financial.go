@@ -13,6 +13,11 @@ import (
 
 var financialConcurrency = runtime.NumCPU()
 
+type financialResult struct {
+	err *domain.SyncError
+	ids []int
+}
+
 type FinancialUsecase struct {
 	store DataStore
 	fetch DataFetch
@@ -28,7 +33,7 @@ func NewFinancialUsecase(
 	}
 }
 
-func (uc FinancialUsecase) SyncFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors {
+func (uc FinancialUsecase) SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors {
 	var errors domain.SyncErrors
 
 	financialItemMap, err := uc.store.GetFinancialItemMap(ctx)
@@ -39,10 +44,13 @@ func (uc FinancialUsecase) SyncFinancials(ctx context.Context, securities map[st
 
 	wg := sync.WaitGroup{}
 	jobs := make(chan securityPair, financialConcurrency)
+	results := make(chan financialResult)
 
 	for i := 0; i < financialConcurrency; i++ {
-		go uc.worker(ctx, errors, &wg, jobs, financialItemMap, prices)
+		go uc.worker(ctx, financialItemMap, prices, jobs, results)
 	}
+
+	go uc.collect(&wg, results, &errors)
 
 	uc.feed(securities, &wg, jobs)
 
@@ -62,15 +70,29 @@ func (uc FinancialUsecase) feed(securities map[string]int, wg *sync.WaitGroup, j
 
 func (uc FinancialUsecase) worker(
 	ctx context.Context,
-	errors domain.SyncErrors,
-	wg *sync.WaitGroup,
-	jobs <-chan securityPair,
 	financialItemMap map[string]domain.FinancialItem,
 	prices map[string]domain.HistoricalPrices,
+	jobs <-chan securityPair,
+	results chan<- financialResult,
 ) {
 	for job := range jobs {
-		if err := uc.sync(ctx, job.ticker, job.securityId, financialItemMap, prices[job.ticker]); err != nil {
-			errors = append(errors, *err)
+		ids, err := uc.sync(ctx, job.ticker, job.securityId, financialItemMap, prices[job.ticker])
+		if err != nil {
+			results <- financialResult{err: err}
+		} else {
+			results <- financialResult{ids: ids}
+		}
+	}
+}
+
+func (uc FinancialUsecase) collect(
+	wg *sync.WaitGroup,
+	results <-chan financialResult,
+	errors *domain.SyncErrors,
+) {
+	for r := range results {
+		if r.err != nil {
+			*errors = append(*errors, *r.err)
 		}
 		wg.Done()
 	}
@@ -78,19 +100,21 @@ func (uc FinancialUsecase) worker(
 
 func (uc FinancialUsecase) sync(
 	ctx context.Context,
-	ticker string, securityId int,
+	ticker string,
+	securityId int,
 	financialItemMap map[string]domain.FinancialItem,
 	prices domain.HistoricalPrices,
-) *domain.SyncError {
-	ctx = gmonitor.NewContext(ctx, "sync.financial")
+) ([]int, *domain.SyncError) {
+	ctx = gmonitor.NewContext(ctx, "sync.security.financial")
 	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
 
 	rawFinancials, err := uc.fetch.Financials(ctx, ticker, financialItemMap)
 	if err != nil {
-		return domain.NewSyncError(ticker, "could not fetch financials", err)
+		return nil, domain.NewSyncError(ticker, "could not fetch financials", err)
 	}
 
+	var ids []int
 	err = uc.store.Atomic(ctx, func(s DataStore) error {
 		financialInputs := slices.Map(rawFinancials, func(p domain.FinancialBase) domain.Financial {
 			return domain.FinancialFromBase(p, &securityId, nil)
@@ -115,18 +139,22 @@ func (uc FinancialUsecase) sync(
 		}
 
 		log.Info().Msgf(
-			"%s | successfully synced financials | count-financials: %d | count-ratios: %d | count-ttm: %d",
+			"%s | successfully synced security financials | count-financials: %d | count-ratios: %d | count-ttm: %d",
 			ticker,
 			len(financialIds),
 			len(ratioFinancialIds),
 			len(ttmFinancialIds),
 		)
 
+		ids = append(ids, financialIds...)
+		ids = append(ids, ttmFinancialIds...)
+		ids = append(ids, ratioFinancialIds...)
+
 		return nil
 	})
 	if err != nil {
-		return domain.NewSyncError(ticker, "could not sync financials", err)
+		return nil, domain.NewSyncError(ticker, "could not sync security financials", err)
 	}
 
-	return nil
+	return ids, nil
 }

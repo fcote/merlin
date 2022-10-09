@@ -88,7 +88,7 @@ func (uc NewsUsecase) worker(
 }
 
 func (uc NewsUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.Newses, *domain.SyncError) {
-	ctx = gmonitor.NewContext(ctx, "sync.securityNews")
+	ctx = gmonitor.NewContext(ctx, "sync.security.news")
 	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
 

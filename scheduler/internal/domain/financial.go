@@ -29,6 +29,11 @@ func (p FinancialPeriod) IsQuarter() bool {
 		p == FinancialPeriodQ4
 }
 
+type FinancialYearPeriod struct {
+	Year   int
+	Period FinancialPeriod
+}
+
 type FinancialBase struct {
 	Value           float64
 	Year            int
@@ -40,6 +45,7 @@ type FinancialBase struct {
 
 type Financial struct {
 	FinancialBase
+	Id         int
 	SecurityId *int
 	SectorId   *int
 }

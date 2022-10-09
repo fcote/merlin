@@ -11,29 +11,35 @@ import (
 const chunkSize = 100
 
 type FullSync struct {
-	ticker          TickerLister
-	security        SecuritySyncer
-	historicalPrice HistoricalPriceSyncer
-	financial       FinancialSyncer
-	earning         EarningSyncer
-	news            NewsSyncer
+	ticker            TickerLister
+	sector            SectorLister
+	security          SecuritySyncer
+	historicalPrice   HistoricalPriceSyncer
+	financialSecurity FinancialSecuritySyncer
+	financialSector   FinancialSectorSyncer
+	earning           EarningSyncer
+	news              NewsSyncer
 }
 
 func NewFullSync(
 	tickerLister TickerLister,
+	sectorLister SectorLister,
 	companySyncer SecuritySyncer,
 	historicalPriceSyncer HistoricalPriceSyncer,
-	financialSyncer FinancialSyncer,
+	financialSecuritySyncer FinancialSecuritySyncer,
+	financialSectorSyncer FinancialSectorSyncer,
 	earningSyncer EarningSyncer,
 	newsSyncer NewsSyncer,
 ) FullSync {
 	return FullSync{
-		ticker:          tickerLister,
-		security:        companySyncer,
-		historicalPrice: historicalPriceSyncer,
-		financial:       financialSyncer,
-		earning:         earningSyncer,
-		news:            newsSyncer,
+		ticker:            tickerLister,
+		sector:            sectorLister,
+		security:          companySyncer,
+		historicalPrice:   historicalPriceSyncer,
+		financialSecurity: financialSecuritySyncer,
+		financialSector:   financialSectorSyncer,
+		earning:           earningSyncer,
+		news:              newsSyncer,
 	}
 }
 
@@ -57,6 +63,8 @@ func (fs FullSync) Handle() error {
 		fs.syncChunk(ctx, index, total, tickerChunk)
 	}
 
+	fs.syncSectors(ctx)
+
 	return nil
 }
 
@@ -75,23 +83,37 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 		return
 	}
 
-	syncerr = fs.earning.SyncEarnings(ctx, securities)
+	syncerr = fs.earning.SyncSecurityEarnings(ctx, securities)
 	if syncerr != nil {
 		syncerr.Log()
 		return
 	}
 
-	prices, syncerr := fs.historicalPrice.SyncHistoricalPrices(ctx, securities)
+	prices, syncerr := fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
 	if syncerr != nil {
 		syncerr.Log()
 		return
 	}
 
-	syncerr = fs.financial.SyncFinancials(ctx, securities, prices)
+	syncerr = fs.financialSecurity.SyncSecurityFinancials(ctx, securities, prices)
 	if syncerr != nil {
 		syncerr.Log()
 		return
 	}
 
 	domain.NewSyncSuccess(tickers, "securities sync success", progress, total).Log()
+}
+
+func (fs FullSync) syncSectors(ctx context.Context) {
+	sectors, err := fs.sector.ListSectors(ctx)
+	if err != nil {
+		domain.NewSyncError("", "could not list sectors", err).Log()
+	}
+
+	for i, sector := range sectors {
+		if err := fs.financialSector.SyncSectorFinancials(ctx, sector); err != nil {
+			err.Log()
+		}
+		domain.NewSyncSuccess([]string{sector.Name}, "sector sync success", i+1, len(sectors)).Log()
+	}
 }

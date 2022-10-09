@@ -38,7 +38,7 @@ func NewHistoricalPriceUsecase(
 	}
 }
 
-func (uc HistoricalPriceUsecase) SyncHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors) {
+func (uc HistoricalPriceUsecase) SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors) {
 	var errors domain.SyncErrors
 
 	wg := &sync.WaitGroup{}
@@ -50,7 +50,7 @@ func (uc HistoricalPriceUsecase) SyncHistoricalPrices(ctx context.Context, secur
 		go uc.worker(ctx, jobs, results)
 	}
 
-	go uc.collect(results, wg, prices, errors)
+	go uc.collect(results, wg, prices, &errors)
 
 	uc.feed(securities, wg, jobs)
 
@@ -73,11 +73,11 @@ func (uc HistoricalPriceUsecase) collect(
 	results <-chan priceResult,
 	wg *sync.WaitGroup,
 	prices map[string]domain.HistoricalPrices,
-	errors domain.SyncErrors,
+	errors *domain.SyncErrors,
 ) {
 	for r := range results {
 		if r.err != nil {
-			errors = append(errors, *r.err)
+			*errors = append(*errors, *r.err)
 		} else {
 			prices[r.ticker] = r.res
 		}
@@ -101,7 +101,7 @@ func (uc HistoricalPriceUsecase) worker(
 }
 
 func (uc HistoricalPriceUsecase) sync(ctx context.Context, ticker string, securityId int) (domain.HistoricalPrices, *domain.SyncError) {
-	ctx = gmonitor.NewContext(ctx, "sync.historicalprice")
+	ctx = gmonitor.NewContext(ctx, "sync.security.historicalprice")
 	defer gmonitor.FromContext(ctx).End()
 	log := glog.Get()
 

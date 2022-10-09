@@ -15,15 +15,19 @@ type SecurityGetter interface {
 }
 
 type HistoricalPriceSyncer interface {
-	SyncHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors)
+	SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors)
 }
 
 type EarningSyncer interface {
-	SyncEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors
+	SyncSecurityEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors
 }
 
-type FinancialSyncer interface {
-	SyncFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors
+type FinancialSecuritySyncer interface {
+	SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors
+}
+
+type FinancialSectorSyncer interface {
+	SyncSectorFinancials(ctx context.Context, sector domain.Sector) domain.SyncErrors
 }
 
 type NewsSyncer interface {
@@ -37,4 +41,8 @@ type ForexSyncer interface {
 
 type TickerLister interface {
 	ListTickers(ctx context.Context) ([]string, error)
+}
+
+type SectorLister interface {
+	ListSectors(ctx context.Context) (domain.Sectors, error)
 }

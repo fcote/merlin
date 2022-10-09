@@ -3,6 +3,7 @@ package domain
 import "github.com/fcote/merlin/sheduler/pkg/slices"
 
 type Sector struct {
+	Id   int
 	Name string
 }
 
