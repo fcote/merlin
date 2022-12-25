@@ -87,19 +87,19 @@ func main() {
 	s := gocron.NewScheduler(location)
 
 	if conf.Job.FullSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).LimitRunsTo(1).Do(fullSyncHandler.Handle)
+		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
 	}
 	if conf.Job.NewsSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).LimitRunsTo(1).Do(newsHandler.Handle)
+		_, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).Do(newsHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize news sync job: %v", err)
 		}
 	}
 	if conf.Job.ForexSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).LimitRunsTo(1).Do(forexHandler.Handle)
+		_, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
