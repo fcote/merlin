@@ -31,8 +31,8 @@ type Pool[T Task, R any] struct {
 	errors      domain.SyncErrors
 }
 
-func NewPool[T Task, R any](concurrency int, taskHandler taskHandler[T, R]) Pool[T, R] {
-	return Pool[T, R]{
+func NewPool[T Task, R any](concurrency int, taskHandler taskHandler[T, R]) *Pool[T, R] {
+	return &Pool[T, R]{
 		concurrency: concurrency,
 
 		tasksChan:   make(chan T),
@@ -44,7 +44,7 @@ func NewPool[T Task, R any](concurrency int, taskHandler taskHandler[T, R]) Pool
 	}
 }
 
-func (p Pool[T, R]) Run(ctx context.Context, tasks []T) (map[string]R, domain.SyncErrors) {
+func (p *Pool[T, R]) Run(ctx context.Context, tasks []T) (map[string]R, domain.SyncErrors) {
 	for i := 0; i < p.concurrency; i++ {
 		go p.worker(ctx)
 	}
@@ -61,14 +61,14 @@ func (p Pool[T, R]) Run(ctx context.Context, tasks []T) (map[string]R, domain.Sy
 	return p.results, p.errors
 }
 
-func (p Pool[T, R]) feed(tasks []T) {
+func (p *Pool[T, R]) feed(tasks []T) {
 	for _, t := range tasks {
 		p.wg.Add(1)
 		p.tasksChan <- t
 	}
 }
 
-func (p Pool[T, R]) collect() {
+func (p *Pool[T, R]) collect() {
 	for r := range p.resultsChan {
 		if r.err != nil {
 			p.errors = append(p.errors, *r.err)
@@ -79,7 +79,7 @@ func (p Pool[T, R]) collect() {
 	}
 }
 
-func (p Pool[T, R]) worker(ctx context.Context) {
+func (p *Pool[T, R]) worker(ctx context.Context) {
 	for task := range p.tasksChan {
 		res, err := p.taskHandler(ctx, task)
 		if err != nil {
