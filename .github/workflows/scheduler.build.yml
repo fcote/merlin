@@ -28,4 +28,6 @@ jobs:
           working-directory: scheduler
 
       - name: build
-        run: go build scheduler
+        run: go build .
+        with:
+          working-directory: scheduler
