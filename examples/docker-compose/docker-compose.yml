@@ -15,6 +15,13 @@ services:
       - ${SERVER_PORT}:${SERVER_PORT}
     restart: unless-stopped
 
+  merlin-scheduler:
+    image: fcote/merlin-scheduler:latest
+    container_name: merlin-scheduler
+    env_file:
+      - server.env
+    restart: unless-stopped
+
   merlin-client:
     image: fcote/merlin-client:latest
     container_name: merlin-client

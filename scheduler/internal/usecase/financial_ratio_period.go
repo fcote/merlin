@@ -6,6 +6,11 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
+const (
+	daysInYear    = 365
+	daysInQuarter = 92
+)
+
 type financialRatioPeriodProcessor struct {
 	year             int
 	period           domain.FinancialPeriod
@@ -38,9 +43,9 @@ func newFinancialRatioPeriodProcessor(
 
 	var days int
 	if period.IsQuarter() {
-		days = 92
+		days = daysInQuarter
 	} else {
-		days = 365
+		days = daysInYear
 	}
 
 	var price float64
