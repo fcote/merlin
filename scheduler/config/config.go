@@ -20,19 +20,23 @@ type DatabasePoolConfig struct {
 }
 
 type DatabaseConfig struct {
-	Host     string
-	Name     string
-	Username string
-	Password string
-	Pool     DatabasePoolConfig
+	Host string
+	Name string
+	User string
+	Pass string
+	Pool DatabasePoolConfig
 }
 
 func (c DatabaseConfig) ConnectionString() string {
-	return fmt.Sprintf("postgres://%s:%s@%s/%s?pool_max_conns=%d", c.Username, c.Password, c.Host, c.Name, c.Pool.Max)
+	return fmt.Sprintf("postgres://%s:%s@%s/%s?pool_max_conns=%d", c.User, c.Pass, c.Host, c.Name, c.Pool.Max)
 }
 
-type FMPConfig struct {
-	ApiKey string
+type External struct {
+	API struct {
+		FMP struct {
+			Key string
+		}
+	}
 }
 
 type NewRelicConfig struct {
@@ -48,8 +52,8 @@ type JobConfig struct {
 type Config struct {
 	Timezone string
 	Job      JobConfig
-	Database DatabaseConfig
-	FMP      FMPConfig
+	DB       DatabaseConfig
+	External External
 	NewRelic NewRelicConfig
 }
 
@@ -70,10 +74,10 @@ func getBaseConfig() *Config {
 				Rule:    "0 * * * * *",
 			},
 		},
-		Database: DatabaseConfig{
-			Host:     "localhost:5432",
-			Name:     "merlin",
-			Username: "postgres",
+		DB: DatabaseConfig{
+			Host: "localhost:5432",
+			Name: "merlin",
+			User: "postgres",
 			Pool: DatabasePoolConfig{
 				Max: 50,
 			},

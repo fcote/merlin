@@ -43,8 +43,8 @@ func StartDatastoreSegment(ctx context.Context, table string, op string, query s
 		Collection:         table,
 		Operation:          op,
 		ParameterizedQuery: query,
-		DatabaseName:       config.Get().Database.Name,
-		Host:               config.Get().Database.Host,
+		DatabaseName:       config.Get().DB.Name,
+		Host:               config.Get().DB.Host,
 	}
 }
 
@@ -56,8 +56,8 @@ func StartAsyncDatastoreSegment(ctx context.Context, table string, op string, qu
 		Collection:         table,
 		Operation:          op,
 		ParameterizedQuery: query,
-		DatabaseName:       config.Get().Database.Name,
-		Host:               config.Get().Database.Host,
+		DatabaseName:       config.Get().DB.Name,
+		Host:               config.Get().DB.Host,
 	}
 }
 

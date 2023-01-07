@@ -31,7 +31,7 @@ func main() {
 	logger := glog.Get()
 
 	// DB
-	pgConf, err := pgxpool.ParseConfig(conf.Database.ConnectionString())
+	pgConf, err := pgxpool.ParseConfig(conf.DB.ConnectionString())
 	if err != nil {
 		logger.Fatal().Msgf("failed to initialize database config: %v", err)
 	}
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	// FMP
-	fmpClient := fmpclient.NewClient(conf.FMP.ApiKey)
+	fmpClient := fmpclient.NewClient(conf.External.API.FMP.Key)
 
 	// Repositories
 	fmpRepository := fmp.NewRepository(fmpClient)
