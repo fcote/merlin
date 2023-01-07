@@ -49,57 +49,57 @@ const schema = {
   database: {
     host: {
       default: 'localhost',
-      env: 'DATABASE_HOST',
+      env: 'DB_HOST',
     },
     port: {
       default: '5432',
-      env: 'DATABASE_PORT',
+      env: 'DB_PORT',
     },
     database: {
       default: 'merlin',
-      env: 'DATABASE_NAME',
+      env: 'DB_NAME',
     },
     user: {
       default: 'postgres',
-      env: 'DATABASE_USER',
+      env: 'DB_USER',
     },
     password: {
       default: 'postgres',
-      env: 'DATABASE_PASSWORD',
+      env: 'DB_PASS',
     },
     migration: {
       enable: {
         default: true,
-        env: 'DATABASE_MIGRATION_ENABLE',
+        env: 'DB_MIGRATION_ENABLE',
       },
       dir: {
         default: './migrations',
-        env: 'DATABASE_MIGRATION_DIR',
+        env: 'DB_MIGRATION_DIR',
       },
     },
     poolMin: {
       default: 1,
-      env: 'DATABASE_POOL_MIN',
+      env: 'DB_POOL_MIN',
     },
     poolMax: {
       default: 10,
-      env: 'DATABASE_POOL_MAX',
+      env: 'DB_POOL_MAX',
     },
     acquireConnectionTimeout: {
       default: 60000,
-      env: 'DATABASE_ACQUIRE_CONNECTION_TIMEOUT',
+      env: 'DB_ACQUIRE_CONNECTION_TIMEOUT',
     },
     idleInTransactionTimeout: {
       default: 60000,
-      env: 'DATABASE_IDLE_IN_TRANSACTION_TIMEOUT',
+      env: 'DB_IDLE_IN_TRANSACTION_TIMEOUT',
     },
     idleTimeoutMillis: {
       default: 15000,
-      env: 'DATABASE_IDLE_TIMEOUT_MILLIS',
+      env: 'DB_IDLE_TIMEOUT_MILLIS',
     },
     monitorQueries: {
       default: false,
-      env: 'DATABASE_MONITOR_QUERIES',
+      env: 'DB_MONITOR_QUERIES',
     },
   },
   pubsub: {
