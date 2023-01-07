@@ -7,10 +7,10 @@ import { logger } from '@logger'
 import { SecurityMarketStatus } from '@models/security'
 
 const getMarketStatus = (quote: SeekingAlphaQuote): SecurityMarketStatus => {
-  switch (quote.attributes.extendedHoursType) {
-    case 'PreMarket':
+  switch (quote.ext_market) {
+    case 'pre':
       return SecurityMarketStatus.preMarket
-    case 'PostMarket':
+    case 'post':
       return SecurityMarketStatus.afterHours
   }
 }
@@ -18,8 +18,8 @@ const getMarketStatus = (quote: SeekingAlphaQuote): SecurityMarketStatus => {
 const toSecurityQuoteResult = (
   quote: SeekingAlphaQuote
 ): SecurityQuoteResult => {
-  const quotePrice = quote.attributes.extendedHoursPrice
-  const quoteChangePercent = quote.attributes.extendedHoursPercentChange
+  const quotePrice = quote.ext_price
+  const quoteChangePercent = (quote.ext_price / quote.last - 1) * 100
   const marketStatus = getMarketStatus(quote)
 
   const base: Partial<SecurityQuoteResult> = [
@@ -33,7 +33,7 @@ const toSecurityQuoteResult = (
     : { extendedHoursPrice: null, extendedHoursChangePercentage: null }
 
   return {
-    symbol: quote.id,
+    symbol: quote.symbol,
     marketStatus,
     ...base,
   }
@@ -48,16 +48,15 @@ async function seekingAlphaBatchQuotes(
   this: SeekingAlphaLink,
   tickers: string[]
 ) {
-  const urlSymbols = tickers.map((t) => `symbols[]=${t}`).join('&')
-  const response = await this.query<{ data: SeekingAlphaQuote[] }>(
-    this.getEndpoint(`/real-time-prices?${urlSymbols}`)
+  const response = await this.query<{ real_time_quotes: SeekingAlphaQuote[] }>(
+    this.getEndpoint(`/real_time_quotes?sa_slugs=${tickers.join(',')}`)
   )
-  if (!response?.data) {
+  if (!response?.real_time_quotes) {
     logger.warn('seekingAlpha > could not fetch security quote')
     return []
   }
 
-  return response.data.map(toSecurityQuoteResult)
+  return response.real_time_quotes.map(toSecurityQuoteResult)
 }
 
 export { seekingAlphaQuote, seekingAlphaBatchQuotes }

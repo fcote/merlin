@@ -1,46 +1,36 @@
-import { APILink, QuoteLink } from '@links/index'
+import { APILink, QuoteLink } from '@links'
 import {
   seekingAlphaQuote,
   seekingAlphaBatchQuotes,
 } from '@links/seekingAlpha/link.seekingAlpha.quote'
 import { SecurityQuoteResult } from '@links/types'
 
-interface SeekingAlphaQuoteAttributes {
-  extendedHoursPrice: number
-  low: number
-  last: number
-  open: number
-  previousClose: number
-  high: number
-  quoteInfo: string
-  change: number
-  extendedHoursPercentChange: number
-  percentChange: number
-  low52Week: number
-  sourceAPI: string
-  high52Week: number
-  percentChangeFromPreviousClose: number
-  extendedHoursDateTime: string
-  close: number
-  extendedHoursType: 'PostMarket' | 'PreMarket'
-  identifier: string
-  extendedHoursChange: number
-  dateTime: string
-  volume: number
-  name: string
-  changeFromPreviousClose: number
-}
-
 export interface SeekingAlphaQuote {
-  id: string
-  attributes: SeekingAlphaQuoteAttributes
+  sa_id: number
+  sa_slug: string
+  symbol: string
+  high: number
+  low: number
+  open: number
+  close: number
+  prev_close: number
+  last: number
+  volume: number
+  last_time: string
+  market_cap: number
+  ext_time: string
+  ext_price: number
+  ext_market: 'post' | 'pre'
+  info: string
+  src: string
+  updated_at: string
 }
 
 class SeekingAlphaLink extends APILink implements QuoteLink {
   constructor() {
     super({
-      endpoint: 'https://finance.api.seekingalpha.com',
-      base: '/v2',
+      endpoint: 'https://finance-api.seekingalpha.com',
+      base: '',
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
