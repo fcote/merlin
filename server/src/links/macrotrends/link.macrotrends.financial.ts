@@ -151,11 +151,14 @@ const parseMacroTrendsFinancials = (
 
         // Statement keys
         return statementKeys.flatMap((financialSlug) => {
-          const baseSecurityItem: SecurityFinancialBaseResult = get(
+          const baseSecurityItem: SecurityFinancialBaseResult | undefined = get(
             FinancialStatementConfig[statement],
             financialSlug
           )
-          const items: string[] | null = get(statementMap, financialSlug)
+          const items: string[] | null | undefined = get(
+            statementMap,
+            financialSlug
+          )
           const value = sumBy(
             items,
             (label: string) => reportRawFinancials[label]?.value ?? 0
@@ -167,7 +170,7 @@ const parseMacroTrendsFinancials = (
             statement,
             unit: defaultUnit,
             ...(value !== 0 && { value }),
-            ...baseSecurityItem,
+            ...(baseSecurityItem ?? {}),
           } as SecurityFinancialResult
         })
       })
