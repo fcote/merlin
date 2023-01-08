@@ -13,17 +13,24 @@
     ],
     "prPriority": 10
   },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "automergeType": "pr",
+    "platformAutomerge": true
+  },
   "labels": [
     "dependencies"
   ],
   "packageRules": [
     {
-      "updateTypes": [
+      "matchUpdateTypes": [
         "minor",
         "patch"
       ],
-      "depTypeList": [
+      "matchDepTypes": [
         "dependencies",
+        "devDependencies",
         "peerDependencies"
       ],
       "automerge": true,
