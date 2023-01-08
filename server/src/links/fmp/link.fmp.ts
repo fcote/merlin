@@ -95,7 +95,7 @@ class FMPLink
       return SecurityType.commodity
     }
     if (
-      new RegExp('ETF|ETN|Index|Fund|Trust').test(get(item, 'name')) ||
+      new RegExp('ETF|ETN|Index|Fund|Trust').test(get(item, 'name') ?? '') ||
       get(item, 'isEtf')
     ) {
       return SecurityType.etf
