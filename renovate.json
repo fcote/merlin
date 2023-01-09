@@ -31,7 +31,8 @@
       "matchDepTypes": [
         "dependencies",
         "devDependencies",
-        "peerDependencies"
+        "peerDependencies",
+        "require"
       ],
       "automerge": true,
       "labels": [
