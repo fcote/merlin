@@ -58,7 +58,7 @@
     "tough-cookie": "^4.0.0",
     "tsconfig-paths": "^4.1.0",
     "type-graphql": "^1.1.1",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "winston": "^3.8.1",
     "ws": "^8.8.1"
   },
@@ -81,7 +81,7 @@
     "@types/pg": "8.6.6",
     "@types/shelljs": "0.8.11",
     "@types/tough-cookie": "4.0.2",
-    "@types/uuid": "8.3.4",
+    "@types/uuid": "9.0.0",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.48.0",
     "@typescript-eslint/parser": "5.48.0",
