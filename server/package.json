@@ -76,7 +76,7 @@
     "@types/node-fetch": "2.6.2",
     "@types/node-schedule": "2.1.0",
     "@types/numeral": "2.0.2",
-    "@types/object-hash": "2.2.1",
+    "@types/object-hash": "3.0.2",
     "@types/p-map": "2.0.0",
     "@types/pg": "8.6.6",
     "@types/shelljs": "0.8.11",
