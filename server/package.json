@@ -23,7 +23,7 @@
     "migrate:rollback": "knex migrate:rollback --migrations-directory migrations --knexfile knexfile.js"
   },
   "dependencies": {
-    "@koa/cors": "^3.3.0",
+    "@koa/cors": "^4.0.0",
     "@sentry/node": "^7.9.0",
     "@sindresorhus/string-hash": "^1.2.0",
     "apollo-server-koa": "^3.10.0",
