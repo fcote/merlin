@@ -238,6 +238,8 @@ github.com/newrelic/go-agent/v3 v3.19.2 h1:gu5Vyp/61gMzXptr+va7+pliKaRkNShoSadYG
 github.com/newrelic/go-agent/v3 v3.19.2/go.mod h1:rT6ZUxJc5rQbWLyCtjqQCOcfb01lKRFbc1yMQkcboWM=
 github.com/newrelic/go-agent/v3 v3.20.2 h1:EqFMriW3Bv3on4tqKzI+fJmNYOEG55yw54v6yv8L+x8=
 github.com/newrelic/go-agent/v3 v3.20.2/go.mod h1:rT6ZUxJc5rQbWLyCtjqQCOcfb01lKRFbc1yMQkcboWM=
+github.com/newrelic/go-agent/v3 v3.20.3 h1:hUBAMq/Y2Y9as5/yxQbf0zNde/X7w58cWZkm2flZIaw=
+github.com/newrelic/go-agent/v3 v3.20.3/go.mod h1:rT6ZUxJc5rQbWLyCtjqQCOcfb01lKRFbc1yMQkcboWM=
 github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0 h1:VRA48fpT1tzb1yXJjquwB6YYNLBRTgMXK2qqgjfvkSM=
 github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0/go.mod h1:sVM8bsUj89KLsRCxvXHvW93EXzJom4SbZV6YZfNvgOQ=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
