@@ -7,7 +7,7 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2
 	github.com/newrelic/go-agent/v3 v3.20.3
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
-	github.com/rs/zerolog v1.28.0
+	github.com/rs/zerolog v1.29.0
 	github.com/spf13/viper v1.14.0
 	go.uber.org/multierr v1.9.0
 )
