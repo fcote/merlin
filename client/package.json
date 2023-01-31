@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "4.8.0",
-    "@apollo/client": "3.7.5",
+    "@apollo/client": "3.7.6",
     "antd": "4.24.7",
     "crypto-hash": "2.0.1",
     "crypto-js": "4.1.1",
