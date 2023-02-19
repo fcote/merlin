@@ -15,9 +15,10 @@ import (
 const fmpEndpoint = "https://financialmodelingprep.com/api"
 
 type FMP struct {
-	client http.Client
-	url    url.URL
-	apiKey string
+	client         http.Client
+	url            url.URL
+	apiKey         string
+	rateLimitTimer *RateLimitTimer
 }
 
 func NewClient(apiKey string) FMP {
@@ -27,15 +28,16 @@ func NewClient(apiKey string) FMP {
 	}
 
 	return FMP{
-		client: http.Client{},
-		url:    *fmpURL,
-		apiKey: apiKey,
+		client:         http.Client{},
+		url:            *fmpURL,
+		apiKey:         apiKey,
+		rateLimitTimer: NewRateLimitTimer(300),
 	}
 }
 
 func (fmp FMP) request(ctx context.Context, url *url.URL, result interface{}) error {
 	q := url.Query()
-	q.Add("apikey", fmp.apiKey)
+	q.Set("apikey", fmp.apiKey)
 	url.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
@@ -54,19 +56,22 @@ func (fmp FMP) request(ctx context.Context, url *url.URL, result interface{}) er
 		_ = resp.Body.Close()
 	}()
 
+	// Wait until we can make another request
+	fmp.rateLimitTimer.Wait()
+
 	// Retry on 429 Too many requests
 	if resp.StatusCode == 429 {
 		time.Sleep(2 * time.Second)
 		return fmp.request(ctx, url, &result)
 	}
 
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("request failed got status code: %d", resp.StatusCode)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("request read body: %w", err)
+	}
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("request (%s) failed got status code: %d (%s)", url.String(), resp.StatusCode, string(body))
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {

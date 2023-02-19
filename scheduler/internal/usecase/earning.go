@@ -11,7 +11,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-var earningConcurrency = runtime.NumCPU()
+var earningConcurrency = runtime.GOMAXPROCS(0)
 
 type EarningUsecase struct {
 	store DataStore

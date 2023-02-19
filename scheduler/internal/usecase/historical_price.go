@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"runtime"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/internal/helper/worker"
@@ -10,7 +11,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-const historicalPriceConcurrency = 50
+var historicalPriceConcurrency = runtime.GOMAXPROCS(0)
 
 type HistoricalPriceUsecase struct {
 	store DataStore

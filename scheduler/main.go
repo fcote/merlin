@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-co-op/gocron"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/fcote/merlin/sheduler/config"
 	"github.com/fcote/merlin/sheduler/internal/handler"
@@ -91,18 +92,21 @@ func main() {
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize news sync job: %v", err)
 		}
+		logger.Info().Msg("news sync job registered")
 	}
 	if conf.Job.ForexSync.Enabled {
 		_, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
+		logger.Info().Msg("forex sync job registered")
 	}
 	if conf.Job.FullSync.Enabled {
 		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
+		logger.Info().Msg("full sync job registered")
 	}
 
 	s.StartBlocking()

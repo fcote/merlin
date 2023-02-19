@@ -11,7 +11,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-var financialConcurrency = runtime.NumCPU()
+var financialConcurrency = runtime.GOMAXPROCS(0)
 
 type financialResult struct {
 	err *domain.SyncError
