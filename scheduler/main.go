@@ -86,28 +86,40 @@ func main() {
 
 	// Scheduler
 	s := gocron.NewScheduler(location)
+	s.SingletonModeAll()
 
 	if conf.Job.NewsSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).Do(newsHandler.Handle)
+		j, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).Do(newsHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize news sync job: %v", err)
 		}
-		logger.Info().Msg("news sync job registered")
+		go logJobRegistered(j, "news sync")
 	}
 	if conf.Job.ForexSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
+		j, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
-		logger.Info().Msg("forex sync job registered")
+		go logJobRegistered(j, "forex sync")
 	}
 	if conf.Job.FullSync.Enabled {
-		_, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
+		j, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
 		if err != nil {
 			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
-		logger.Info().Msg("full sync job registered")
+		go logJobRegistered(j, "full sync")
 	}
 
 	s.StartBlocking()
+}
+
+func logJobRegistered(j *gocron.Job, name string) {
+	// waits for scheduler to start
+	<-time.After(1 * time.Second)
+
+	glog.Get().Info().Msgf(
+		"job | registered %s | next run: %s",
+		name,
+		j.ScheduledTime().Format("2006-01-02 15:04:05"),
+	)
 }
