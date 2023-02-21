@@ -7,7 +7,7 @@ import (
 )
 
 type SecuritySyncer interface {
-	SyncSecurities(ctx context.Context, tickers []string) (map[string]int, *domain.SyncError)
+	SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, *domain.SyncError)
 }
 
 type SecurityGetter interface {

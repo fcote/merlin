@@ -24,21 +24,22 @@ func NewSecurityUsecase(
 	}
 }
 
-func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) (map[string]int, *domain.SyncError) {
+func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, *domain.SyncError) {
 	ctx = gmonitor.NewContext(ctx, "sync.security")
 	defer gmonitor.FromContext(ctx).End()
 
 	rawCompanies, err := uc.fetch.Companies(ctx, tickers)
 	if err != nil {
-		return nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch companies", err)
+		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch companies", err)
 	}
 
 	rawSecurities, err := uc.fetch.Securities(ctx, tickers)
 	if err != nil {
-		return nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch securities", err)
+		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch securities", err)
 	}
 
 	securities := make(map[string]int)
+	commonStocks := make(map[string]int)
 
 	err = uc.store.Atomic(ctx, func(s DataStore) error {
 		industryInputs := slices.Map(rawCompanies, func(c domain.CompanyBase) domain.Industry {
@@ -75,15 +76,18 @@ func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) 
 
 		for i, input := range securityInputs {
 			securities[input.Ticker] = securityIds[i]
+			if input.Type == domain.SecurityTypeCommonStock {
+				commonStocks[input.Ticker] = securityIds[i]
+			}
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError(strings.Join(tickers, ","), "could not sync securities", err)
+		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not sync securities", err)
 	}
 
-	return securities, nil
+	return securities, commonStocks, nil
 }
 
 func (uc SecurityUsecase) GetSecurities(ctx context.Context) (map[string]int, *domain.SyncError) {

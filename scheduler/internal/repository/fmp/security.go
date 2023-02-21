@@ -68,11 +68,11 @@ func GetSecurityType(fmpStock fmp.Stock, fmpCompany fmp.Company) string {
 	if fmpCompany.ExchangeShortName == "INDEX" || fmpStock.Exchange == "INDEX" {
 		return "Index"
 	}
-	if fmpCompany.ExchangeShortName == "MUTUAL_FUND" || fmpStock.Exchange == "MUTUAL_FUND" {
-		return "Mutual Fund"
-	}
 	if fmpCompany.ExchangeShortName == "COMMODITY" || fmpStock.Exchange == "COMMODITY" {
 		return "Commodity"
+	}
+	if fmpCompany.IsFund || fmpCompany.ExchangeShortName == "MUTUAL_FUND" || fmpStock.Exchange == "MUTUAL_FUND" {
+		return "Mutual Fund"
 	}
 	if fmpCompany.IsEtf || regexp.MustCompile("ETF|ETN|Index|Fund|Trust").Match([]byte(fmpStock.Name)) {
 		return "ETF"

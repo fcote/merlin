@@ -71,21 +71,9 @@ func (fs FullSync) Handle() error {
 func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers []string) {
 	progress := index*chunkSize + len(tickers)
 
-	securities, err := fs.security.SyncSecurities(ctx, tickers)
+	securities, commonStocks, err := fs.security.SyncSecurities(ctx, tickers)
 	if err != nil {
 		err.Log()
-		return
-	}
-
-	syncerr := fs.news.SyncSecurityNews(ctx, securities)
-	if syncerr != nil {
-		syncerr.Log()
-		return
-	}
-
-	syncerr = fs.earning.SyncSecurityEarnings(ctx, securities)
-	if syncerr != nil {
-		syncerr.Log()
 		return
 	}
 
@@ -95,10 +83,24 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 		return
 	}
 
-	syncerr = fs.financialSecurity.SyncSecurityFinancials(ctx, securities, prices)
-	if syncerr != nil {
-		syncerr.Log()
-		return
+	if len(commonStocks) > 0 {
+		syncerr := fs.news.SyncSecurityNews(ctx, commonStocks)
+		if syncerr != nil {
+			syncerr.Log()
+			return
+		}
+
+		syncerr = fs.earning.SyncSecurityEarnings(ctx, commonStocks)
+		if syncerr != nil {
+			syncerr.Log()
+			return
+		}
+
+		syncerr = fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices)
+		if syncerr != nil {
+			syncerr.Log()
+			return
+		}
 	}
 
 	domain.NewSyncSuccess(tickers, "securities sync success", progress, total).Log()

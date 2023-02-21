@@ -4,6 +4,10 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
+const (
+	SecurityTypeCommonStock = "Common Stock"
+)
+
 type SecurityBase struct {
 	Ticker                     string   `json:"ticker"`
 	Currency                   *string  `json:"currency"`
