@@ -6,6 +6,7 @@ import (
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/fmp"
+	"github.com/fcote/merlin/sheduler/pkg/maps"
 	"github.com/fcote/merlin/sheduler/pkg/pointer"
 )
 
@@ -28,15 +29,21 @@ func (r Repository) Securities(ctx context.Context, tickers []string) ([]domain.
 	if err != nil {
 		return nil, err
 	}
+	companiesByTicker := maps.GroupBy(companies, func(c fmp.Company) string {
+		return c.Symbol
+	})
 
 	stocks, err := r.client.BatchStocks(ctx, tickers)
 	if err != nil {
 		return nil, err
 	}
+	stocksByTicker := maps.GroupBy(stocks, func(s fmp.Stock) string {
+		return s.Symbol
+	})
 
 	result := make([]domain.SecurityBase, len(tickers))
-	for i := range stocks {
-		result[i] = SecurityBaseFromFMP(stocks[i], companies[i])
+	for i, ticker := range tickers {
+		result[i] = SecurityBaseFromFMP(stocksByTicker[ticker], companiesByTicker[ticker])
 	}
 
 	return result, nil

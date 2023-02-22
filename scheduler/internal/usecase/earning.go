@@ -52,8 +52,7 @@ func (uc EarningUsecase) sync(ctx context.Context, task domain.SecurityTask) (do
 			Map(rawEarnings, func(p domain.EarningBase) domain.Earning {
 				return domain.EarningFromBase(p, task.SecurityId)
 			})
-		result, err := s.
-			BatchInsertEarnings(ctx, earningInputs)
+		result, err := s.BatchInsertEarnings(ctx, earningInputs)
 		if err != nil {
 			return err
 		}

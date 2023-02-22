@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/fcote/merlin/sheduler/pkg/math"
 	"github.com/fcote/merlin/sheduler/pkg/pointer"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
@@ -102,7 +103,7 @@ func (earnings Earnings) Times() []string {
 
 func (earnings Earnings) EpsEstimates() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.EpsEstimate == 0 {
+		if math.IsEmpty(e.EpsEstimate) {
 			return nil
 		}
 		return pointer.To(e.EpsEstimate)
@@ -111,7 +112,7 @@ func (earnings Earnings) EpsEstimates() []*float64 {
 
 func (earnings Earnings) Epss() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.Eps == 0 {
+		if math.IsEmpty(e.Eps) {
 			return nil
 		}
 		return pointer.To(e.Eps)
@@ -120,7 +121,7 @@ func (earnings Earnings) Epss() []*float64 {
 
 func (earnings Earnings) EpsSurprisePercents() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.EpsSurprisePercent == 0 {
+		if math.IsEmpty(e.EpsSurprisePercent) {
 			return nil
 		}
 		return pointer.To(e.EpsSurprisePercent)
@@ -129,7 +130,7 @@ func (earnings Earnings) EpsSurprisePercents() []*float64 {
 
 func (earnings Earnings) RevenueEstimates() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.RevenueEstimate == 0 {
+		if math.IsEmpty(e.RevenueEstimate) {
 			return nil
 		}
 		return pointer.To(e.RevenueEstimate)
@@ -138,7 +139,7 @@ func (earnings Earnings) RevenueEstimates() []*float64 {
 
 func (earnings Earnings) Revenues() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.Revenue == 0 {
+		if math.IsEmpty(e.Revenue) {
 			return nil
 		}
 		return pointer.To(e.Revenue)
@@ -147,7 +148,7 @@ func (earnings Earnings) Revenues() []*float64 {
 
 func (earnings Earnings) RevenueSurprisePercents() []*float64 {
 	return slices.Map(earnings, func(e Earning) *float64 {
-		if e.RevenueSurprisePercent == 0 {
+		if math.IsEmpty(e.RevenueSurprisePercent) {
 			return nil
 		}
 		return pointer.To(e.RevenueSurprisePercent)

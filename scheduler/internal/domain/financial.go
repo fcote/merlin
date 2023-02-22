@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 
+	"github.com/fcote/merlin/sheduler/pkg/math"
 	"github.com/fcote/merlin/sheduler/pkg/pointer"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
@@ -81,7 +82,7 @@ type Financials []Financial
 
 func (financials Financials) Values() []*float64 {
 	return slices.Map(financials, func(f Financial) *float64 {
-		if f.Value == 0 {
+		if math.IsEmpty(f.Value) {
 			return nil
 		}
 		return pointer.To(f.Value)

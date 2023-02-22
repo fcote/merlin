@@ -36,10 +36,10 @@ func (t *RateLimitTimer) Wait() {
 	defer t.mu.Unlock()
 
 	t.nRequests++
-	glog.Get().Debug().Msgf("fmp | rate limit | %d/%d", t.nRequests, t.maxRequestsPerMin)
 
 	if t.nRequests >= t.maxRequestsPerMin {
 		timeToWait := time.Until(t.end)
+
 		glog.Get().Debug().Msgf("fmp | rate limit | waiting %.2fs", timeToWait.Seconds())
 
 		<-time.After(timeToWait)
@@ -52,8 +52,6 @@ func (t *RateLimitTimer) reset() {
 	defer t.mu.Unlock()
 
 	t.nRequests = 0
-
-	glog.Get().Debug().Msg("fmp | rate limit | reset")
 
 	t.timer.Reset(timerDuration)
 	t.end = time.Now().Add(timerDuration)

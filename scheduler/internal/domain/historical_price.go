@@ -50,7 +50,7 @@ func (prices HistoricalPrices) Dates() []string {
 
 func (prices HistoricalPrices) Opens() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.Open == 0 {
+		if math.IsEmpty(i.Open) {
 			return nil
 		}
 		return pointer.To(i.Open)
@@ -59,7 +59,7 @@ func (prices HistoricalPrices) Opens() []*float64 {
 
 func (prices HistoricalPrices) Highs() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.High == 0 {
+		if math.IsEmpty(i.High) {
 			return nil
 		}
 		return pointer.To(i.High)
@@ -68,7 +68,7 @@ func (prices HistoricalPrices) Highs() []*float64 {
 
 func (prices HistoricalPrices) Lows() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.Low == 0 {
+		if math.IsEmpty(i.Low) {
 			return nil
 		}
 		return pointer.To(i.Low)
@@ -77,7 +77,7 @@ func (prices HistoricalPrices) Lows() []*float64 {
 
 func (prices HistoricalPrices) Closes() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.Close == 0 {
+		if math.IsEmpty(i.Close) {
 			return nil
 		}
 		return pointer.To(i.Close)
@@ -86,7 +86,7 @@ func (prices HistoricalPrices) Closes() []*float64 {
 
 func (prices HistoricalPrices) Volumes() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.Volume == 0 {
+		if math.IsEmpty(i.Volume) {
 			return nil
 		}
 		return pointer.To(i.Volume)
@@ -95,7 +95,7 @@ func (prices HistoricalPrices) Volumes() []*float64 {
 
 func (prices HistoricalPrices) Changes() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.Change == 0 {
+		if math.IsEmpty(i.Change) {
 			return nil
 		}
 		return pointer.To(i.Change)
@@ -104,7 +104,7 @@ func (prices HistoricalPrices) Changes() []*float64 {
 
 func (prices HistoricalPrices) ChangePercents() []*float64 {
 	return slices.Map(prices, func(i HistoricalPrice) *float64 {
-		if i.ChangePercent == 0 {
+		if math.IsEmpty(i.ChangePercent) {
 			return nil
 		}
 		return pointer.To(i.ChangePercent)

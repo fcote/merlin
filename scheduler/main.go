@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-co-op/gocron"
@@ -36,7 +36,7 @@ func main() {
 	if err != nil {
 		logger.Fatal().Msgf("failed to initialize database config: %v", err)
 	}
-	dbPool, err := pgxpool.ConnectConfig(context.Background(), pgConf)
+	dbPool, err := pgxpool.NewWithConfig(context.Background(), pgConf)
 	if err != nil {
 		logger.Fatal().Msgf("failed to initialize database: %v", err)
 	}

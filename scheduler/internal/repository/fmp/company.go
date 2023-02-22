@@ -6,6 +6,7 @@ import (
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/fmp"
+	"github.com/fcote/merlin/sheduler/pkg/maps"
 )
 
 func (r Repository) Companies(ctx context.Context, tickers []string) ([]domain.CompanyBase, error) {
@@ -13,10 +14,13 @@ func (r Repository) Companies(ctx context.Context, tickers []string) ([]domain.C
 	if err != nil {
 		return nil, err
 	}
+	companiesByTicker := maps.GroupBy(companies, func(c fmp.Company) string {
+		return c.Symbol
+	})
 
-	result := make([]domain.CompanyBase, len(companies))
-	for i, company := range companies {
-		result[i] = CompanyBaseFromFMP(company)
+	result := make([]domain.CompanyBase, len(tickers))
+	for i, ticker := range tickers {
+		result[i] = CompanyBaseFromFMP(companiesByTicker[ticker])
 	}
 
 	return result, nil
