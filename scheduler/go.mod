@@ -4,7 +4,8 @@ go 1.19
 
 require (
 	github.com/go-co-op/gocron v1.18.0
-	github.com/jackc/pgx/v4 v4.18.0
+	github.com/jackc/pgx/v4 v4.12.1-0.20210724153913-640aa07df17c
+	github.com/jackc/pgx/v5 v5.3.0
 	github.com/newrelic/go-agent/v3 v3.20.3
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
 	github.com/rs/zerolog v1.29.0
