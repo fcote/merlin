@@ -81,7 +81,7 @@
     "@types/pg": "8.6.6",
     "@types/shelljs": "0.8.11",
     "@types/tough-cookie": "4.0.2",
-    "@types/uuid": "9.0.0",
+    "@types/uuid": "9.0.1",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.53.0",
     "@typescript-eslint/parser": "5.53.0",
