@@ -63,7 +63,7 @@ func getBaseConfig() *Config {
 		Job: JobConfig{
 			FullSync: CronConfig{
 				Enabled: true,
-				Rule:    "* * * * * *",
+				Rule:    "0 0 0 * * *",
 			},
 			NewsSync: CronConfig{
 				Enabled: true,
