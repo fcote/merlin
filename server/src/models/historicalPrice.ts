@@ -19,9 +19,9 @@ class HistoricalPrice extends BaseModel {
   low: number
   @Field((_) => Float)
   close: number
-  @Field((_) => Float)
+  @Field((_) => Float, { nullable: true })
   volume: number // In millions
-  @Field((_) => Float)
+  @Field((_) => Float, { nullable: true })
   change: number
   @Field((_) => Float)
   changePercent: number

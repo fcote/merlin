@@ -9,6 +9,7 @@ import {
   LineSeriesPartialOptions,
   AreaSeriesPartialOptions,
   HistogramSeriesPartialOptions,
+  ColorType,
 } from 'lightweight-charts'
 import { debounce } from 'lodash'
 import React, { useState, useRef, useEffect, CSSProperties } from 'react'
@@ -28,7 +29,10 @@ export type SecurityChartProps = {
 
 const chartConfig: DeepPartial<ChartOptions> = {
   layout: {
-    backgroundColor: 'transparent',
+    background: {
+      type: ColorType.Solid,
+      color: 'transparent',
+    },
     textColor: '#d1d4dc',
   },
   grid: {
