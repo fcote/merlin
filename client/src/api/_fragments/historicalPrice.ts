@@ -6,7 +6,6 @@ const historicalPriceFragment = gql`
     date
     close
     volume
-    change
   }
 `
 
