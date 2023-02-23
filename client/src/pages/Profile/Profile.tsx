@@ -1,14 +1,6 @@
 import { SaveOutlined } from '@ant-design/icons'
-import {
-  Form,
-  PageHeader,
-  Card,
-  Input,
-  Button,
-  Row,
-  Col,
-  FormInstance,
-} from 'antd'
+import { PageHeader } from '@ant-design/pro-layout'
+import { Form, Card, Input, Button, Row, Col, FormInstance } from 'antd'
 import React, { useRef, useEffect } from 'react'
 
 import successNotification from '@helpers/successNotification'

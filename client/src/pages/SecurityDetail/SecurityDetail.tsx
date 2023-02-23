@@ -3,15 +3,8 @@ import {
   InfoCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import {
-  PageHeader,
-  Progress,
-  Descriptions,
-  Button,
-  Tag,
-  Modal,
-  Layout,
-} from 'antd'
+import { PageHeader } from '@ant-design/pro-layout'
+import { Progress, Descriptions, Button, Tag, Modal, Layout } from 'antd'
 import React, { useState, useMemo } from 'react'
 import { useParams, Routes, useNavigate, Route } from 'react-router-dom'
 
@@ -100,7 +93,7 @@ const SecurityDetail = () => {
         title={security?.company?.name}
         closable={false}
         onCancel={() => setIsCompanyDescriptionModalVisible(false)}
-        visible={isCompanyDescriptionModalVisible}
+        open={isCompanyDescriptionModalVisible}
         footer={null}
       >
         <Descriptions size="small" column={3} layout="vertical" colon={false}>

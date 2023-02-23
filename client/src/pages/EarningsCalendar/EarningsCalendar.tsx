@@ -1,5 +1,6 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { PageHeader, Card, Badge, Button, Space } from 'antd'
+import { PageHeader } from '@ant-design/pro-layout'
+import { Card, Badge, Button, Space } from 'antd'
 import { HeaderRender } from 'antd/es/calendar/generateCalendar'
 import { sortBy } from 'lodash'
 import React from 'react'

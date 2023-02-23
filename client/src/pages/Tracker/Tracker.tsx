@@ -1,5 +1,6 @@
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Col, PageHeader, Row, Space } from 'antd'
+import { PageHeader } from '@ant-design/pro-layout'
+import { Button, Col, Row, Space } from 'antd'
 import { range } from 'lodash'
 import React, { useState, useMemo } from 'react'
 

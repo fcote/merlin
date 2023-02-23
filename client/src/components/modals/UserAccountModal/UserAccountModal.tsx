@@ -102,7 +102,7 @@ const UserAccountModal = ({
     <Modal
       className="user-account-balance-modal"
       title={account?.name}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

@@ -1,6 +1,36 @@
-@import '~antd/dist/antd.dark.less';
+/* @import '~antd/dist/antd.dark.less';*/
 
 // Site content
+
+body,
+.ant-layout {
+    background: @body-background;
+}
+
+.ant-card {
+    background: @component-background;
+}
+
+a,
+.ant-menu-light,
+.ant-menu-light.ant-menu-horizontal >.ant-menu-item-selected,
+.ant-menu-light.ant-menu-horizontal >.ant-menu-item-selected::after,
+.ant-statistic .ant-statistic-title,
+.ant-table-wrapper .ant-table-thead >tr>th,
+.ant-table-wrapper .ant-table, .ant-card .ant-card-head {
+    color: @primary-color;
+}
+
+.ant-empty-normal {
+    color: @menu-dark-item-active-bg;
+}
+
+.ant-card .ant-card-head,
+.ant-table-wrapper .ant-table-thead >tr>th,
+.ant-table-wrapper .ant-table-thead >tr>td,
+.ant-table-wrapper .ant-table-tbody >tr >td {
+    border-color: @border-color;
+}
 
 .site-layout {
     flex: 1;
@@ -110,7 +140,7 @@ tbody > tr > td > .security-value-loss {
 
 .ant-skeleton.ant-skeleton-active .ant-skeleton-content .ant-skeleton-title,
 .ant-skeleton.ant-skeleton-active .ant-skeleton-content .ant-skeleton-paragraph > li {
-    animation: ~'@{skeleton-prefix-cls}-loading' 1s linear infinite;
+    animation: ~'ant-skeleton-loading' 1s linear infinite;
 }
 
 // Tooltip

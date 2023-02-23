@@ -71,7 +71,7 @@ const EarningCallTranscriptModal = ({
     <Modal
       className="earning-call-transcript-modal"
       title={`Call transcript - ${earning?.fiscalYear} (Q${earning?.fiscalQuarter})`}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

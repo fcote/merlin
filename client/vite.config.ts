@@ -1,10 +1,16 @@
+import { convertLegacyToken } from '@ant-design/compatible/lib'
 import react from '@vitejs/plugin-react'
 import reactRefresh from '@vitejs/plugin-react-refresh'
+import { theme } from 'antd/lib'
 // @ts-ignore
 import path from 'path'
 import { defineConfig } from 'vite'
 
 import { Color } from './src/style/color'
+
+const { darkAlgorithm, defaultSeed } = theme
+const mapToken = darkAlgorithm(defaultSeed)
+const v4Token = convertLegacyToken(mapToken)
 
 const mapToFolder = (
   dependencies: string[],
@@ -29,11 +35,14 @@ export default defineConfig({
     preprocessorOptions: {
       less: {
         modifyVars: {
+          ...v4Token,
           'menu-dark-item-active-bg': '#444444',
           'primary-color': Color.primary,
           'error-color': Color.error,
           'success-color': Color.success,
+          'body-background': '#000000',
           'component-background': '#101010',
+          'border-color': '#303030',
           'link-color': '#cccccc',
           'skeleton-color': '#000000',
           'radio-button-focus-shadow': 'none',

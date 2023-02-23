@@ -112,7 +112,7 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
   return (
     <Modal
       className="spotlight-search"
-      visible={isSearchVisible}
+      open={isSearchVisible}
       closable={false}
       footer={null}
     >
