@@ -1,7 +1,7 @@
 ###
 ### Build container
 ###
-FROM node:15.14-alpine3.10 as tsc-builder
+FROM node:19-alpine3.17 as tsc-builder
 WORKDIR /app
 
 # Install deps and build.
@@ -11,7 +11,7 @@ RUN npm i && npm run build
 ###
 ### Production image container
 ###
-FROM node:15.14-alpine3.10 as runtime-container
+FROM node:19-alpine3.17 as runtime-container
 WORKDIR /app
 
 # Copy compiled sources
