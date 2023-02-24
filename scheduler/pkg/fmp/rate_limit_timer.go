@@ -1,7 +1,6 @@
 package fmp
 
 import (
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -14,8 +13,6 @@ type RateLimitTimer struct {
 	end               time.Time
 	nRequests         atomic.Uint64
 	maxRequestsPerMin uint64
-
-	mu sync.Mutex
 }
 
 // NewRateLimitTimer creates a new RateLimitTimer
