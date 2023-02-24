@@ -2,9 +2,8 @@ package fmp
 
 import (
 	"sync"
+	"sync/atomic"
 	"time"
-
-	"github.com/fcote/merlin/sheduler/pkg/glog"
 )
 
 const timerDuration = 1 * time.Minute
@@ -13,8 +12,8 @@ const timerDuration = 1 * time.Minute
 type RateLimitTimer struct {
 	timer             *time.Timer
 	end               time.Time
-	nRequests         int
-	maxRequestsPerMin int
+	nRequests         atomic.Uint64
+	maxRequestsPerMin uint64
 
 	mu sync.Mutex
 }
@@ -23,7 +22,7 @@ type RateLimitTimer struct {
 func NewRateLimitTimer(maxRequestsPerMin int) *RateLimitTimer {
 	t := &RateLimitTimer{
 		end:               time.Now().Add(timerDuration),
-		maxRequestsPerMin: maxRequestsPerMin,
+		maxRequestsPerMin: uint64(maxRequestsPerMin),
 	}
 	t.timer = time.AfterFunc(timerDuration, t.reset)
 
@@ -32,26 +31,17 @@ func NewRateLimitTimer(maxRequestsPerMin int) *RateLimitTimer {
 
 // Wait blocks until the next request can be made
 func (t *RateLimitTimer) Wait() {
-	t.mu.Lock()
-	defer t.mu.Unlock()
+	t.nRequests.Add(1)
 
-	t.nRequests++
-
-	if t.nRequests >= t.maxRequestsPerMin {
+	if t.nRequests.Load() >= t.maxRequestsPerMin {
 		timeToWait := time.Until(t.end)
-
-		glog.Get().Debug().Msgf("fmp | rate limit | waiting %.2fs", timeToWait.Seconds())
-
 		<-time.After(timeToWait)
 	}
 }
 
 // reset the number of requests made and the timer
 func (t *RateLimitTimer) reset() {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	t.nRequests = 0
+	t.nRequests.Store(0)
 
 	t.timer.Reset(timerDuration)
 	t.end = time.Now().Add(timerDuration)

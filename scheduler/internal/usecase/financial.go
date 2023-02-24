@@ -78,7 +78,11 @@ func (uc FinancialUsecase) sync(
 				return err
 			}
 
-			ratioProcessor := NewFinancialRatioProcessor(financialInputs, financialItemMap, tickerPrices)
+			ratioProcessor := NewFinancialRatioProcessor(
+				append(financialInputs, ttmFinancialInputs...),
+				financialItemMap,
+				tickerPrices,
+			)
 			ratioFinancialInputs := ratioProcessor.Compute()
 			ratioFinancialIds, err := s.BatchInsertSecurityFinancials(ctx, ratioFinancialInputs)
 			if err != nil {
