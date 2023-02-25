@@ -2,10 +2,8 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"strings"
 
-	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
@@ -32,8 +30,8 @@ func NewFullSync(
 	financialSectorSyncer FinancialSectorSyncer,
 	earningSyncer EarningSyncer,
 	newsSyncer NewsSyncer,
-) FullSync {
-	return FullSync{
+) *FullSync {
+	return &FullSync{
 		ticker:            tickerLister,
 		sector:            sectorLister,
 		security:          companySyncer,
@@ -45,7 +43,7 @@ func NewFullSync(
 	}
 }
 
-func (fs FullSync) Handle() error {
+func (fs *FullSync) Handle() error {
 	ctx := context.Background()
 
 	tickers, err := fs.ticker.ListTickers(ctx)
@@ -65,21 +63,16 @@ func (fs FullSync) Handle() error {
 	return nil
 }
 
-func (fs FullSync) isTickerValid(ticker string) bool {
+func (fs *FullSync) isTickerValid(ticker string) bool {
 	return !strings.Contains(ticker, ".") &&
 		!strings.Contains(ticker, "-") &&
 		len(ticker) > 0
 }
 
-func (fs FullSync) syncSecurities(ctx context.Context, index int, total int, tickers []string) {
+func (fs *FullSync) syncSecurities(ctx context.Context, index int, total int, tickers []string) {
 	progress := index*chunkSize + len(tickers)
 
-	securities, commonStocks, err := fs.security.SyncSecurities(ctx, tickers)
-	prices, err := fs.syncSecurityHistoricalPrices(ctx, err, securities)
-	err = fs.syncSecurityNews(ctx, err, commonStocks)
-	err = fs.syncSecurityEarnings(ctx, err, commonStocks)
-	err = fs.syncSecurityFinancials(ctx, err, commonStocks, prices)
-
+	err := syncChunk(ctx, fs, tickers)
 	switch {
 	case err != nil:
 		glog.Error().Msgf(
@@ -99,44 +92,15 @@ func (fs FullSync) syncSecurities(ctx context.Context, index int, total int, tic
 	}
 }
 
-func (fs FullSync) syncSecurityHistoricalPrices(ctx context.Context, err error, securities map[string]int) (map[string]domain.HistoricalPrices, error) {
-	if len(securities) == 0 {
-		return nil, err
-	}
-	prices, pricesErr := fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
-	return prices, errors.Join(err, pricesErr)
-}
-
-func (fs FullSync) syncSecurityNews(ctx context.Context, err error, commonStocks map[string]int) error {
-	if len(commonStocks) == 0 {
-		return err
-	}
-	return errors.Join(err, fs.news.SyncSecurityNews(ctx, commonStocks))
-}
-
-func (fs FullSync) syncSecurityEarnings(ctx context.Context, err error, commonStocks map[string]int) error {
-	if len(commonStocks) == 0 {
-		return err
-	}
-	return errors.Join(err, fs.earning.SyncSecurityEarnings(ctx, commonStocks))
-}
-
-func (fs FullSync) syncSecurityFinancials(ctx context.Context, err error, commonStocks map[string]int, prices map[string]domain.HistoricalPrices) error {
-	if len(commonStocks) == 0 || len(prices) == 0 {
-		return err
-	}
-	return errors.Join(err, fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices))
-}
-
-func (fs FullSync) syncSectors(ctx context.Context) {
+func (fs *FullSync) syncSectors(ctx context.Context) {
 	sectors, err := fs.sector.ListSectors(ctx)
 	if err != nil {
 		glog.Error().Msgf("sector sync | could not list sectors: %v", err)
+		return
 	}
 
 	for i, sector := range sectors {
 		err := fs.financialSector.SyncSectorFinancials(ctx, sector)
-
 		switch {
 		case err != nil:
 			glog.Error().Msgf(
