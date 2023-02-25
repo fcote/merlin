@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
+	"github.com/sourcegraph/conc/pool"
+
 	"github.com/fcote/merlin/sheduler/internal/domain"
-	"github.com/fcote/merlin/sheduler/internal/helper/worker"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
@@ -28,22 +30,39 @@ func NewEarningUsecase(
 	}
 }
 
-func (uc EarningUsecase) SyncSecurityEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors {
-	_, errors := worker.NewPool(
-		earningConcurrency,
-		uc.sync,
-	).Run(ctx, domain.SecurityTasks(securities))
-	return errors
+func (uc EarningUsecase) SyncSecurityEarnings(ctx context.Context, securities map[string]int) error {
+	p := pool.New().
+		WithErrors().
+		WithContext(ctx).
+		WithMaxGoroutines(earningConcurrency)
+
+	uc.launchSyncs(p, securities)
+
+	if err := p.Wait(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (uc EarningUsecase) sync(ctx context.Context, task domain.SecurityTask) (domain.Earnings, *domain.SyncError) {
+func (uc EarningUsecase) launchSyncs(pool *pool.ContextPool, securities map[string]int) {
+	for ticker, securityId := range securities {
+		pool.Go(func(ctx context.Context) error {
+			return uc.sync(ctx, domain.SecurityTask{
+				Ticker:     ticker,
+				SecurityId: securityId,
+			})
+		})
+	}
+}
+
+func (uc EarningUsecase) sync(ctx context.Context, task domain.SecurityTask) error {
 	ctx = gmonitor.NewContext(ctx, "sync.security.earning")
 	defer gmonitor.FromContext(ctx).End()
-	log := glog.Get()
 
 	rawEarnings, err := uc.fetch.Earnings(ctx, task.Ticker)
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not fetch earnings", err)
+		return fmt.Errorf("%s | could not fetch earnings: %w", task.Ticker, err)
 	}
 
 	var earningInputs domain.Earnings
@@ -57,8 +76,8 @@ func (uc EarningUsecase) sync(ctx context.Context, task domain.SecurityTask) (do
 			return err
 		}
 
-		log.Info().Msgf(
-			"%s | successfully synced earnings | count: %d",
+		glog.Info().Msgf(
+			"%s | earnings | count: %d",
 			task.Ticker,
 			len(result),
 		)
@@ -66,8 +85,8 @@ func (uc EarningUsecase) sync(ctx context.Context, task domain.SecurityTask) (do
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not sync earnings", err)
+		return fmt.Errorf("%s | could not sync earnings: %w", task.Ticker, err)
 	}
 
-	return earningInputs, nil
+	return nil
 }

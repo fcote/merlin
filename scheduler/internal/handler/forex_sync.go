@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 )
 
 type ForexSync struct {
@@ -22,12 +22,13 @@ func (ns ForexSync) Handle() error {
 	ctx := context.Background()
 
 	forexIds, err := ns.forex.SyncForex(ctx)
-	if err != nil {
-		err.Log()
-		return nil
-	}
 
-	domain.NewSyncSuccess(nil, "forex sync success", len(forexIds), len(forexIds)).Log()
+	switch {
+	case err != nil:
+		glog.Error().Msgf("%d/%d | forex sync\n%v", len(forexIds), len(forexIds), err)
+	default:
+		glog.Info().Msgf("%d/%d | forex sync", len(forexIds), len(forexIds))
+	}
 
 	return nil
 }

@@ -29,16 +29,15 @@ func main() {
 	}
 
 	glog.InitLogger(gmonitor.Get())
-	logger := glog.Get()
 
 	// DB
 	pgConf, err := pgxpool.ParseConfig(conf.DB.ConnectionString())
 	if err != nil {
-		logger.Fatal().Msgf("failed to initialize database config: %v", err)
+		glog.Fatal().Msgf("failed to initialize database config: %v", err)
 	}
 	dbPool, err := pgxpool.NewWithConfig(context.Background(), pgConf)
 	if err != nil {
-		logger.Fatal().Msgf("failed to initialize database: %v", err)
+		glog.Fatal().Msgf("failed to initialize database: %v", err)
 	}
 
 	// FMP
@@ -81,7 +80,7 @@ func main() {
 	// Load timezone
 	location, err := time.LoadLocation(conf.Timezone)
 	if err != nil {
-		logger.Fatal().Msgf("failed to load timezone from config: %v", err)
+		glog.Fatal().Msgf("failed to load timezone from config: %v", err)
 	}
 
 	// Scheduler
@@ -91,21 +90,21 @@ func main() {
 	if conf.Job.NewsSync.Enabled {
 		j, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).Do(newsHandler.Handle)
 		if err != nil {
-			logger.Fatal().Msgf("failed to initialize news sync job: %v", err)
+			glog.Fatal().Msgf("failed to initialize news sync job: %v", err)
 		}
 		go logJobRegistered(j, "news sync")
 	}
 	if conf.Job.ForexSync.Enabled {
 		j, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
 		if err != nil {
-			logger.Fatal().Msgf("failed to initialize forex sync job: %v", err)
+			glog.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
 		go logJobRegistered(j, "forex sync")
 	}
 	if conf.Job.FullSync.Enabled {
 		j, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
 		if err != nil {
-			logger.Fatal().Msgf("failed to initialize full sync job: %v", err)
+			glog.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
 		go logJobRegistered(j, "full sync")
 	}
@@ -117,7 +116,7 @@ func logJobRegistered(j *gocron.Job, name string) {
 	// waits for scheduler to start
 	<-time.After(1 * time.Second)
 
-	glog.Get().Info().Msgf(
+	glog.Info().Msgf(
 		"job | registered %s | next run: %s",
 		name,
 		j.ScheduledTime().Format("2006-01-02 15:04:05"),

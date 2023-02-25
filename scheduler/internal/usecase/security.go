@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
@@ -24,18 +25,18 @@ func NewSecurityUsecase(
 	}
 }
 
-func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, *domain.SyncError) {
+func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, error) {
 	ctx = gmonitor.NewContext(ctx, "sync.security")
 	defer gmonitor.FromContext(ctx).End()
 
 	rawCompanies, err := uc.fetch.Companies(ctx, tickers)
 	if err != nil {
-		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch companies", err)
+		return nil, nil, fmt.Errorf("%s | could not fetch companies: %w", strings.Join(tickers, ","), err)
 	}
 
 	rawSecurities, err := uc.fetch.Securities(ctx, tickers)
 	if err != nil {
-		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not fetch securities", err)
+		return nil, nil, fmt.Errorf("%s | could not fetch securities: %w", strings.Join(tickers, ","), err)
 	}
 
 	securities := make(map[string]int)
@@ -84,13 +85,13 @@ func (uc SecurityUsecase) SyncSecurities(ctx context.Context, tickers []string) 
 		return nil
 	})
 	if err != nil {
-		return nil, nil, domain.NewSyncError(strings.Join(tickers, ","), "could not sync securities", err)
+		return nil, nil, fmt.Errorf("%s | could not sync securities: %w", strings.Join(tickers, ","), err)
 	}
 
 	return securities, commonStocks, nil
 }
 
-func (uc SecurityUsecase) GetSecurities(ctx context.Context) (map[string]int, *domain.SyncError) {
+func (uc SecurityUsecase) GetSecurities(ctx context.Context) (map[string]int, error) {
 	ctx = gmonitor.NewContext(ctx, "get.security")
 	defer gmonitor.FromContext(ctx).End()
 
@@ -109,7 +110,7 @@ func (uc SecurityUsecase) GetSecurities(ctx context.Context) (map[string]int, *d
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError("", "could not get securities", err)
+		return nil, fmt.Errorf("could not get securities: %w", err)
 	}
 
 	return securities, nil

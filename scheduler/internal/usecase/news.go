@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
+	"github.com/sourcegraph/conc/pool"
+
 	"github.com/fcote/merlin/sheduler/internal/domain"
-	"github.com/fcote/merlin/sheduler/internal/helper/worker"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
@@ -28,22 +30,39 @@ func NewNewsUsecase(
 	}
 }
 
-func (uc NewsUsecase) SyncSecurityNews(ctx context.Context, securities map[string]int) domain.SyncErrors {
-	_, errors := worker.NewPool(
-		newsConcurrency,
-		uc.sync,
-	).Run(ctx, domain.SecurityTasks(securities))
-	return errors
+func (uc NewsUsecase) SyncSecurityNews(ctx context.Context, securities map[string]int) error {
+	p := pool.New().
+		WithErrors().
+		WithContext(ctx).
+		WithMaxGoroutines(newsConcurrency)
+
+	uc.launchSyncs(p, securities)
+
+	if err := p.Wait(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (uc NewsUsecase) sync(ctx context.Context, task domain.SecurityTask) (domain.Newses, *domain.SyncError) {
+func (uc NewsUsecase) launchSyncs(pool *pool.ContextPool, securities map[string]int) {
+	for ticker, securityId := range securities {
+		pool.Go(func(ctx context.Context) error {
+			return uc.sync(ctx, domain.SecurityTask{
+				Ticker:     ticker,
+				SecurityId: securityId,
+			})
+		})
+	}
+}
+
+func (uc NewsUsecase) sync(ctx context.Context, task domain.SecurityTask) error {
 	ctx = gmonitor.NewContext(ctx, "sync.security.news")
 	defer gmonitor.FromContext(ctx).End()
-	log := glog.Get()
 
 	rawNews, err := uc.fetch.SecurityNews(ctx, task.Ticker)
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not fetch news", err)
+		return fmt.Errorf("%s | could not fetch news: %w", task.Ticker, err)
 	}
 
 	var newsInputs domain.Newses
@@ -56,8 +75,8 @@ func (uc NewsUsecase) sync(ctx context.Context, task domain.SecurityTask) (domai
 			return err
 		}
 
-		log.Info().Msgf(
-			"%s | successfully synced news | count: %d",
+		glog.Info().Msgf(
+			"%s | news | count: %d",
 			task.Ticker,
 			len(result),
 		)
@@ -65,19 +84,19 @@ func (uc NewsUsecase) sync(ctx context.Context, task domain.SecurityTask) (domai
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not sync news", err)
+		return fmt.Errorf("%s | could not fetch news: %w", task.Ticker, err)
 	}
 
-	return newsInputs, nil
+	return nil
 }
 
-func (uc NewsUsecase) SyncNews(ctx context.Context, securities map[string]int) ([]int, *domain.SyncError) {
+func (uc NewsUsecase) SyncNews(ctx context.Context, securities map[string]int) ([]int, error) {
 	ctx = gmonitor.NewContext(ctx, "sync.news")
 	defer gmonitor.FromContext(ctx).End()
 
 	rawNews, err := uc.fetch.News(ctx)
 	if err != nil {
-		return nil, domain.NewSyncError("", "could not fetch news", err)
+		return nil, fmt.Errorf("could not fetch news: %w", err)
 	}
 
 	var newsIds []int
@@ -99,7 +118,7 @@ func (uc NewsUsecase) SyncNews(ctx context.Context, securities map[string]int) (
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError("", "could not sync news", err)
+		return nil, fmt.Errorf("could not sync news: %w", err)
 	}
 
 	return newsIds, nil

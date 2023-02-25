@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 )
 
 type NewsSync struct {
@@ -24,19 +24,20 @@ func NewNewsSync(
 func (ns NewsSync) Handle() error {
 	ctx := context.Background()
 
-	securities, getErr := ns.security.GetSecurities(ctx)
-	if getErr != nil {
-		getErr.Log()
+	securities, err := ns.security.GetSecurities(ctx)
+	if err != nil {
+		glog.Error().Err(err).Msg("news sync failed")
 		return nil
 	}
 
-	newsIds, syncErr := ns.news.SyncNews(ctx, securities)
-	if syncErr != nil {
-		syncErr.Log()
-		return nil
-	}
+	newsIds, err := ns.news.SyncNews(ctx, securities)
 
-	domain.NewSyncSuccess(nil, "news sync success", len(newsIds), len(newsIds)).Log()
+	switch {
+	case err != nil:
+		glog.Error().Msgf("%d/%d | news sync\n%v", len(newsIds), len(newsIds), err)
+	default:
+		glog.Info().Msgf("%d/%d | news sync", len(newsIds), len(newsIds))
+	}
 
 	return nil
 }

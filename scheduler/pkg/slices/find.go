@@ -13,15 +13,6 @@ func FindIndex[T Equalizer[T]](s []T, needle T) int {
 	return -1
 }
 
-func Find[T comparable](s []T, needle T) *T {
-	for _, input := range s {
-		if input == needle {
-			return &input
-		}
-	}
-	return nil
-}
-
 func Get[T any](s []T, index int) *T {
 	if index >= len(s) {
 		return nil

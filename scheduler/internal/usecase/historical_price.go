@@ -2,10 +2,12 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
+	"github.com/sourcegraph/conc/pool"
+
 	"github.com/fcote/merlin/sheduler/internal/domain"
-	"github.com/fcote/merlin/sheduler/internal/helper/worker"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
@@ -28,21 +30,40 @@ func NewHistoricalPriceUsecase(
 	}
 }
 
-func (uc HistoricalPriceUsecase) SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors) {
-	return worker.NewPool(
-		historicalPriceConcurrency,
-		uc.sync,
-	).Run(ctx, domain.SecurityTasks(securities))
+func (uc HistoricalPriceUsecase) SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, error) {
+	p := pool.NewWithResults[*domain.SyncResult[domain.HistoricalPrices]]().
+		WithErrors().
+		WithContext(ctx).
+		WithMaxGoroutines(historicalPriceConcurrency)
+
+	uc.launchSyncs(p, securities)
+
+	res, errs := p.Wait()
+	if errs != nil {
+		return nil, errs
+	}
+
+	return domain.MapSyncResults(res), nil
 }
 
-func (uc HistoricalPriceUsecase) sync(ctx context.Context, task domain.SecurityTask) (domain.HistoricalPrices, *domain.SyncError) {
+func (uc HistoricalPriceUsecase) launchSyncs(pool *pool.ResultContextPool[*domain.SyncResult[domain.HistoricalPrices]], securities map[string]int) {
+	for ticker, securityId := range securities {
+		pool.Go(func(ctx context.Context) (*domain.SyncResult[domain.HistoricalPrices], error) {
+			return uc.sync(ctx, domain.SecurityTask{
+				Ticker:     ticker,
+				SecurityId: securityId,
+			})
+		})
+	}
+}
+
+func (uc HistoricalPriceUsecase) sync(ctx context.Context, task domain.SecurityTask) (*domain.SyncResult[domain.HistoricalPrices], error) {
 	ctx = gmonitor.NewContext(ctx, "sync.security.historicalprice")
 	defer gmonitor.FromContext(ctx).End()
-	log := glog.Get()
 
 	rawHistoricalPrices, err := uc.fetch.HistoricalPrices(ctx, task.Ticker)
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not fetch historical prices", err)
+		return nil, fmt.Errorf("%s | could not fetch historical prices: %w", task.Ticker, err)
 	}
 
 	var historicalPriceInputs domain.HistoricalPrices
@@ -57,17 +78,16 @@ func (uc HistoricalPriceUsecase) sync(ctx context.Context, task domain.SecurityT
 			return err
 		}
 
-		log.Info().Msgf(
-			"%s | successfully synced historical prices | count: %d",
+		glog.Info().Msgf(
+			"%s | historical prices | count: %d",
 			task.Ticker,
 			len(result),
 		)
-
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError(task.Ticker, "could not sync historical prices", err)
+		return nil, fmt.Errorf("%s | could not sync historical prices: %w", task.Ticker, err)
 	}
 
-	return historicalPriceInputs, nil
+	return domain.NewSyncResult(task.Ticker, historicalPriceInputs), nil
 }

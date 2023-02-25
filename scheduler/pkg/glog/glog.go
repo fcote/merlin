@@ -18,6 +18,14 @@ func InitLogger(app *newrelic.Application) {
 	logger = baseLogger.Hook(nrHook)
 }
 
-func Get() *zerolog.Logger {
-	return &logger
+func Info() *zerolog.Event {
+	return logger.Info()
+}
+
+func Error() *zerolog.Event {
+	return logger.Error()
+}
+
+func Fatal() *zerolog.Event {
+	return logger.Fatal()
 }

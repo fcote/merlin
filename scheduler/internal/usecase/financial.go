@@ -2,21 +2,18 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
+	"github.com/sourcegraph/conc/pool"
+
 	"github.com/fcote/merlin/sheduler/internal/domain"
-	"github.com/fcote/merlin/sheduler/internal/helper/worker"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
 var financialConcurrency = runtime.GOMAXPROCS(0)
-
-type financialResult struct {
-	err *domain.SyncError
-	ids []int
-}
 
 type FinancialUsecase struct {
 	store DataStore
@@ -33,32 +30,55 @@ func NewFinancialUsecase(
 	}
 }
 
-func (uc FinancialUsecase) SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors {
+func (uc FinancialUsecase) SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) error {
 	financialItemMap, err := uc.store.GetFinancialItemMap(ctx)
 	if err != nil {
-		return domain.SyncErrors{*domain.NewSyncError("", "could not fetch financial item map", err)}
+		return fmt.Errorf("could not fetch financial item map: %w", err)
 	}
 
-	_, errors := worker.NewPool(
-		financialConcurrency,
-		uc.sync(financialItemMap, prices),
-	).Run(ctx, domain.SecurityTasks(securities))
-	return errors
+	p := pool.New().
+		WithErrors().
+		WithContext(ctx).
+		WithMaxGoroutines(financialConcurrency)
+
+	uc.launchSyncs(p, securities, prices, financialItemMap)
+
+	if err := p.Wait(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uc FinancialUsecase) launchSyncs(
+	pool *pool.ContextPool,
+	securities map[string]int,
+	prices map[string]domain.HistoricalPrices,
+	financialItemMap map[string]domain.FinancialItem,
+) {
+	sync := uc.sync(financialItemMap, prices)
+	for ticker, securityId := range securities {
+		pool.Go(func(ctx context.Context) error {
+			return sync(ctx, domain.SecurityTask{
+				Ticker:     ticker,
+				SecurityId: securityId,
+			})
+		})
+	}
 }
 
 func (uc FinancialUsecase) sync(
 	financialItemMap map[string]domain.FinancialItem,
 	prices map[string]domain.HistoricalPrices,
-) func(ctx context.Context, task domain.SecurityTask) ([]int, *domain.SyncError) {
-	return func(ctx context.Context, task domain.SecurityTask) ([]int, *domain.SyncError) {
+) func(ctx context.Context, task domain.SecurityTask) error {
+	return func(ctx context.Context, task domain.SecurityTask) error {
 		ctx = gmonitor.NewContext(ctx, "sync.security.financial")
 		defer gmonitor.FromContext(ctx).End()
-		log := glog.Get()
 
 		tickerPrices := prices[task.Ticker]
 		rawFinancials, err := uc.fetch.Financials(ctx, task.Ticker, financialItemMap)
 		if err != nil {
-			return nil, domain.NewSyncError(task.Ticker, "could not fetch financials", err)
+			return fmt.Errorf("%s | could not fetch financials: %w", task.Ticker, err)
 		}
 
 		var ids []int
@@ -89,8 +109,8 @@ func (uc FinancialUsecase) sync(
 				return err
 			}
 
-			log.Info().Msgf(
-				"%s | successfully synced security financials | count-financials: %d | count-ratios: %d | count-ttm: %d",
+			glog.Info().Msgf(
+				"%s | security financials | count-financials: %d | count-ratios: %d | count-ttm: %d",
 				task.Ticker,
 				len(financialIds),
 				len(ratioFinancialIds),
@@ -104,9 +124,9 @@ func (uc FinancialUsecase) sync(
 			return nil
 		})
 		if err != nil {
-			return nil, domain.NewSyncError(task.Ticker, "could not sync security financials", err)
+			return fmt.Errorf("%s | could not sync security financials: %w", task.Ticker, err)
 		}
 
-		return ids, nil
+		return nil
 	}
 }

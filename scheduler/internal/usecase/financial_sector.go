@@ -4,17 +4,17 @@ import (
 	"context"
 	"fmt"
 	"runtime"
-	"sync"
 
-	"github.com/rs/zerolog/log"
+	"github.com/sourcegraph/conc/pool"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 	"github.com/fcote/merlin/sheduler/pkg/math"
 	"github.com/fcote/merlin/sheduler/pkg/pointer"
 )
 
-var sectorFinancialConcurrency = runtime.NumCPU()
+var sectorFinancialConcurrency = runtime.GOMAXPROCS(0)
 
 type sectorJob struct {
 	sector domain.Sector
@@ -34,7 +34,7 @@ func NewFinancialSectorUsecase(
 	}
 }
 
-func (uc FinancialSectorUsecase) SyncSectorFinancials(ctx context.Context, sector domain.Sector) domain.SyncErrors {
+func (uc FinancialSectorUsecase) SyncSectorFinancials(ctx context.Context, sector domain.Sector) error {
 	var sectorPeriods []domain.FinancialYearPeriod
 
 	err := uc.store.Atomic(ctx, func(s DataStore) error {
@@ -46,70 +46,39 @@ func (uc FinancialSectorUsecase) SyncSectorFinancials(ctx context.Context, secto
 		return nil
 	})
 	if err != nil {
-		return domain.SyncErrors{*domain.NewSyncError(sector.Name, "could not sync sector financials", err)}
+		return fmt.Errorf("%s | could not fetch sector financial periods: %w", sector.Name, err)
 	}
 
-	var errors domain.SyncErrors
-	wg := sync.WaitGroup{}
-	jobs := make(chan sectorJob, sectorFinancialConcurrency)
-	results := make(chan financialResult)
+	p := pool.New().
+		WithErrors().
+		WithContext(ctx).
+		WithMaxGoroutines(sectorFinancialConcurrency)
 
-	for i := 0; i < sectorFinancialConcurrency; i++ {
-		go uc.worker(ctx, jobs, results)
+	uc.launchSyncs(p, sector, sectorPeriods)
+
+	if err := p.Wait(); err != nil {
+		return err
 	}
 
-	go uc.collect(&wg, results, &errors)
-
-	uc.feed(sector, sectorPeriods, &wg, jobs)
-
-	wg.Wait()
-
-	close(jobs)
-	close(results)
-
-	return errors
+	return nil
 }
 
-func (uc FinancialSectorUsecase) feed(sector domain.Sector, sectorPeriods []domain.FinancialYearPeriod, wg *sync.WaitGroup, jobs chan<- sectorJob) {
+func (uc FinancialSectorUsecase) launchSyncs(pool *pool.ContextPool, sector domain.Sector, sectorPeriods []domain.FinancialYearPeriod) {
 	for _, period := range sectorPeriods {
-		wg.Add(1)
-		jobs <- sectorJob{sector, period.Year, period.Period}
+		pool.Go(func(ctx context.Context) error {
+			return uc.sync(ctx, sectorJob{
+				sector: sector,
+				year:   period.Year,
+				period: period.Period,
+			})
+		})
 	}
 }
 
-func (uc FinancialSectorUsecase) worker(
-	ctx context.Context,
-	jobs <-chan sectorJob,
-	results chan<- financialResult,
-) {
-	for job := range jobs {
-		ids, err := uc.sync(ctx, job)
-		if err != nil {
-			results <- financialResult{err: err}
-		} else {
-			results <- financialResult{ids: ids}
-		}
-	}
-}
-
-func (uc FinancialSectorUsecase) collect(
-	wg *sync.WaitGroup,
-	results <-chan financialResult,
-	errors *domain.SyncErrors,
-) {
-	for r := range results {
-		if r.err != nil {
-			*errors = append(*errors, *r.err)
-		}
-		wg.Done()
-	}
-}
-
-func (uc FinancialSectorUsecase) sync(ctx context.Context, job sectorJob) ([]int, *domain.SyncError) {
+func (uc FinancialSectorUsecase) sync(ctx context.Context, job sectorJob) error {
 	ctx = gmonitor.NewContext(ctx, "sync.security.sector")
 	defer gmonitor.FromContext(ctx).End()
 
-	var sectorFinancialIds []int
 	err := uc.store.Atomic(ctx, func(s DataStore) error {
 		sectorFinancials, err := s.GetSectorFinancials(ctx, job.sector.Id, domain.FinancialTypeRatio, job.year, job.period)
 		if err != nil {
@@ -118,25 +87,26 @@ func (uc FinancialSectorUsecase) sync(ctx context.Context, job sectorJob) ([]int
 
 		financialInputs := uc.computeFinancialMedians(sectorFinancials, job)
 
-		sectorFinancialIds, err = s.BatchInsertSectorFinancials(ctx, financialInputs)
+		_, err = s.BatchInsertSectorFinancials(ctx, financialInputs)
 		if err != nil {
 			return err
 		}
 
-		log.Info().Msgf(
-			"%s | successfully synced sector financials | count: %d | source-financials: %d",
-			fmt.Sprintf("%s-%d-%s", job.sector.Name, job.year, job.period),
+		glog.Info().Msgf(
+			"%s | %d | %s | sector financials | count: %d | source-financials: %d",
+			job.sector.Name,
+			job.year,
+			job.period,
 			len(financialInputs),
 			len(sectorFinancials),
 		)
-
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError(job.sector.Name, "could not sync sector financials", err)
+		return fmt.Errorf("%s | could not sync sector financials: %w", job.sector.Name, err)
 	}
 
-	return sectorFinancialIds, nil
+	return nil
 }
 
 func (uc FinancialSectorUsecase) computeFinancialMedians(sectorFinancials domain.Financials, job sectorJob) domain.Financials {

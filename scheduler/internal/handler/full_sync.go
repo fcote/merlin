@@ -2,9 +2,11 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
+	"github.com/fcote/merlin/sheduler/pkg/glog"
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
@@ -50,15 +52,10 @@ func (fs FullSync) Handle() error {
 	if err != nil {
 		return err
 	}
-	tickers = slices.Filter(tickers, func(ticker string) bool {
-		return !strings.Contains(ticker, ".") &&
-			!strings.Contains(ticker, "-") &&
-			len(ticker) > 0
-	})
+	tickers = slices.Filter(tickers, fs.isTickerValid)
 
 	total := len(tickers)
 	tickerChunks := slices.Chunk(tickers, chunkSize)
-
 	for index, tickerChunk := range tickerChunks {
 		fs.syncChunk(ctx, index, total, tickerChunk)
 	}
@@ -68,54 +65,96 @@ func (fs FullSync) Handle() error {
 	return nil
 }
 
+func (fs FullSync) isTickerValid(ticker string) bool {
+	return !strings.Contains(ticker, ".") &&
+		!strings.Contains(ticker, "-") &&
+		len(ticker) > 0
+}
+
 func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers []string) {
 	progress := index*chunkSize + len(tickers)
 
 	securities, commonStocks, err := fs.security.SyncSecurities(ctx, tickers)
-	if err != nil {
-		err.Log()
-		return
+	prices, pricesErr := fs.syncSecurityHistoricalPrices(ctx, securities)
+	if pricesErr != nil {
+		err = errors.Join(err, pricesErr)
 	}
+	err = errors.Join(err, fs.syncSecurityNews(ctx, commonStocks))
+	err = errors.Join(err, fs.syncSecurityEarnings(ctx, commonStocks))
+	err = errors.Join(err, fs.syncSecurityFinancials(ctx, commonStocks, prices))
 
-	prices, syncerr := fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
-	if syncerr != nil {
-		syncerr.Log()
-		return
+	switch {
+	case err != nil:
+		glog.Error().Msgf(
+			"%d/%d | securities sync | %v\n%v",
+			progress,
+			total,
+			tickers,
+			err,
+		)
+	default:
+		glog.Info().Msgf(
+			"%d/%d | securities sync | %v",
+			progress,
+			total,
+			tickers,
+		)
 	}
+}
 
-	if len(commonStocks) > 0 {
-		syncerr := fs.news.SyncSecurityNews(ctx, commonStocks)
-		if syncerr != nil {
-			syncerr.Log()
-			return
-		}
-
-		syncerr = fs.earning.SyncSecurityEarnings(ctx, commonStocks)
-		if syncerr != nil {
-			syncerr.Log()
-			return
-		}
-
-		syncerr = fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices)
-		if syncerr != nil {
-			syncerr.Log()
-			return
-		}
+func (fs FullSync) syncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, error) {
+	if len(securities) == 0 {
+		return nil, nil
 	}
+	return fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
+}
 
-	domain.NewSyncSuccess(tickers, "securities sync success", progress, total).Log()
+func (fs FullSync) syncSecurityNews(ctx context.Context, commonStocks map[string]int) error {
+	if len(commonStocks) == 0 {
+		return nil
+	}
+	return fs.news.SyncSecurityNews(ctx, commonStocks)
+}
+
+func (fs FullSync) syncSecurityEarnings(ctx context.Context, commonStocks map[string]int) error {
+	if len(commonStocks) == 0 {
+		return nil
+	}
+	return fs.earning.SyncSecurityEarnings(ctx, commonStocks)
+}
+
+func (fs FullSync) syncSecurityFinancials(ctx context.Context, commonStocks map[string]int, prices map[string]domain.HistoricalPrices) error {
+	if len(commonStocks) == 0 || len(prices) == 0 {
+		return nil
+	}
+	return fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices)
 }
 
 func (fs FullSync) syncSectors(ctx context.Context) {
 	sectors, err := fs.sector.ListSectors(ctx)
 	if err != nil {
-		domain.NewSyncError("", "could not list sectors", err).Log()
+		glog.Error().Msgf("sector sync | could not list sectors: %v", err)
 	}
 
 	for i, sector := range sectors {
-		if err := fs.financialSector.SyncSectorFinancials(ctx, sector); err != nil {
-			err.Log()
+		err := fs.financialSector.SyncSectorFinancials(ctx, sector)
+
+		switch {
+		case err != nil:
+			glog.Error().Msgf(
+				"%d/%d | sector sync | %s\n%v",
+				i+1,
+				len(sectors),
+				sector.Name,
+				err,
+			)
+		default:
+			glog.Info().Msgf(
+				"%d/%d | sector sync | %s",
+				i+1,
+				len(sectors),
+				sector.Name,
+			)
 		}
-		domain.NewSyncSuccess([]string{sector.Name}, "sector sync success", i+1, len(sectors)).Log()
 	}
 }

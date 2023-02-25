@@ -7,36 +7,36 @@ import (
 )
 
 type SecuritySyncer interface {
-	SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, *domain.SyncError)
+	SyncSecurities(ctx context.Context, tickers []string) (map[string]int, map[string]int, error)
 }
 
 type SecurityGetter interface {
-	GetSecurities(ctx context.Context) (map[string]int, *domain.SyncError)
+	GetSecurities(ctx context.Context) (map[string]int, error)
 }
 
 type HistoricalPriceSyncer interface {
-	SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, domain.SyncErrors)
+	SyncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, error)
 }
 
 type EarningSyncer interface {
-	SyncSecurityEarnings(ctx context.Context, securities map[string]int) domain.SyncErrors
+	SyncSecurityEarnings(ctx context.Context, securities map[string]int) error
 }
 
 type FinancialSecuritySyncer interface {
-	SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) domain.SyncErrors
+	SyncSecurityFinancials(ctx context.Context, securities map[string]int, prices map[string]domain.HistoricalPrices) error
 }
 
 type FinancialSectorSyncer interface {
-	SyncSectorFinancials(ctx context.Context, sector domain.Sector) domain.SyncErrors
+	SyncSectorFinancials(ctx context.Context, sector domain.Sector) error
 }
 
 type NewsSyncer interface {
-	SyncSecurityNews(ctx context.Context, securities map[string]int) domain.SyncErrors
-	SyncNews(ctx context.Context, securities map[string]int) ([]int, *domain.SyncError)
+	SyncSecurityNews(ctx context.Context, securities map[string]int) error
+	SyncNews(ctx context.Context, securities map[string]int) ([]int, error)
 }
 
 type ForexSyncer interface {
-	SyncForex(ctx context.Context) ([]int, *domain.SyncError)
+	SyncForex(ctx context.Context) ([]int, error)
 }
 
 type TickerLister interface {

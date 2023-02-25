@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
 )
 
@@ -22,13 +22,13 @@ func NewForexUsecase(
 	}
 }
 
-func (uc ForexUsecase) SyncForex(ctx context.Context) ([]int, *domain.SyncError) {
+func (uc ForexUsecase) SyncForex(ctx context.Context) ([]int, error) {
 	ctx = gmonitor.NewContext(ctx, "sync.forex")
 	defer gmonitor.FromContext(ctx).End()
 
 	forexInputs, err := uc.fetch.Forex(ctx)
 	if err != nil {
-		return nil, domain.NewSyncError("", "could not fetch forex", err)
+		return nil, fmt.Errorf("could not fetch forex: %w", err)
 	}
 
 	var forexIds []int
@@ -41,7 +41,7 @@ func (uc ForexUsecase) SyncForex(ctx context.Context) ([]int, *domain.SyncError)
 		return nil
 	})
 	if err != nil {
-		return nil, domain.NewSyncError("", "could not sync forex", err)
+		return nil, fmt.Errorf("could not sync forex: %w", err)
 	}
 
 	return forexIds, nil
