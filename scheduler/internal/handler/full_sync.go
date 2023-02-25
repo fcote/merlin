@@ -57,7 +57,7 @@ func (fs FullSync) Handle() error {
 	total := len(tickers)
 	tickerChunks := slices.Chunk(tickers, chunkSize)
 	for index, tickerChunk := range tickerChunks {
-		fs.syncChunk(ctx, index, total, tickerChunk)
+		fs.syncSecurities(ctx, index, total, tickerChunk)
 	}
 
 	fs.syncSectors(ctx)
@@ -71,17 +71,14 @@ func (fs FullSync) isTickerValid(ticker string) bool {
 		len(ticker) > 0
 }
 
-func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers []string) {
+func (fs FullSync) syncSecurities(ctx context.Context, index int, total int, tickers []string) {
 	progress := index*chunkSize + len(tickers)
 
 	securities, commonStocks, err := fs.security.SyncSecurities(ctx, tickers)
-	prices, pricesErr := fs.syncSecurityHistoricalPrices(ctx, securities)
-	if pricesErr != nil {
-		err = errors.Join(err, pricesErr)
-	}
-	err = errors.Join(err, fs.syncSecurityNews(ctx, commonStocks))
-	err = errors.Join(err, fs.syncSecurityEarnings(ctx, commonStocks))
-	err = errors.Join(err, fs.syncSecurityFinancials(ctx, commonStocks, prices))
+	prices, err := fs.syncSecurityHistoricalPrices(ctx, err, securities)
+	err = fs.syncSecurityNews(ctx, err, commonStocks)
+	err = fs.syncSecurityEarnings(ctx, err, commonStocks)
+	err = fs.syncSecurityFinancials(ctx, err, commonStocks, prices)
 
 	switch {
 	case err != nil:
@@ -102,32 +99,33 @@ func (fs FullSync) syncChunk(ctx context.Context, index int, total int, tickers 
 	}
 }
 
-func (fs FullSync) syncSecurityHistoricalPrices(ctx context.Context, securities map[string]int) (map[string]domain.HistoricalPrices, error) {
+func (fs FullSync) syncSecurityHistoricalPrices(ctx context.Context, err error, securities map[string]int) (map[string]domain.HistoricalPrices, error) {
 	if len(securities) == 0 {
-		return nil, nil
+		return nil, err
 	}
-	return fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
+	prices, pricesErr := fs.historicalPrice.SyncSecurityHistoricalPrices(ctx, securities)
+	return prices, errors.Join(err, pricesErr)
 }
 
-func (fs FullSync) syncSecurityNews(ctx context.Context, commonStocks map[string]int) error {
+func (fs FullSync) syncSecurityNews(ctx context.Context, err error, commonStocks map[string]int) error {
 	if len(commonStocks) == 0 {
-		return nil
+		return err
 	}
-	return fs.news.SyncSecurityNews(ctx, commonStocks)
+	return errors.Join(err, fs.news.SyncSecurityNews(ctx, commonStocks))
 }
 
-func (fs FullSync) syncSecurityEarnings(ctx context.Context, commonStocks map[string]int) error {
+func (fs FullSync) syncSecurityEarnings(ctx context.Context, err error, commonStocks map[string]int) error {
 	if len(commonStocks) == 0 {
-		return nil
+		return err
 	}
-	return fs.earning.SyncSecurityEarnings(ctx, commonStocks)
+	return errors.Join(err, fs.earning.SyncSecurityEarnings(ctx, commonStocks))
 }
 
-func (fs FullSync) syncSecurityFinancials(ctx context.Context, commonStocks map[string]int, prices map[string]domain.HistoricalPrices) error {
+func (fs FullSync) syncSecurityFinancials(ctx context.Context, err error, commonStocks map[string]int, prices map[string]domain.HistoricalPrices) error {
 	if len(commonStocks) == 0 || len(prices) == 0 {
-		return nil
+		return err
 	}
-	return fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices)
+	return errors.Join(err, fs.financialSecurity.SyncSecurityFinancials(ctx, commonStocks, prices))
 }
 
 func (fs FullSync) syncSectors(ctx context.Context) {
