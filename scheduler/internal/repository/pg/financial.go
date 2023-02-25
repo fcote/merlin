@@ -3,6 +3,7 @@ package pg
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/gmonitor"
@@ -228,6 +229,15 @@ where c.sector_id = $1;
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("could not read financial period rows: %w", err)
 	}
+
+	sort.Slice(periods, func(i, j int) bool {
+		yearI := periods[i].Year
+		yearJ := periods[j].Year
+		if yearI != yearJ {
+			return yearI < yearJ
+		}
+		return periods[i].Period > periods[j].Period
+	})
 
 	return periods, nil
 }

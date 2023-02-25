@@ -2,10 +2,8 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"runtime"
-
-	"github.com/sourcegraph/conc/pool"
 
 	"github.com/fcote/merlin/sheduler/internal/domain"
 	"github.com/fcote/merlin/sheduler/pkg/glog"
@@ -13,8 +11,6 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/math"
 	"github.com/fcote/merlin/sheduler/pkg/pointer"
 )
-
-var sectorFinancialConcurrency = runtime.GOMAXPROCS(0)
 
 type sectorJob struct {
 	sector domain.Sector
@@ -49,30 +45,15 @@ func (uc FinancialSectorUsecase) SyncSectorFinancials(ctx context.Context, secto
 		return fmt.Errorf("%s | could not fetch sector financial periods: %w", sector.Name, err)
 	}
 
-	p := pool.New().
-		WithErrors().
-		WithContext(ctx).
-		WithMaxGoroutines(sectorFinancialConcurrency)
-
-	uc.launchSyncs(p, sector, sectorPeriods)
-
-	if err := p.Wait(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (uc FinancialSectorUsecase) launchSyncs(pool *pool.ContextPool, sector domain.Sector, sectorPeriods []domain.FinancialYearPeriod) {
 	for _, period := range sectorPeriods {
-		pool.Go(func(ctx context.Context) error {
-			return uc.sync(ctx, sectorJob{
-				sector: sector,
-				year:   period.Year,
-				period: period.Period,
-			})
-		})
+		err = errors.Join(err, uc.sync(ctx, sectorJob{
+			sector: sector,
+			year:   period.Year,
+			period: period.Period,
+		}))
 	}
+
+	return err
 }
 
 func (uc FinancialSectorUsecase) sync(ctx context.Context, job sectorJob) error {

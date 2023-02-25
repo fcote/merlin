@@ -100,7 +100,7 @@ func last4QuartersMap(financials domain.Financials, financialItemMap map[int]dom
 
 	for _, financial := range financials {
 		// Only store quarters financials
-		if financial.Period == domain.FinancialPeriodY {
+		if !financial.Period.IsQuarter() {
 			continue
 		}
 		fi := financialItemMap[financial.FinancialItemId]
