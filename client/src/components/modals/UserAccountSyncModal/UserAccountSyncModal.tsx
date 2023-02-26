@@ -56,7 +56,7 @@ const UserAccountSyncModal = ({
     <Modal
       className="user-account-login-modal"
       title={accountLabel}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

@@ -157,7 +157,7 @@ const UserTransactionTableModal = ({
     <Modal
       className="user-transaction-modal"
       title={dayjs(date).format('MMMM YY')}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

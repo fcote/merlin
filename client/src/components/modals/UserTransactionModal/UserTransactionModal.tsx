@@ -107,7 +107,7 @@ const UserTransactionModal = ({
     <Modal
       className="user-transaction-balance-modal"
       title="Transaction"
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

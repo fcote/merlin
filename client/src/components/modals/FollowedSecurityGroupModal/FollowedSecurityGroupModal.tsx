@@ -72,7 +72,7 @@ const FollowedSecurityGroupModal = ({
     <Modal
       className="followed-security-group-modal"
       title={`New ${type}`}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

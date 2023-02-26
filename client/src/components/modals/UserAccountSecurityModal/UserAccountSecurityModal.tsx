@@ -128,7 +128,7 @@ const UserAccountSecurityModal = ({
     <Modal
       width={1000}
       className="user-account-security-modal"
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={false}
       closeIcon={null}

@@ -100,7 +100,7 @@ const SecurityDetail = () => {
         title={security?.company?.name}
         closable={false}
         onCancel={() => setIsCompanyDescriptionModalVisible(false)}
-        visible={isCompanyDescriptionModalVisible}
+        open={isCompanyDescriptionModalVisible}
         footer={null}
       >
         <Descriptions size="small" column={3} layout="vertical" colon={false}>

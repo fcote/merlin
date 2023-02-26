@@ -3,7 +3,7 @@ import { Input, Modal, Table, Spin, InputRef } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import { ColumnType } from 'antd/lib/table'
 import { debounce, isEmpty } from 'lodash'
-import React, { useState, useRef, ChangeEvent, useMemo } from 'react'
+import React, {useState, useRef, ChangeEvent, useMemo, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useSecuritySearch } from '@hooks/api/queries/useSecuritySearch'
@@ -36,15 +36,18 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
     }))
   }, [securitySearchResults])
 
+  useEffect(() => {
+    if (!searchInput.current || !isSearchVisible) return
+    setTimeout(() => searchInput.current.focus(), 100)
+  }, [isSearchVisible])
+
   const handleOpen = (_: KeyboardEvent) => {
     if (isSearchVisible) return
     setIsSearchVisible(true)
-    searchInput.current.focus()
   }
   const handleClose = (_?: KeyboardEvent) => {
     if (!isSearchVisible) return
     setIsSearchVisible(false)
-    searchInput.current.input.setAttribute('value', null) // Empty search input on close
   }
   const handleSelectRowDown = (_: KeyboardEvent) => {
     if (!isSearchVisible) return
@@ -76,7 +79,7 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
       return
     }
 
-    securitySearch({
+    await securitySearch({
       variables: { ticker: event.target.value.toUpperCase() },
     })
   }
@@ -105,16 +108,16 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
       title: 'Company',
       dataIndex: 'company',
       align: 'right',
-      width: 150,
     },
   ]
 
   return (
     <Modal
       className="spotlight-search"
-      visible={isSearchVisible}
+      open={isSearchVisible}
       closable={false}
       footer={null}
+      width={600}
     >
       <Input
         ref={searchInput}

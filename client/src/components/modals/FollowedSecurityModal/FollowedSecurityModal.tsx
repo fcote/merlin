@@ -126,7 +126,7 @@ const FollowedSecurityModal = ({
           ? `Edit - ${followedSecurityItem.alias}`
           : 'New item'
       }
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}
