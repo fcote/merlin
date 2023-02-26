@@ -8,7 +8,7 @@ require (
 	github.com/newrelic/go-agent/v3 v3.20.3
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
 	github.com/rs/zerolog v1.29.0
-	github.com/sourcegraph/conc v0.2.0
+	github.com/sourcegraph/conc v0.3.0
 	github.com/spf13/viper v1.15.0
 	go.uber.org/atomic v1.10.0
 	go.uber.org/automaxprocs v1.5.1
