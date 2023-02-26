@@ -1,5 +1,6 @@
-![client build](https://img.shields.io/github/workflow/status/fcote/merlin/client.build?label=client%20build)
-![server build](https://img.shields.io/github/workflow/status/fcote/merlin/server.build?label=server%20build)
+![client build](https://img.shields.io/github/actions/workflow/status/fcote/merlin/client.build.yml?label=client%20build)
+![server build](https://img.shields.io/github/actions/workflow/status/fcote/merlin/server.build.yml?label=server%20build)
+![server build](https://img.shields.io/github/actions/workflow/status/fcote/merlin/scheduler.build.yml?label=scheduler%20build)
 ![release](https://img.shields.io/github/v/release/fcote/merlin)
 ![license](https://img.shields.io/github/license/fcote/merlin)
 
