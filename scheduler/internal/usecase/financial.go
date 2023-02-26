@@ -56,22 +56,21 @@ func (uc FinancialUsecase) launchSyncs(
 	prices map[string]domain.HistoricalPrices,
 	financialItemMap map[string]domain.FinancialItem,
 ) {
-	sync := uc.sync(financialItemMap, prices)
 	for ticker, securityId := range securities {
-		pool.Go(func(ctx context.Context) error {
-			return sync(ctx, domain.SecurityTask{
-				Ticker:     ticker,
-				SecurityId: securityId,
-			})
-		})
+		task := domain.SecurityTask{
+			Ticker:     ticker,
+			SecurityId: securityId,
+		}
+		pool.Go(uc.sync(task, financialItemMap, prices))
 	}
 }
 
 func (uc FinancialUsecase) sync(
+	task domain.SecurityTask,
 	financialItemMap map[string]domain.FinancialItem,
 	prices map[string]domain.HistoricalPrices,
-) func(ctx context.Context, task domain.SecurityTask) error {
-	return func(ctx context.Context, task domain.SecurityTask) error {
+) func(ctx context.Context) error {
+	return func(ctx context.Context) error {
 		ctx = gmonitor.NewContext(ctx, "sync.security.financial")
 		defer gmonitor.FromContext(ctx).End()
 

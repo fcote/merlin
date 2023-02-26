@@ -44,7 +44,6 @@ func ttmFinancial(financials financialPeriodMap, value float64) *domain.Financia
 	return &domain.Financial{
 		FinancialBase: domain.FinancialBase{
 			Value:           value,
-			Year:            lastFinancial.Year,
 			Period:          domain.FinancialPeriodTTM,
 			ReportDate:      "TTM",
 			IsEstimate:      false,
