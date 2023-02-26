@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"runtime"
 
 	"github.com/sourcegraph/conc/pool"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-var earningConcurrency = runtime.GOMAXPROCS(0)
+var earningConcurrency = 50
 
 type EarningUsecase struct {
 	store DataStore

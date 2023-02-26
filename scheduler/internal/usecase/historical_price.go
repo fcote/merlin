@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"runtime"
 
 	"github.com/sourcegraph/conc/pool"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-var historicalPriceConcurrency = runtime.GOMAXPROCS(0)
+var historicalPriceConcurrency = 50
 
 type HistoricalPriceUsecase struct {
 	store DataStore

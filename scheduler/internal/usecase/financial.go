@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"runtime"
 
 	"github.com/sourcegraph/conc/pool"
 
@@ -13,7 +12,7 @@ import (
 	"github.com/fcote/merlin/sheduler/pkg/slices"
 )
 
-var financialConcurrency = runtime.GOMAXPROCS(0)
+var financialConcurrency = 25
 
 type FinancialUsecase struct {
 	store DataStore
