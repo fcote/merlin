@@ -1,3 +1,5 @@
+import { isNull } from 'lodash'
+
 import {
   SeekingAlphaQuote,
   SeekingAlphaLink,
@@ -6,12 +8,16 @@ import { SecurityQuoteResult } from '@links/types'
 import { logger } from '@logger'
 import { SecurityMarketStatus } from '@models/security'
 
-const getMarketStatus = (quote: SeekingAlphaQuote): SecurityMarketStatus => {
+const getMarketStatus = (
+  quote: SeekingAlphaQuote
+): SecurityMarketStatus | null => {
   switch (quote.ext_market) {
     case 'pre':
       return SecurityMarketStatus.preMarket
     case 'post':
       return SecurityMarketStatus.afterHours
+    default:
+      return null
   }
 }
 
@@ -22,15 +28,12 @@ const toSecurityQuoteResult = (
   const quoteChangePercent = (quote.ext_price / quote.last - 1) * 100
   const marketStatus = getMarketStatus(quote)
 
-  const base: Partial<SecurityQuoteResult> = [
-    SecurityMarketStatus.afterHours,
-    SecurityMarketStatus.preMarket,
-  ].includes(marketStatus)
-    ? {
+  const base: Partial<SecurityQuoteResult> = isNull(marketStatus)
+    ? { extendedHoursPrice: null, extendedHoursChangePercentage: null }
+    : {
         extendedHoursPrice: quotePrice,
         extendedHoursChangePercentage: quoteChangePercent,
       }
-    : { extendedHoursPrice: null, extendedHoursChangePercentage: null }
 
   return {
     symbol: quote.symbol,
