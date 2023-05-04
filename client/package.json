@@ -24,7 +24,7 @@
   "dependencies": {
     "@ant-design/icons": "5.0.1",
     "@apollo/client": "3.7.14",
-    "antd": "4.24.9",
+    "antd": "4.24.10",
     "crypto-hash": "2.0.1",
     "crypto-js": "4.1.1",
     "graphql": "16.5.0",
