@@ -72,7 +72,7 @@
     "@types/koa-compose": "3.2.5",
     "@types/koa-router": "7.4.4",
     "@types/lodash": "4.14.194",
-    "@types/node": "18.16.12",
+    "@types/node": "18.16.13",
     "@types/node-fetch": "2.6.4",
     "@types/node-schedule": "2.1.0",
     "@types/numeral": "2.0.2",
