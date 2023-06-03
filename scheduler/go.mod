@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/go-co-op/gocron v1.28.2
 	github.com/jackc/pgx/v5 v5.3.1
-	github.com/newrelic/go-agent/v3 v3.21.1
+	github.com/newrelic/go-agent/v3 v3.22.1
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
 	github.com/rs/zerolog v1.29.1
 	github.com/sourcegraph/conc v0.3.0
