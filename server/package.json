@@ -71,7 +71,7 @@
     "@types/koa-bodyparser": "4.3.11",
     "@types/koa-compose": "3.2.7",
     "@types/koa-router": "7.4.6",
-    "@types/lodash": "4.14.195",
+    "@types/lodash": "4.14.200",
     "@types/node": "18.16.18",
     "@types/node-fetch": "2.6.4",
     "@types/node-schedule": "2.1.0",
