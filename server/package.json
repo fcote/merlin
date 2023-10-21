@@ -74,7 +74,7 @@
     "@types/lodash": "4.14.200",
     "@types/node": "18.16.18",
     "@types/node-fetch": "2.6.7",
-    "@types/node-schedule": "2.1.0",
+    "@types/node-schedule": "2.1.2",
     "@types/numeral": "2.0.2",
     "@types/object-hash": "3.0.2",
     "@types/p-map": "2.0.0",
