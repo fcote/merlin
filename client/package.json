@@ -48,7 +48,7 @@
     "@types/katex": "0.16.0",
     "@types/node": "18.16.18",
     "@types/lodash": "4.14.200",
-    "@types/numeral": "2.0.2",
+    "@types/numeral": "2.0.4",
     "@types/omit-deep-lodash": "1.1.1",
     "@types/react": "18.2.9",
     "@types/react-custom-scrollbars": "4.0.10",
