@@ -38,7 +38,7 @@
     "graphql-fields": "^2.0.3",
     "graphql-scalars": "^1.17.0",
     "graphql-subscriptions": "^2.0.0",
-    "jsdom": "^21.0.0",
+    "jsdom": "^22.0.0",
     "knex": "^2.2.0",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
