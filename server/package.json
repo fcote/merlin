@@ -33,7 +33,7 @@
     "cron-parser": "^4.6.0",
     "dataloader": "^2.1.0",
     "dayjs": "^1.11.4",
-    "got": "^11.8.5",
+    "got": "^13.0.0",
     "graphql": "^15.8.0",
     "graphql-fields": "^2.0.3",
     "graphql-scalars": "^1.17.0",
