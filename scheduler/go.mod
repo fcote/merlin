@@ -11,7 +11,7 @@ require (
 	github.com/sourcegraph/conc v0.3.0
 	github.com/spf13/viper v1.16.0
 	go.uber.org/atomic v1.11.0
-	go.uber.org/automaxprocs v1.5.2
+	go.uber.org/automaxprocs v1.5.3
 )
 
 require (
