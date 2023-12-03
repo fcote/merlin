@@ -3,7 +3,7 @@ module github.com/fcote/merlin/sheduler
 go 1.20
 
 require (
-	github.com/go-co-op/gocron v1.28.3
+	github.com/go-co-op/gocron v1.36.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/newrelic/go-agent/v3 v3.22.1
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
@@ -20,6 +20,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-redsync/redsync/v4 v4.8.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/uuid v1.4.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
