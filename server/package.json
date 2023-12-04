@@ -50,7 +50,7 @@
     "numeral": "^2.0.6",
     "object-hash": "^3.0.0",
     "objection": "^3.0.1",
-    "p-map": "^4.0.0",
+    "p-map": "^6.0.0",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "shelljs": "^0.8.5",
