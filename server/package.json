@@ -28,7 +28,7 @@
     "@sindresorhus/string-hash": "^1.2.0",
     "apollo-server-koa": "^3.10.0",
     "apollo-server-plugin-base": "^3.6.2",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "convict": "^6.2.3",
     "cron-parser": "^4.6.0",
     "dataloader": "^2.1.0",
