@@ -94,7 +94,7 @@
     "prettier": "2.8.8",
     "prettier-eslint": "15.0.1",
     "ts-jest": "29.1.1",
-    "ts-node": "10.9.1",
+    "ts-node": "10.9.2",
     "typescript": "4.9.5",
     "winston-transport": "4.6.0"
   }
