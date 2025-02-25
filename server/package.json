@@ -52,7 +52,7 @@
     "objection": "^3.0.1",
     "p-map": "^4.0.0",
     "pg": "^8.7.3",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.0",
     "shelljs": "^0.8.5",
     "subscriptions-transport-ws": "^0.11.0",
     "tough-cookie": "^4.0.0",
