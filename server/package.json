@@ -69,7 +69,7 @@
     "@types/jsdom": "21.1.7",
     "@types/koa": "2.15.0",
     "@types/koa-bodyparser": "4.3.13",
-    "@types/koa-compose": "3.2.8",
+    "@types/koa-compose": "3.2.9",
     "@types/koa-router": "7.4.8",
     "@types/lodash": "4.17.20",
     "@types/node": "18.19.127",
