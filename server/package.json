@@ -70,7 +70,7 @@
     "@types/koa": "2.15.0",
     "@types/koa-bodyparser": "4.3.13",
     "@types/koa-compose": "3.2.9",
-    "@types/koa-router": "7.4.8",
+    "@types/koa-router": "7.4.9",
     "@types/lodash": "4.17.20",
     "@types/node": "18.19.127",
     "@types/node-fetch": "2.6.13",
