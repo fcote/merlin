@@ -79,7 +79,7 @@
     "@types/object-hash": "3.0.6",
     "@types/p-map": "2.0.0",
     "@types/pg": "8.20.0",
-    "@types/shelljs": "0.8.17",
+    "@types/shelljs": "0.10.0",
     "@types/tough-cookie": "4.0.5",
     "@types/uuid": "9.0.8",
     "@types/ws": "8.18.1",
