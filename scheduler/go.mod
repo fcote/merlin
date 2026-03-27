@@ -7,7 +7,7 @@ require (
 	github.com/jackc/pgx/v5 v5.5.0
 	github.com/newrelic/go-agent/v3 v3.28.1
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.0
-	github.com/rs/zerolog v1.31.0
+	github.com/rs/zerolog v1.34.0
 	github.com/sourcegraph/conc v0.3.0
 	github.com/spf13/viper v1.18.0
 	go.uber.org/atomic v1.11.0
