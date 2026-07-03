@@ -29,7 +29,7 @@
     "crypto-js": "4.2.0",
     "graphql": "16.14.2",
     "js-cookie": "3.0.8",
-    "katex": "0.16.47",
+    "katex": "0.17.0",
     "lightweight-charts": "4.2.3",
     "lodash": "4.18.1",
     "numeral": "2.0.6",
