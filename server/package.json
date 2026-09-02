@@ -27,7 +27,7 @@
     "@sentry/node": "^7.9.0",
     "@sindresorhus/string-hash": "^1.2.0",
     "apollo-server-koa": "^3.10.0",
-    "apollo-server-plugin-base": "^3.6.2",
+    "@apollo/server": "^4.0.0",
     "class-validator": "^0.13.2",
     "convict": "^6.2.3",
     "cron-parser": "^4.6.0",
