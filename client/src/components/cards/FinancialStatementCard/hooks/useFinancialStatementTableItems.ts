@@ -41,15 +41,18 @@ const computeValue = (fi: FinancialItem, f: Financial) => {
 const useFinancialStatementTableItems = (financialItems: FinancialItem[]) => {
   return useMemo(() => {
     return financialItems.reduce((formatted, fi) => {
-      const itemFinancials = fi.financials.reduce((result, f, index) => {
-        const date = `${f.year}-${f.period}`
-        result[date] = {
-          value: computeValue(fi, f),
-          growth: computeGrowth(fi, f, index),
-          performance: f.performance,
-        }
-        return result
-      }, {} as Record<string, FinancialStatementTableItemValue>)
+      const itemFinancials = fi.financials.reduce(
+        (result, f, index) => {
+          const date = `${f.year}-${f.period}`
+          result[date] = {
+            value: computeValue(fi, f),
+            growth: computeGrowth(fi, f, index),
+            performance: f.performance,
+          }
+          return result
+        },
+        {} as Record<string, FinancialStatementTableItemValue>
+      )
 
       formatted.push({
         key: fi.id,

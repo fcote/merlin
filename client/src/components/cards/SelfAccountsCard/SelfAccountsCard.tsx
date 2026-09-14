@@ -140,7 +140,7 @@ const SelfAccountsCard: React.FC<UserAccountsCardProps> = ({
         isVisible={isAccountLoginModalVisible}
         setIsVisible={setIsAccountLoginModalVisible}
       />
-      <Dropdown overlay={ContextMenu} trigger={['contextMenu']}>
+      <Dropdown popupRender={() => ContextMenu} trigger={['contextMenu']}>
         <div>
           <UserFinancialCard
             title="Accounts"

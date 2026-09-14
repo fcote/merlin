@@ -1,0 +1,62 @@
+name: integration
+
+on:
+  push:
+    branches: [dev]
+    paths: ['client/**', 'server/**', '.github/workflows/**']
+  pull_request:
+    branches: [dev]
+    paths: ['client/**', 'server/**', '.github/workflows/**']
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: merlin-test
+          POSTGRES_DB: merlin_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: merlin_test
+      DB_USER: postgres
+      DB_PASS: merlin-test
+      SCHEDULER_PRICES_SUBSCRIBED_ENABLED: 'false'
+      SCHEDULER_NEWS_SUBSCRIBED_ENABLED: 'false'
+      SCHEDULER_EARNINGS_SUBSCRIBED_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24.x'
+      - run: npm ci
+        working-directory: server
+      - run: npm ci
+        working-directory: client
+      - run: npm test
+        working-directory: server
+      - run: npm run build
+        working-directory: client
+      - run: npx playwright install --with-deps chromium
+        working-directory: client
+      - name: Start test API
+        working-directory: server/dist
+        run: SERVER_PORT=4300 npm start > /tmp/merlin-api.log 2>&1 &
+      - name: Wait for test API
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:4300/graphql -H 'content-type: application/json' --data '{"query":"{ __typename }"}' > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/merlin-api.log
+          exit 1
+      - run: npm run test:e2e
+        working-directory: client

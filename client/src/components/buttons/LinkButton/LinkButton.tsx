@@ -1,15 +1,15 @@
-import { Button } from 'antd'
+import { Button, ButtonProps } from 'antd'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './LinkButton.style.less'
 
-export type LinkButtonProps = {
+export type LinkButtonProps = ButtonProps & {
   to: string
   icon: React.ReactNode
 }
 
-const LinkButton: React.FC<LinkButtonProps> = ({ to, icon }) => {
+const LinkButton: React.FC<LinkButtonProps> = ({ to, icon, ...props }) => {
   const navigate = useNavigate()
 
   const goToLink = async () => {
@@ -23,6 +23,7 @@ const LinkButton: React.FC<LinkButtonProps> = ({ to, icon }) => {
       className="link-button"
       onClick={goToLink}
       icon={icon}
+      {...props}
     />
   )
 }

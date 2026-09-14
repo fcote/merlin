@@ -1,4 +1,4 @@
-import { parseExpression } from 'cron-parser'
+import { CronExpressionParser } from 'cron-parser'
 import {
   Job as NodeJob,
   RecurrenceRule,
@@ -23,12 +23,14 @@ class Scheduler implements Connectable {
     Object.values(JobType).forEach((jobType) => {
       if (!this.schedulerConfig[jobType]?.enabled) return
 
-      const cronRule = parseExpression(this.schedulerConfig[jobType].rule)
+      const cronRule = CronExpressionParser.parse(
+        this.schedulerConfig[jobType].rule
+      )
       const rule = new RecurrenceRule()
-      rule.hour = cronRule.fields.hour as RecurrenceSegment
-      rule.minute = cronRule.fields.minute as RecurrenceSegment
-      rule.second = cronRule.fields.second as RecurrenceSegment
-      rule.dayOfWeek = cronRule.fields.dayOfWeek as RecurrenceSegment
+      rule.hour = cronRule.fields.hour.values as RecurrenceSegment
+      rule.minute = cronRule.fields.minute.values as RecurrenceSegment
+      rule.second = cronRule.fields.second.values as RecurrenceSegment
+      rule.dayOfWeek = cronRule.fields.dayOfWeek.values as RecurrenceSegment
       rule.tz = 'ETC/Utc'
 
       this.jobs.push(

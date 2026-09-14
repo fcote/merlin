@@ -1,7 +1,7 @@
 import { Ctx, FieldResolver, Resolver, Arg, Authorized } from 'type-graphql'
 
 import { UserTransaction } from '@models/userTransaction'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SelfMutation } from '@resolvers/root'
 import { UserTransactionFields } from '@resolvers/userTransaction/userTransaction.inputs'
 import { UserTransactionService } from '@services/userTransaction'

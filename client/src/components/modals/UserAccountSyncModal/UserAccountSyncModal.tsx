@@ -28,7 +28,7 @@ const UserAccountSyncModal = ({
   setIsVisible,
   triggerRefresh,
 }: UserAccountLoginModalProps) => {
-  const form = useRef<FormInstance<LoginFormType>>()
+  const form = useRef<FormInstance<LoginFormType>>(null)
   const { selfUserAccountSync, selfUserAccountSyncLoading, saveCredentials } =
     useSelfUserAccountSync()
 

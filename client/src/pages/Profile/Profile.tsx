@@ -1,14 +1,6 @@
+import { PageHeader } from '@components/PageHeader'
 import { SaveOutlined } from '@ant-design/icons'
-import {
-  Form,
-  PageHeader,
-  Card,
-  Input,
-  Button,
-  Row,
-  Col,
-  FormInstance,
-} from 'antd'
+import { Form, Card, Input, Button, Row, Col, FormInstance } from 'antd'
 import React, { useRef, useEffect } from 'react'
 
 import successNotification from '@helpers/successNotification'
@@ -32,7 +24,7 @@ const Profile = () => {
   const { data: user, refetch } = useSelfProfile()
   const { selfUpdateUser, selUpdateUserLoading } = useSelfUpdateUser()
 
-  const form = useRef<FormInstance<ProfileForm>>()
+  const form = useRef<FormInstance<ProfileForm>>(null)
 
   useEffect(() => {
     if (!form.current) return

@@ -1,5 +1,5 @@
-import { SubscribeToMoreOptions } from '@apollo/client/core/watchQueryOptions'
-import { mergeDeep } from '@apollo/client/utilities'
+import { SubscribeToMoreOptions } from '@apollo/client'
+import { merge as mergeDeep } from 'lodash'
 import { sortBy } from 'lodash'
 
 import useNewsQuery from '@hooks/api/queries/useNews/useNews.query'
@@ -21,7 +21,7 @@ const useNews = () => {
   return { ...rest, getNews, news: data }
 }
 
-const subscribeToMoreNews = (ticker: string): SubscribeToMoreOptions => ({
+const subscribeToMoreNews = (ticker: string): SubscribeToMoreOptions<any> => ({
   document: useNewsChangesSubscription,
   variables: { tickers: [ticker] },
   updateQuery: (prev, { subscriptionData }) => {

@@ -1,7 +1,7 @@
 import { Ctx, FieldResolver, Resolver, Arg, Authorized } from 'type-graphql'
 
 import { UserAccount } from '@models/userAccount'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SelfMutation } from '@resolvers/root'
 import {
   UserAccountSyncFields,

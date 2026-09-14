@@ -120,30 +120,33 @@ class UserFieldsResolver {
 
     let currentTotalBalance = await userAccountService.totalBalance(user.id)
 
-    return range(0, nMonth - 1).reduce((result, n) => {
-      const forecastDate = currentDate().add(n, 'month')
-      const totalExtraExpenses = getTotal(
-        forecastDate,
-        UserTransactionType.expense
-      )
-      const totalExtraIncome = getTotal(
-        forecastDate,
-        UserTransactionType.income
-      )
+    return range(0, nMonth - 1).reduce(
+      (result, n) => {
+        const forecastDate = currentDate().add(n, 'month')
+        const totalExtraExpenses = getTotal(
+          forecastDate,
+          UserTransactionType.expense
+        )
+        const totalExtraIncome = getTotal(
+          forecastDate,
+          UserTransactionType.income
+        )
 
-      const totalExtras = -totalExtraExpenses + totalExtraIncome
-      const forecastedBalance =
-        currentTotalBalance + incomeLeftPerMonth + totalExtras
+        const totalExtras = -totalExtraExpenses + totalExtraIncome
+        const forecastedBalance =
+          currentTotalBalance + incomeLeftPerMonth + totalExtras
 
-      result[forecastDate.format('YYYY-MM-DD')] = {
-        balance: forecastedBalance,
-        extras: totalExtras,
-      }
+        result[forecastDate.format('YYYY-MM-DD')] = {
+          balance: forecastedBalance,
+          extras: totalExtras,
+        }
 
-      currentTotalBalance = forecastedBalance
+        currentTotalBalance = forecastedBalance
 
-      return result
-    }, {} as Record<string, Record<string, number>>)
+        return result
+      },
+      {} as Record<string, Record<string, number>>
+    )
   }
 
   @FieldResolver((_) => UserMonthlyExpenses)

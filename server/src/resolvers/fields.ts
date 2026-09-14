@@ -1,10 +1,10 @@
 import graphqlFields from 'graphql-fields'
-import { createParamDecorator } from 'type-graphql'
+import { createParameterDecorator } from 'type-graphql'
 
 type FieldList = string[]
 
-function Fields(): ParameterDecorator {
-  return createParamDecorator(({ info }): FieldList => {
+function Fields() {
+  return createParameterDecorator(({ info }): FieldList => {
     const fields = graphqlFields(info, {}, { excludedFields: ['__typename'] })
     if (fields?.nodes) return Object.keys(fields.nodes)
     return Object.keys(fields)

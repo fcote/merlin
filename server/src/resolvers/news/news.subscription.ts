@@ -2,7 +2,7 @@ import { Arg, Resolver, Root, Subscription, Authorized } from 'type-graphql'
 
 import { News } from '@models/news'
 import { SubscriptionChannel, subscription } from '@pubSub'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 
 @Resolver()
 class NewsSubscriptionResolver {

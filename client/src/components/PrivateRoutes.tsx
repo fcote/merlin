@@ -5,7 +5,7 @@ import useAuth from '@hooks/auth/useAuth'
 
 const PrivateRoutes = () => {
   let auth = useAuth()
-  return auth ? <Outlet /> : <Navigate to="/login" />
+  return auth?.user ? <Outlet /> : <Navigate to="/login" replace />
 }
 
 export default PrivateRoutes

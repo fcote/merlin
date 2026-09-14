@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Mutation, Authorized } from 'type-graphql'
 
 import { JobType } from '@models/job'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { JobService } from '@services/job'
 import { RequestContext } from '@typings/context'
 

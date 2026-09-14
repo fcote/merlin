@@ -1,4 +1,4 @@
-import { cloneDeep } from '@apollo/client/utilities'
+import { cloneDeep } from 'lodash'
 
 const queryStripTypename = (input: any) => {
   const handleTypename = (obj) => {

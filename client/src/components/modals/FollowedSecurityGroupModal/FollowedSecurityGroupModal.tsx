@@ -35,7 +35,7 @@ const FollowedSecurityGroupModal = ({
   triggerRefresh,
   type,
 }: FollowedSecurityGroupModalProps) => {
-  const form = useRef<FormInstance<FollowedSecurityGroupFormType>>()
+  const form = useRef<FormInstance<FollowedSecurityGroupFormType>>(null)
   const {
     selfFollowedSecurityGroupUpsert,
     selfFollowedSecurityGroupUpsertLoading,

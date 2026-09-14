@@ -24,6 +24,7 @@ const LogoutButton = () => {
       type="text"
       size="large"
       id="logout-button"
+      aria-label="Logout"
       onClick={logout}
       icon={<LogoutOutlined />}
       loading={isLoading}

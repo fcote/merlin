@@ -20,7 +20,7 @@ import {
 import { ApolloUnprocessableEntity } from '@typings/errors/apolloErrors'
 import { BadRequest } from '@typings/errors/errors'
 
-@ObjectType('BaseModel', { isAbstract: true })
+@ObjectType('BaseModel', {})
 class BaseModel extends Model {
   @Field((_) => ID)
   id: number | string

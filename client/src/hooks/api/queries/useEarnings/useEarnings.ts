@@ -1,5 +1,5 @@
-import { SubscribeToMoreOptions } from '@apollo/client/core/watchQueryOptions'
-import { mergeDeep } from '@apollo/client/utilities'
+import { SubscribeToMoreOptions } from '@apollo/client'
+import { merge as mergeDeep } from 'lodash'
 import { sortBy } from 'lodash'
 
 import useEarningsQuery from '@hooks/api/queries/useEarnings/useEarnings.query'
@@ -21,7 +21,9 @@ const useEarnings = () => {
   return { ...rest, getEarnings, earnings: data }
 }
 
-const subscribeToMoreEarnings = (ticker: string): SubscribeToMoreOptions => ({
+const subscribeToMoreEarnings = (
+  ticker: string
+): SubscribeToMoreOptions<any> => ({
   document: useEarningsChangesSubscription,
   variables: { tickers: [ticker] },
   updateQuery: (prev, { subscriptionData }) => {

@@ -1,7 +1,7 @@
 import { Ctx, FieldResolver, Resolver, Arg, Authorized } from 'type-graphql'
 
 import { FollowedSecurityGroup } from '@models/followedSecurityGroup'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { FollowedSecurityGroupFields } from '@resolvers/followedSecurityGroup/followedSecurityGroup.inputs'
 import { SelfMutation } from '@resolvers/root'
 import { FollowedSecurityGroupService } from '@services/followedSecurityGroup'

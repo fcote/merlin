@@ -48,9 +48,8 @@ class FollowedSecurityGroup extends SoftDeleteModel {
   ) => {
     if (!id) return
 
-    const followedSecurityGroup = await FollowedSecurityGroup.query(
-      trx
-    ).findById(id)
+    const followedSecurityGroup =
+      await FollowedSecurityGroup.query(trx).findById(id)
     if (!followedSecurityGroup) {
       throw new ApolloResourceNotFound('GROUP_NOT_FOUND')
     }

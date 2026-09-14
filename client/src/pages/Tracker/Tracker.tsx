@@ -1,5 +1,6 @@
+import { PageHeader } from '@components/PageHeader'
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Col, PageHeader, Row, Space } from 'antd'
+import { Button, Col, Row, Space } from 'antd'
 import { range } from 'lodash'
 import React, { useState, useMemo } from 'react'
 
@@ -43,7 +44,7 @@ const Tracker = () => {
   const trackers = useMemo(() => {
     if (loading)
       return range(6).map(
-        (i) => ({ id: i.toString() } as FollowedSecurityGroup)
+        (i) => ({ id: i.toString() }) as FollowedSecurityGroup
       )
     return rawTrackers
   }, [rawTrackers, loading])

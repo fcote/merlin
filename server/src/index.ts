@@ -8,8 +8,8 @@ const manager = new ServiceManager({
   logger: null,
   safeExit: 200, // let 200 ms before the app call process.exit
   subscribe: [
-    'SIGINT',
-    'SIGTERM',
+    ['SIGINT', { exitStatus: 0 }],
+    ['SIGTERM', { exitStatus: 0 }],
     ['unhandledRejection', { log: true, logLevel: 'error' }],
     ['uncaughtException', { log: true, logLevel: 'error' }],
   ],

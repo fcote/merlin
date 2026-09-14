@@ -1,5 +1,4 @@
 import react from '@vitejs/plugin-react'
-import reactRefresh from '@vitejs/plugin-react-refresh'
 // @ts-ignore
 import path from 'path'
 import { defineConfig } from 'vite'
@@ -47,28 +46,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
-    terserOptions: {
-      parse: {
-        ecma: 2020,
-      },
-      compress: {
-        ecma: 5,
-        comparisons: false,
-        inline: 2,
-        drop_console: true,
-      },
-      mangle: {
-        safari10: true,
-      },
-      output: {
-        ecma: 5,
-        comments: false,
-        ascii_only: true,
-      },
-    },
     chunkSizeWarningLimit: 2048,
   },
-  plugins: [react(), reactRefresh()],
+  plugins: [react()],
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/components'),

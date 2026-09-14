@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Mutation, Authorized } from 'type-graphql'
 
 import { Security } from '@models/security'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SecurityService } from '@services/security'
 import { RequestContext } from '@typings/context'
 

@@ -1,6 +1,7 @@
 {
   "extends": "./tspaths.json",
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "ESNext",
     "lib": [
       "dom",
@@ -14,7 +15,7 @@
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

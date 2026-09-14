@@ -8,7 +8,7 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons'
 import { Menu } from 'antd'
-import Sider from 'antd/es/layout/Sider'
+import { Layout } from 'antd'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -19,7 +19,7 @@ import './SiderMenu.style.less'
 
 const SiderMenu = () => {
   return (
-    <Sider className="main-sider" collapsed={true}>
+    <Layout.Sider className="main-sider" collapsed={true}>
       <div className="logo">
         <Link className="logoLink" to="/home">
           <LineChartOutlined className="logo" />
@@ -39,18 +39,20 @@ const SiderMenu = () => {
           <Link to="/earnings-calendar">Earnings</Link>
         </Menu.Item>
       </Menu>
-      <Menu className="main-sider-bottom-menu" theme="dark" mode="inline">
-        <Menu.Item className="button-item" key="1" title="Logs">
-          <LinkButton to="/logs" icon={<FileSearchOutlined />} />
-        </Menu.Item>
-        <Menu.Item className="button-item" key="2" title="Profile">
-          <LinkButton to="/profile" icon={<UserOutlined />} />
-        </Menu.Item>
-        <Menu.Item className="button-item" key="3" title="Logout">
-          <LogoutButton />
-        </Menu.Item>
-      </Menu>
-    </Sider>
+      <nav className="main-sider-bottom-menu" aria-label="Account">
+        <LinkButton
+          to="/logs"
+          aria-label="Logs"
+          icon={<FileSearchOutlined />}
+        />
+        <LinkButton
+          to="/profile"
+          aria-label="Profile"
+          icon={<UserOutlined />}
+        />
+        <LogoutButton />
+      </nav>
+    </Layout.Sider>
   )
 }
 

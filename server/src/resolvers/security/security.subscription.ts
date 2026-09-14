@@ -11,7 +11,7 @@ import {
 
 import { Security } from '@models/security'
 import { SubscriptionChannel, subscription } from '@pubSub'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 
 @ObjectType('SecuritySyncProgressChange')
 class SecuritySyncProgressChange {

@@ -12,9 +12,9 @@ class SoftDeleteQueryBuilder<M extends Model, R = M[]> extends QueryBuilder<
   constructor(modelClass: any) {
     // @ts-ignore objection.js QueryBuilder typing is missing constructor definition
     super(modelClass)
-    const { tableName } = super.modelClass()
+    const { tableName } = this.modelClass()
 
-    super.onBuild((builder) => {
+    this.onBuild((builder) => {
       if (!builder.context().withArchived) {
         builder.whereNull(`${tableName}.deletedAt`)
       }
@@ -22,7 +22,7 @@ class SoftDeleteQueryBuilder<M extends Model, R = M[]> extends QueryBuilder<
   }
 
   withArchived = (withArchived: boolean) => {
-    super.context().withArchived = !!withArchived
+    this.context().withArchived = !!withArchived
     return this
   }
 

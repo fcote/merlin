@@ -1,48 +1,27 @@
-import { ApolloError } from 'apollo-server-core'
-import { GraphQLError } from 'graphql'
+import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { Logger } from 'winston'
 
 import { getLevel } from '@middlewares/http/errorHandler'
-import { ApolloBadRequest } from '@typings/errors/apolloErrors'
 
-const reformatError = (err: GraphQLError) => {
-  const validationErrors = ['VariableDefinition']
-  const errorKinds = err.nodes ? err.nodes.map((n) => n.kind) : []
-  const isValidationError = (k: string) => validationErrors.includes(k)
-
-  if (errorKinds.every(isValidationError)) {
-    const formatted = new ApolloBadRequest(err.message)
-    err.extensions.status = formatted.extensions.status
-    err.extensions.code = formatted.extensions.code
-    return err
+const errorHandlerApollo =
+  (logger: Logger) =>
+  (formatted: GraphQLFormattedError, error: unknown): GraphQLFormattedError => {
+    const err = error instanceof GraphQLError ? error : undefined
+    const { code, status, message, ctx, ...properties } =
+      formatted.extensions ?? {}
+    const level = getLevel(status as number, code as string)
+    if (level) {
+      logger[level](formatted.message, {
+        err: err?.originalError ?? err,
+        errorCode: code ?? message,
+        errorMessage: message,
+        errorProperties: properties,
+        errorStatus: status,
+        requestId: (ctx as any)?.requestId,
+        userId: (ctx as any)?.userId,
+      })
+    }
+    return formatted
   }
-
-  return err
-}
-
-const errorHandlerApollo = (logger: Logger) => (err: GraphQLError) => {
-  err = reformatError(err) as ApolloError
-
-  const { code, status, message, ctx, ...properties } = err.extensions
-
-  const level = getLevel(status as number, code as string)
-
-  err.stack = err.extensions.exception.stacktrace.join('\n')
-
-  if (level) {
-    logger[level](err.message, {
-      err,
-      errorCode: code ?? message,
-      errorMessage: message,
-      errorProperties: properties,
-      errorStatus: status,
-      requestId: ctx?.requestId,
-      userId: ctx?.userId,
-    })
-  }
-
-  delete err.stack
-  return err
-}
 
 export { errorHandlerApollo }

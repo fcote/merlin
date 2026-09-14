@@ -1,7 +1,7 @@
 import { Ctx, FieldResolver, Resolver, Authorized } from 'type-graphql'
 
 import { User } from '@models/user'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SelfQuery } from '@resolvers/root'
 import { UserService } from '@services/user'
 import { RequestContext } from '@typings/context'

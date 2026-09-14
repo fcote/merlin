@@ -1,8 +1,12 @@
-import * as shell from 'shelljs'
+import { copyFileSync, cpSync, mkdirSync } from 'node:fs'
 
-shell.exec(
-  "find src/config -name '*.json' -exec cp -prv '{}' 'dist/src/config' ';'"
-)
-shell.exec("find ./ -name '*.env' -exec cp -prv '{}' 'dist' ';'")
-shell.exec('cp -prv ./tsconfig.paths.js dist')
-shell.exec('cp -prv ./package.json dist')
+mkdirSync('dist/src/config', { recursive: true })
+cpSync('src/config', 'dist/src/config', {
+  recursive: true,
+  filter: (path) =>
+    path === 'src/config' ||
+    (path.endsWith('.json') && !path.includes('.private.')),
+})
+for (const file of ['tsconfig.paths.js', 'tsconfig.json', 'package.json']) {
+  copyFileSync(file, `dist/${file}`)
+}

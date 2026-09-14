@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedStdLog } from '@models/stdLog'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'
 import { StdLogService } from '@services/stdLog'
 import { RequestContext } from '@typings/context'

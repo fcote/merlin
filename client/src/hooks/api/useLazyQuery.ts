@@ -1,68 +1,40 @@
-import { useLazyQuery as useApolloLazyQuery } from '@apollo/client'
-import { OperationVariables } from '@apollo/client/core'
-import {
-  QueryHookOptions,
-  QueryLazyOptions,
-  LazyQueryResult,
-  Context,
-} from '@apollo/client/react/types/types'
-import { TypedDocumentNode } from '@graphql-typed-document-node/core'
+import { OperationVariables, TypedDocumentNode } from '@apollo/client'
+import { useLazyQuery as useApolloLazyQuery } from '@apollo/client/react'
 import { DocumentNode } from 'graphql'
-import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import client from '@api/client'
-
 import { queryExtractData } from '@helpers/queryExtractData'
 
-export type LazyQueryExecute<TData, TVariables> = ({
-  variables,
-  context,
-}: {
-  variables?: TVariables
-  context?: Context
-}) => Promise<TData>
+export type LazyQueryExecute<TData, TVariables extends OperationVariables> = (
+  options?: useApolloLazyQuery.ExecOptions<TVariables>
+) => Promise<TData>
 
-const useLazyQuery = <TData = any, TVariables = OperationVariables>(
+const useLazyQuery = <
+  TData = any,
+  TVariables extends OperationVariables = OperationVariables,
+>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
-  options?: QueryHookOptions<TData, TVariables> & {
+  options?: useApolloLazyQuery.Options<TData, TVariables> & {
     namespace?: string
   }
 ) => {
-  const [baseRequest, { data: rawData, ...rest }] = useApolloLazyQuery<
+  const [execute, { data: rawData, ...rest }] = useApolloLazyQuery<
     any,
     TVariables
   >(query, { ...options, client })
-
-  const resolveRef = useRef<(value?: TData | PromiseLike<TData>) => void>()
-
-  useEffect(() => {
-    if (!rest.called || rest.loading || !resolveRef.current) return
-
-    const data = queryExtractData<TData>(rawData, options?.namespace)
-    resolveRef.current(data)
-    resolveRef.current = undefined
-  }, [rest.loading, rest.called])
-
-  // Wrap request in a promise
-  const request: LazyQueryExecute<TData, TVariables> = useCallback(
-    ({ variables, context }) => {
-      baseRequest({ variables, context })
-      return new Promise<TData>((resolve) => {
-        resolveRef.current = resolve
-      })
+  const request = useCallback(
+    async (requestOptions?: useApolloLazyQuery.ExecOptions<TVariables>) => {
+      const result = await execute(requestOptions)
+      return queryExtractData<TData>(result.data, options?.namespace)
     },
-    [baseRequest]
+    [execute, options?.namespace]
   )
-
-  // Extract actual data from the response
-  const data = useMemo(() => {
-    return queryExtractData<TData>(rawData, options?.namespace)
-  }, [rawData])
-
-  return [request, { ...rest, data }] as [
-    (options?: QueryLazyOptions<TVariables>) => Promise<TData>,
-    LazyQueryResult<TData, TVariables>
-  ]
+  const data = useMemo(
+    () => queryExtractData<TData>(rawData, options?.namespace),
+    [rawData, options?.namespace]
+  )
+  return [request, { ...rest, data }] as const
 }
 
 export default useLazyQuery

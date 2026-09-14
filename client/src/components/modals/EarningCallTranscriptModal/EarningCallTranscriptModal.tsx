@@ -1,6 +1,5 @@
 import { Empty, Modal, Skeleton } from 'antd'
-import React, { useEffect, useMemo } from 'react'
-import { Converter } from 'showdown'
+import React, { useEffect } from 'react'
 
 import { useEarningCallTranscript } from '@hooks/api/queries/useEarningCallTranscript'
 import useWindowSize from '@hooks/useWindowSize'
@@ -21,7 +20,6 @@ const EarningCallTranscriptModal = ({
   const { getEarningCallTranscript, earningCallTranscript, loading } =
     useEarningCallTranscript()
   const size = useWindowSize()
-  const markdownConverter = new Converter()
 
   const handleClose = () => {
     setIsVisible(false)
@@ -37,17 +35,6 @@ const EarningCallTranscriptModal = ({
     })
   }, [earning])
 
-  const htmlEarningCallTranscript = useMemo(() => {
-    if (!earningCallTranscript) return
-
-    const markdown = earningCallTranscript
-      .map(({ speaker, statement }) => {
-        return `### ${speaker} :\n${statement}`
-      })
-      .join('\n')
-    return markdownConverter.makeHtml(markdown)
-  }, [earningCallTranscript])
-
   const EarningCallTranscriptContent = () => {
     if (!earningCallTranscript) {
       return (
@@ -56,10 +43,14 @@ const EarningCallTranscriptModal = ({
     }
 
     return (
-      <div
-        className="earning-call-transcript-content"
-        dangerouslySetInnerHTML={{ __html: htmlEarningCallTranscript }}
-      />
+      <div className="earning-call-transcript-content">
+        {earningCallTranscript.map(({ speaker, statement }, index) => (
+          <section key={index}>
+            <h3>{speaker} :</h3>
+            <p style={{ whiteSpace: 'pre-wrap' }}>{statement}</p>
+          </section>
+        ))}
+      </div>
     )
   }
 

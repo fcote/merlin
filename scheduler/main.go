@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
 
-	"github.com/go-co-op/gocron"
+	"github.com/go-co-op/gocron/v2"
 	_ "go.uber.org/automaxprocs"
 
 	"github.com/fcote/merlin/sheduler/config"
@@ -39,6 +42,8 @@ func main() {
 	if err != nil {
 		glog.Fatal().Msgf("failed to initialize database: %v", err)
 	}
+
+	defer dbPool.Close()
 
 	// FMP
 	fmpClient := fmpclient.NewClient(conf.External.API.FMP.Key)
@@ -84,40 +89,55 @@ func main() {
 	}
 
 	// Scheduler
-	s := gocron.NewScheduler(location)
-	s.SingletonModeAll()
+	s, err := gocron.NewScheduler(gocron.WithLocation(location), gocron.WithGlobalJobOptions(gocron.WithSingletonMode(gocron.LimitModeReschedule)))
+	if err != nil {
+		glog.Fatal().Msgf("failed to initialize scheduler: %v", err)
+	}
+	defer func() {
+		if err := s.Shutdown(); err != nil {
+			glog.Error().Err(err).Msg("failed to shut down scheduler")
+		}
+	}()
 
 	if conf.Job.NewsSync.Enabled {
-		j, err := s.CronWithSeconds(conf.Job.NewsSync.Rule).Do(newsHandler.Handle)
+		j, err := s.NewJob(gocron.CronJob(conf.Job.NewsSync.Rule, true), gocron.NewTask(newsHandler.Handle))
 		if err != nil {
 			glog.Fatal().Msgf("failed to initialize news sync job: %v", err)
 		}
 		logJobRegistered(j, "news sync")
 	}
 	if conf.Job.ForexSync.Enabled {
-		j, err := s.CronWithSeconds(conf.Job.ForexSync.Rule).Do(forexHandler.Handle)
+		j, err := s.NewJob(gocron.CronJob(conf.Job.ForexSync.Rule, true), gocron.NewTask(forexHandler.Handle))
 		if err != nil {
 			glog.Fatal().Msgf("failed to initialize forex sync job: %v", err)
 		}
 		logJobRegistered(j, "forex sync")
 	}
 	if conf.Job.FullSync.Enabled {
-		j, err := s.CronWithSeconds(conf.Job.FullSync.Rule).Do(fullSyncHandler.Handle)
+		j, err := s.NewJob(gocron.CronJob(conf.Job.FullSync.Rule, true), gocron.NewTask(fullSyncHandler.Handle))
 		if err != nil {
 			glog.Fatal().Msgf("failed to initialize full sync job: %v", err)
 		}
 		logJobRegistered(j, "full sync")
 	}
 
-	s.StartBlocking()
+	s.Start()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	<-ctx.Done()
 }
 
-func logJobRegistered(j *gocron.Job, name string) {
+func logJobRegistered(j gocron.Job, name string) {
 	time.AfterFunc(1*time.Second, func() {
+		next, err := j.NextRun()
+		if err != nil {
+			glog.Error().Err(err).Msg("failed to get next run")
+			return
+		}
 		glog.Info().Msgf(
 			"job | registered %s | next run: %s",
 			name,
-			j.ScheduledTime().Format("2006-01-02 15:04:05"),
+			next.Format("2006-01-02 15:04:05"),
 		)
 	})
 }

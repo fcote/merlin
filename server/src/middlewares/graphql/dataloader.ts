@@ -1,8 +1,8 @@
-import {
+import type {
   ApolloServerPlugin,
   GraphQLRequestListener,
   BaseContext as ApolloBaseContext,
-} from 'apollo-server-plugin-base'
+} from '@apollo/server' with { 'resolution-mode': 'import' }
 
 class DefaultDataloader {
   ctx: BaseContext
@@ -12,24 +12,23 @@ class DefaultDataloader {
 }
 
 type BaseContext<L extends DefaultDataloader = DefaultDataloader> =
-  ApolloBaseContext & { loaders?: L }
+  ApolloBaseContext & { loaders?: L; trxStartPromise?: Promise<unknown> }
 
 type DataloaderPluginConfig<
-  L extends typeof DefaultDataloader = typeof DefaultDataloader
+  L extends typeof DefaultDataloader = typeof DefaultDataloader,
 > = {
   class: L
 }
 
 class DataloaderPlugin<
   C extends BaseContext = BaseContext,
-  L extends typeof DefaultDataloader = typeof DefaultDataloader
-> implements ApolloServerPlugin<C>
-{
+  L extends typeof DefaultDataloader = typeof DefaultDataloader,
+> implements ApolloServerPlugin<C> {
   constructor(private config: DataloaderPluginConfig<L>) {}
 
   async requestDidStart(): Promise<GraphQLRequestListener<C>> {
     return {
-      didResolveOperation: async ({ context }) => {
+      didResolveOperation: async ({ contextValue: context }) => {
         if (context.trxStartPromise) {
           // Wait for the sql transaction to be started before instantiating the dataloader
           await context.trxStartPromise

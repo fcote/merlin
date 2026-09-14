@@ -9,7 +9,7 @@ import {
 
 import { FollowedSecurity } from '@models/followedSecurity'
 import { FollowedSecurityGroup } from '@models/followedSecurityGroup'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { FollowedSecurityFields } from '@resolvers/followedSecurity/followedSecurity.inputs'
 import { SelfMutation } from '@resolvers/root'
 import { FollowedSecurityService } from '@services/followedSecurity'

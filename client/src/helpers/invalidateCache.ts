@@ -3,7 +3,7 @@ import { ApolloCache } from '@apollo/client'
 import client from '@api/client'
 
 const invalidateCache = (match: string) => {
-  const cache = client.cache as ApolloCache<any> & { data: any }
+  const cache = client.cache as ApolloCache & { data: any }
   const rootQuery = cache.data.data.ROOT_QUERY
   Object.keys(rootQuery).forEach((key) => {
     if (key.match(match)) {

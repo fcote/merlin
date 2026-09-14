@@ -11,7 +11,7 @@ import {
 
 import { config } from '@config'
 import { User } from '@models/user'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SelfMutation } from '@resolvers/root'
 import {
   SignUpFields,

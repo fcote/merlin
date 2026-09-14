@@ -34,8 +34,7 @@ export type DebtRatioKeys =
   | 'equityMultiplier'
 
 export type OperatingPerformanceRatioKeys =
-  | 'fixedAssetTurnover'
-  | 'assetTurnover'
+  'fixedAssetTurnover' | 'assetTurnover'
 
 export type CashFlowRatioKeys =
   | 'operatingCashFlowToSales'

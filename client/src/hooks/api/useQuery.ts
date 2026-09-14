@@ -1,6 +1,6 @@
-import { useQuery as useApolloQuery } from '@apollo/client'
+import { useQuery as useApolloQuery } from '@apollo/client/react'
 import { OperationVariables } from '@apollo/client/core'
-import { QueryHookOptions } from '@apollo/client/react/types/types'
+import { QueryHookOptions } from '@apollo/client/react'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { DocumentNode } from 'graphql'
 import { useMemo } from 'react'
@@ -9,7 +9,10 @@ import client from '@api/client'
 
 import { queryExtractData } from '@helpers/queryExtractData'
 
-const useQuery = <TData = any, TVariables = OperationVariables>(
+const useQuery = <
+  TData = any,
+  TVariables extends OperationVariables = OperationVariables,
+>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: QueryHookOptions<TData, TVariables> & {
     namespace?: string

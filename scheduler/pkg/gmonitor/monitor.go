@@ -16,6 +16,7 @@ func InitMonitor(license string) error {
 	app, err := newrelic.NewApplication(
 		newrelic.ConfigAppName("merlin-scheduler"),
 		newrelic.ConfigLicense(license),
+		newrelic.ConfigEnabled(license != ""),
 		newrelic.ConfigAppLogForwardingEnabled(true),
 		newrelic.ConfigAppLogDecoratingEnabled(true),
 		newrelic.ConfigInfoLogger(os.Stdout),

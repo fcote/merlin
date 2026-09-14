@@ -1,6 +1,6 @@
 import { BarChartOutlined, LoginOutlined } from '@ant-design/icons'
 import { Space, Card, Form, Input, Button } from 'antd'
-import Title from 'antd/lib/typography/Title'
+import { Typography } from 'antd'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -23,19 +23,21 @@ const LoginForm = () => {
 
   const handleSubmitLogin = async (values: LoginFormType) => {
     setIsLoading(true)
-    const res = await signin(values.username, values.password)
-    setIsLoading(false)
-
-    if (res) {
-      navigate({ pathname: '/home' }, { replace: true })
+    try {
+      const res = await signin(values.username, values.password)
+      if (res) navigate({ pathname: '/home' }, { replace: true })
+    } catch {
+      // The Apollo error link displays the sign-in error.
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <Form name="login-form" layout="vertical" onFinish={handleSubmitLogin}>
-      <Title id="login-form-title">
+      <Typography.Title id="login-form-title">
         <BarChartOutlined />
-      </Title>
+      </Typography.Title>
       <Space className="login-form-space" direction="vertical">
         <Card>
           <Form.Item

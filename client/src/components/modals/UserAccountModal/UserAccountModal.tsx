@@ -44,7 +44,7 @@ const UserAccountModal = ({
   setIsVisible,
   triggerRefresh,
 }: UserAccountBalanceModalProps) => {
-  const form = useRef<FormInstance<UpdateBalanceFormType>>()
+  const form = useRef<FormInstance<UpdateBalanceFormType>>(null)
   const { selfUserAccountUpsert, selfUserAccountUpsertLoading } =
     useSelfUserAccountUpsert()
 
@@ -102,7 +102,7 @@ const UserAccountModal = ({
     <Modal
       className="user-account-balance-modal"
       title={account?.name}
-      visible={isVisible}
+      open={isVisible}
       footer={null}
       closable={true}
       onCancel={handleClose}

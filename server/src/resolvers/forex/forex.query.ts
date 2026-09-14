@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedForex } from '@models/forex'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { Fields, FieldList } from '@resolvers/fields'
 import { ForexFilters } from '@resolvers/forex/forex.inputs'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'

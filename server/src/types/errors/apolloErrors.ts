@@ -1,4 +1,10 @@
-import { ApolloError } from 'apollo-server-core'
+import { GraphQLError } from 'graphql'
+
+class ApolloError extends GraphQLError {
+  constructor(message: string, code: string, properties?: Record<string, any>) {
+    super(message, { extensions: { ...properties, code } })
+  }
+}
 
 import { DefaultErrorCodes } from './errorCodes'
 

@@ -1,17 +1,20 @@
-import { CacheHint, CacheScope } from 'apollo-server-types'
+import {
+  CacheHint,
+  maybeCacheControlFromInfo,
+} from '@apollo/cache-control-types'
 import { UseMiddleware, Directive } from 'type-graphql'
 
 function TypeCacheControl(hint: CacheHint) {
   return Directive(
     `@cacheControl(maxAge: ${hint.maxAge}, scope: ${
-      hint.scope ?? CacheScope.Public
+      hint.scope ?? 'PUBLIC'
     }, inheritMaxAge: false)`
   )
 }
 
 function CacheControl(hint: CacheHint) {
   return UseMiddleware(({ info }, next) => {
-    info.cacheControl.setCacheHint(hint)
+    maybeCacheControlFromInfo(info)?.setCacheHint(hint)
     return next()
   })
 }

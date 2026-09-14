@@ -24,10 +24,13 @@ class UserTransactionMonthlyExpensesMethod extends ServiceMethod {
 
     const total = sumBy(sums, (s) => s.sum)
     const left = this.ctx.user!.netIncomePerMonth - total
-    const categorySums = sums.reduce((result, value) => {
-      result[value.category] = value.sum
-      return result
-    }, {} as Record<UserTransactionCategory, number>)
+    const categorySums = sums.reduce(
+      (result, value) => {
+        result[value.category] = value.sum
+        return result
+      },
+      {} as Record<UserTransactionCategory, number>
+    )
 
     return {
       total,

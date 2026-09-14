@@ -21,8 +21,8 @@ class PaginationOptions {
   offset: number
 }
 
-function PaginatedClass<TItem>(TItemClass: ClassType<TItem>) {
-  @ObjectType({ isAbstract: true })
+function PaginatedClass<TItem extends object>(TItemClass: ClassType<TItem>) {
+  @ObjectType({})
   abstract class NewPaginatedClass {
     @Field((_) => [TItemClass])
     nodes: TItem[]

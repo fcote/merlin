@@ -1,8 +1,8 @@
-import {
+import type {
   ApolloServerPlugin,
   GraphQLRequestListener,
   BaseContext as ApolloBaseContext,
-} from 'apollo-server-plugin-base'
+} from '@apollo/server' with { 'resolution-mode': 'import' }
 import { Knex } from 'knex'
 import { Logger } from 'winston'
 
@@ -19,9 +19,9 @@ type BaseContext = ApolloBaseContext & {
   trxTimeout?: NodeJS.Timeout
 }
 
-class TransactionPlugin<C extends BaseContext = BaseContext>
-  implements ApolloServerPlugin<C>
-{
+class TransactionPlugin<
+  C extends BaseContext = BaseContext,
+> implements ApolloServerPlugin<C> {
   constructor(private config: TransactionPluginConfig) {}
 
   private setTransactionInContext(context: C, trx?: Knex.Transaction) {
@@ -48,10 +48,8 @@ class TransactionPlugin<C extends BaseContext = BaseContext>
     // Set a timeout to kill the transaction if it takes too long
     if (this.config?.transactionTimeoutMs) {
       context.trxTimeout = setTimeout(
-        this.timeout,
-        this.config.transactionTimeoutMs,
-        context,
-        this.config.logger
+        () => this.timeout(context, this.config.logger),
+        this.config.transactionTimeoutMs
       )
     }
   }
@@ -82,13 +80,13 @@ class TransactionPlugin<C extends BaseContext = BaseContext>
 
   async requestDidStart(): Promise<GraphQLRequestListener<C>> {
     return {
-      didResolveOperation: async ({ context }) => {
+      didResolveOperation: async ({ contextValue: context }) => {
         await this.start(context)
       },
-      didEncounterErrors: async ({ context }) => {
+      didEncounterErrors: async ({ contextValue: context }) => {
         await this.abort(context)
       },
-      willSendResponse: async ({ context }) => {
+      willSendResponse: async ({ contextValue: context }) => {
         await this.commit(context)
       },
     }

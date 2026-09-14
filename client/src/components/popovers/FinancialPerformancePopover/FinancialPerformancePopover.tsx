@@ -55,8 +55,8 @@ const FinancialPerformancePopover: React.FC<
       key="financial-ratio-performance"
       content={Content}
       placement="rightTop"
-      arrowPointAtCenter={true}
-      destroyTooltipOnHide={{ keepParent: false }}
+      arrow={{ pointAtCenter: true }}
+      destroyOnHidden
     >
       {children}
     </Popover>

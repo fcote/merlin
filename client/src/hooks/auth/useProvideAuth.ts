@@ -1,3 +1,4 @@
+import client, { wsClient } from '@api/client'
 import Cookies from 'js-cookie'
 import { useState } from 'react'
 
@@ -13,13 +14,9 @@ export type IAuthContext = {
 }
 
 export const useProvideAuth = (): IAuthContext => {
-  const [user, setUser] = useState<User>(null)
-  const { signIn } = useSignIn()
-
   const cookiesUser = useUserFromCookies()
-  if (cookiesUser && !user) {
-    setUser(cookiesUser)
-  }
+  const [user, setUser] = useState<User>(cookiesUser)
+  const { signIn } = useSignIn()
 
   const signin = async (login: string, password: string) => {
     const res = await signIn({
@@ -30,6 +27,7 @@ export const useProvideAuth = (): IAuthContext => {
     Cookies.set('userId', res.id)
     Cookies.set('username', res.username)
     Cookies.set('apiToken', res.apiToken)
+    wsClient.terminate()
 
     return res
   }
@@ -39,6 +37,8 @@ export const useProvideAuth = (): IAuthContext => {
     Cookies.remove('username')
     Cookies.remove('apiToken')
     setUser(null)
+    wsClient.terminate()
+    await client.clearStore()
 
     return true
   }

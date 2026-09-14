@@ -9,7 +9,7 @@ import {
 } from 'type-graphql'
 
 import { PaginatedEarning, EarningStatement } from '@models/earning'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { EarningFilters } from '@resolvers/earning/earning.inputs'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'

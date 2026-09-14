@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedHistoricalPrice } from '@models/historicalPrice'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { Fields, FieldList } from '@resolvers/fields'
 import { HistoricalPriceFilters } from '@resolvers/historicalPrice/historicalPrice.inputs'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'

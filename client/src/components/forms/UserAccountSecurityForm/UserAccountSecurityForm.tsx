@@ -39,7 +39,7 @@ const UserAccountSecurityForm: React.FC<UserAccountSecurityFormProps> = ({
   triggerRefresh,
   userCurrency,
 }) => {
-  const form = useRef<FormInstance<UserAccountSecurityFormType>>()
+  const form = useRef<FormInstance<UserAccountSecurityFormType>>(null)
 
   const {
     selfUserAccountSecurityUpsert,

@@ -1,7 +1,7 @@
 import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
 
 import { PaginatedUserAccount } from '@models/userAccount'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { OrderOptions, PaginationOptions } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'
 import { UserAccountFilters } from '@resolvers/userAccount/userAccount.inputs'

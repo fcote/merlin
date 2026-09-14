@@ -16,7 +16,10 @@ class WebsocketClient {
   public socket: WebSocket
   private isConnected: boolean
 
-  constructor(private endpoint: string, private loginCommand?: any) {}
+  constructor(
+    private endpoint: string,
+    private loginCommand?: any
+  ) {}
 
   private open = (endpoint: string) => {
     return new Promise<void>((resolve, reject) => {

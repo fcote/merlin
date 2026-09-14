@@ -1,5 +1,5 @@
-import { SubscribeToMoreOptions } from '@apollo/client/core/watchQueryOptions'
-import { mergeDeep } from '@apollo/client/utilities'
+import { SubscribeToMoreOptions } from '@apollo/client'
+import { merge as mergeDeep } from 'lodash'
 import { uniq } from 'lodash'
 
 import useSelfFollowedSecurityGroupsQuery from '@hooks/api/queries/useSelfFollowedSecurityGroups/useSelfFollowedSecurityGroups.query'
@@ -21,7 +21,7 @@ const useSelfFollowedSecurityGroups = (type: FollowedSecurityGroupType) =>
 
 const subscribeToMoreFollowedSecurityGroupPrices = (
   tickers: string[]
-): SubscribeToMoreOptions => ({
+): SubscribeToMoreOptions<any> => ({
   document: useSecurityPriceChangesSubscription,
   variables: { tickers: uniq(tickers) },
   updateQuery: (prev, { subscriptionData }) => {

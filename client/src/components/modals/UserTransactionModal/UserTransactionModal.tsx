@@ -46,7 +46,7 @@ const UserTransactionModal = ({
   setIsVisible,
   triggerRefresh,
 }: UserTransactionBalanceModalProps) => {
-  const form = useRef<FormInstance<TransactionFormType>>()
+  const form = useRef<FormInstance<TransactionFormType>>(null)
   const { selfUserTransactionUpsert, selfUserTransactionUpsertLoading } =
     useSelfUserTransactionUpsert()
 

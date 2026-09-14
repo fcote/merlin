@@ -11,7 +11,7 @@ function useKeyEventListener<T extends HTMLElement = HTMLDivElement>(
   handler: (event: Event) => void,
   element?: RefObject<T>
 ) {
-  const savedHandler = useRef<(event: Event) => void>()
+  const savedHandler = useRef<(event: Event) => void>(null)
 
   useEffect(() => {
     const keyHandler = (event: KeyboardEvent) => {

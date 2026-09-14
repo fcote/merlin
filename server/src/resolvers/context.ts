@@ -11,7 +11,7 @@ const graphqlContext = ({
   connectionParams?: any
 }): RequestContext => {
   const isSubscription = !!connectionParams
-  const state = ctx?.state ?? connectionParams
+  const state = ctx?.state ?? connectionParams ?? {}
 
   const c: RequestContext = {
     user: state.user,

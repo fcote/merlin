@@ -75,7 +75,7 @@ const SelfMonthlyExpensesCard: React.FC<SelfMonthlyExpensesCardProps> = ({
         transaction={transactionModalInstance}
         triggerRefresh={refetch}
       />
-      <Dropdown overlay={ContextMenu} trigger={['contextMenu']}>
+      <Dropdown popupRender={() => ContextMenu} trigger={['contextMenu']}>
         <div>
           <UserFinancialCard
             title="Monthly expenses"

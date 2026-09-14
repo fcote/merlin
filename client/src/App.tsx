@@ -1,5 +1,4 @@
 import { Layout } from 'antd'
-import { Content } from 'antd/es/layout/layout'
 import 'katex/dist/katex.min.css'
 import React from 'react'
 import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom'
@@ -28,11 +27,11 @@ const App = () => {
       <SpotlightSearch openKey="alt+KeyR" closeKey="Escape" />
       <SiderMenu />
       <Layout className="site-layout">
-        <Content className="site-content">
+        <Layout.Content className="site-content">
           <Scrollbar>
             <Outlet />
           </Scrollbar>
-        </Content>
+        </Layout.Content>
       </Layout>
     </div>
   )

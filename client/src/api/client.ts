@@ -7,7 +7,9 @@ import {
 import { setContext } from '@apollo/client/link/context'
 import { onError } from '@apollo/client/link/error'
 import { createPersistedQueryLink } from '@apollo/client/link/persisted-queries'
-import { WebSocketLink } from '@apollo/client/link/ws'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
+import { createClient } from 'graphql-ws'
+import { CombinedGraphQLErrors } from '@apollo/client/errors'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { notification } from 'antd'
 import { sha256 } from 'crypto-hash'
@@ -22,21 +24,21 @@ const httpLink = createPersistedQueryLink({
 }).concat(
   createHttpLink({
     uri: getEndpoint('/graphql'),
+    headers: { 'Apollo-Require-Preflight': 'true' },
   })
 )
 
-const wsLink = new WebSocketLink({
-  uri: getWsEndpoint('/graphql/subscriptions'),
-  options: {
-    reconnect: true,
-    lazy: true,
-    connectionParams: () => {
-      const { apiToken } = Cookies.get()
-      if (!apiToken) return {}
-      return { 'x-api-token': apiToken }
-    },
+export const wsClient = createClient({
+  url: getWsEndpoint('/graphql/subscriptions'),
+
+  lazy: true,
+  connectionParams: () => {
+    const { apiToken } = Cookies.get()
+    if (!apiToken) return {}
+    return { 'x-api-token': apiToken }
   },
 })
+const wsLink = new GraphQLWsLink(wsClient)
 
 const splitLink = split(
   ({ query }) => {
@@ -50,22 +52,11 @@ const splitLink = split(
   httpLink
 )
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message }) => {
-      notification.error({
-        message,
-        placement: 'bottomRight',
-      })
-    })
-  }
-
-  if (networkError) {
-    notification.error({
-      message: networkError.message,
-      placement: 'bottomRight',
-    })
-  }
+const errorLink = onError(({ error }) => {
+  const errors = CombinedGraphQLErrors.is(error) ? error.errors : [error]
+  errors.forEach(({ message }) =>
+    notification.error({ message, placement: 'bottomRight' })
+  )
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -79,7 +70,7 @@ const authLink = setContext((_, { headers }) => {
 })
 
 const client = new ApolloClient({
-  name: 'merlin-client',
+  clientAwareness: { name: 'merlin-client' },
   link: authLink.concat(errorLink).concat(splitLink),
   cache: new InMemoryCache({
     typePolicies: {

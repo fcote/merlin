@@ -73,9 +73,9 @@ type SubscriptionOptions<PT, AT> = {
 }
 
 const withCancel = <T>(
-  asyncIterator: AsyncIterator<T | undefined>,
+  asyncIterator: AsyncIterableIterator<T | undefined>,
   onCancel: () => void
-): AsyncIterator<T | undefined> => {
+): AsyncIterableIterator<T | undefined> => {
   if (!asyncIterator.return) {
     asyncIterator.return = () =>
       Promise.resolve({ value: undefined, done: true })
@@ -97,18 +97,21 @@ const subscription =
     onCancel,
     filter,
   }: SubscriptionOptions<PT, AT>) =>
-  (
-    root: any,
-    args: ArgsDictionary,
-    context: RequestContext,
+  async ({
+    args,
+    context,
+    info,
+  }: {
+    args: ArgsDictionary
+    context: RequestContext
     info: GraphQLResolveInfo
-  ) => {
+  }) => {
     onSubscribe?.(context, args)
 
-    const asyncIterator = withFilter(
-      () => pubSub.asyncIterator(channel),
+    const asyncIterator = await withFilter(
+      () => pubSub.asyncIterableIterator(channel),
       (payload, variables) => (filter ? filter(payload, variables) : true)
-    )(root, args, context, info)
+    )(undefined, args, context, info)
 
     return withCancel(asyncIterator, () => {
       onCancel?.(context, args)

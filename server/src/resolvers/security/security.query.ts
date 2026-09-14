@@ -2,7 +2,7 @@ import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { searchLink } from '@links/links'
 import { Security, SecuritySearch } from '@models/security'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SecurityService } from '@services/security'
 import { RequestContext } from '@typings/context'
 

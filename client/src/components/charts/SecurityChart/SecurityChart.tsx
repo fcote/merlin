@@ -1,6 +1,9 @@
 import { LoadingOutlined } from '@ant-design/icons'
 import { Spin, Card, Tag } from 'antd'
 import {
+  AreaSeries,
+  LineSeries,
+  HistogramSeries,
   DeepPartial,
   ChartOptions,
   createChart,
@@ -89,17 +92,17 @@ const smaSeriesConfig: LineSeriesPartialOptions = {
 
 const SecurityChart: React.FC<SecurityChartProps> = ({ prices, loading }) => {
   const windowSize = useWindowSize()
-  const chartContainer = useRef<HTMLDivElement>()
+  const chartContainer = useRef<HTMLDivElement>(null)
   const [chartSize, setChartSize] = useState<Size>({
     width: undefined,
     height: undefined,
   })
 
-  const priceChartViewRef = useRef()
+  const priceChartViewRef = useRef<HTMLDivElement>(null)
   const [priceChart, setPriceChart] = useState<IChartApi>()
   const [priceSeries, setPriceSeries] = useState<ISeriesApi<'Area'>>()
 
-  const volumeChartViewRef = useRef()
+  const volumeChartViewRef = useRef<HTMLDivElement>(null)
   const [volumeChart, setVolumeChart] = useState<IChartApi>()
   const [volumeSeries, setVolumeSeries] = useState<ISeriesApi<'Histogram'>>()
 
@@ -108,45 +111,24 @@ const SecurityChart: React.FC<SecurityChartProps> = ({ prices, loading }) => {
   const [sma200Series, setSma200Series] = useState<ISeriesApi<'Line'>>()
   const [sma200CurrentValue, setSma200CurrentValue] = useState<string>()
 
-  const initPriceChart = () => {
-    if (priceChart) return
-    const newPriceChart = createChart(priceChartViewRef.current, chartConfig)
-    const newSma50Series = newPriceChart.addLineSeries({
-      ...smaSeriesConfig,
-      color: sma50Color,
-    })
-    const newSma200Series = newPriceChart.addLineSeries({
-      ...smaSeriesConfig,
-      color: sma200Color,
-    })
-    const newPriceSeries = newPriceChart.addAreaSeries(priceAreaSeriesConfig)
-    setPriceChart(newPriceChart)
-    setPriceSeries(newPriceSeries)
-    setSma50Series(newSma50Series)
-    setSma200Series(newSma200Series)
-  }
-
-  const initVolumeChart = () => {
-    if (volumeChart) return
-    const newChart = createChart(volumeChartViewRef.current, volumeChartConfig)
-    const newChartSeries = newChart.addHistogramSeries(volumeSeriesConfig)
-    setVolumeChart(newChart)
-    setVolumeSeries(newChartSeries)
-  }
-
-  const setIndicatorValue = (
-    series: ISeriesApi<'Line'>,
-    setValue: (value: string) => void
-  ) =>
-    debounce((event) => {
-      const value = event.seriesPrices.get(series) as number
-      setValue(value?.toFixed(2))
-    }, 5)
-  const setIndicatorSma50 = setIndicatorValue(sma50Series, setSma50CurrentValue)
-  const setIndicatorSma200 = setIndicatorValue(
-    sma200Series,
-    setSma200CurrentValue
-  )
+  useEffect(() => {
+    const price = createChart(priceChartViewRef.current, chartConfig)
+    const volume = createChart(volumeChartViewRef.current, volumeChartConfig)
+    setPriceChart(price)
+    setVolumeChart(volume)
+    setPriceSeries(price.addSeries(AreaSeries, priceAreaSeriesConfig))
+    setVolumeSeries(volume.addSeries(HistogramSeries, volumeSeriesConfig))
+    setSma50Series(
+      price.addSeries(LineSeries, { ...smaSeriesConfig, color: sma50Color })
+    )
+    setSma200Series(
+      price.addSeries(LineSeries, { ...smaSeriesConfig, color: sma200Color })
+    )
+    return () => {
+      price.remove()
+      volume.remove()
+    }
+  }, [])
 
   useEffect(() => {
     priceSeries?.setData(
@@ -164,25 +146,32 @@ const SecurityChart: React.FC<SecurityChartProps> = ({ prices, loading }) => {
         color: hp.change > 0 ? upColor : downColor,
       }))
     )
-  }, [prices])
+  }, [prices, priceSeries, volumeSeries, sma50Series, sma200Series])
 
   useEffect(() => {
-    if (priceChartViewRef.current) initPriceChart()
-    if (volumeChartViewRef.current) initVolumeChart()
-  }, [priceChartViewRef, volumeChartViewRef])
-
-  useEffect(() => {
-    priceChart?.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      volumeChart?.timeScale().setVisibleLogicalRange(range)
-    })
-    priceChart?.subscribeCrosshairMove((event) => {
-      setIndicatorSma50(event)
-      setIndicatorSma200(event)
-    })
-    volumeChart?.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      priceChart?.timeScale().setVisibleLogicalRange(range)
-    })
-  }, [priceChart, volumeChart])
+    if (!priceChart || !volumeChart || !sma50Series || !sma200Series) return
+    const syncVolume = (range) => {
+      if (range) volumeChart.timeScale().setVisibleLogicalRange(range)
+    }
+    const syncPrice = (range) => {
+      if (range) priceChart.timeScale().setVisibleLogicalRange(range)
+    }
+    const updateIndicators = debounce((event) => {
+      setSma50CurrentValue(event.seriesData.get(sma50Series)?.value?.toFixed(2))
+      setSma200CurrentValue(
+        event.seriesData.get(sma200Series)?.value?.toFixed(2)
+      )
+    }, 5)
+    priceChart.timeScale().subscribeVisibleLogicalRangeChange(syncVolume)
+    volumeChart.timeScale().subscribeVisibleLogicalRangeChange(syncPrice)
+    priceChart.subscribeCrosshairMove(updateIndicators)
+    return () => {
+      priceChart.timeScale().unsubscribeVisibleLogicalRangeChange(syncVolume)
+      volumeChart.timeScale().unsubscribeVisibleLogicalRangeChange(syncPrice)
+      priceChart.unsubscribeCrosshairMove(updateIndicators)
+      updateIndicators.cancel()
+    }
+  }, [priceChart, volumeChart, sma50Series, sma200Series])
 
   useEffect(() => {
     setChartSize({
@@ -196,9 +185,10 @@ const SecurityChart: React.FC<SecurityChartProps> = ({ prices, loading }) => {
   ])
 
   useEffect(() => {
+    if (!chartSize.width || !chartSize.height) return
     priceChart?.resize(chartSize.width, chartSize.height * 0.75)
     volumeChart?.resize(chartSize.width, chartSize.height * 0.25)
-  }, [priceChart, chartSize])
+  }, [priceChart, volumeChart, chartSize])
 
   const IndicatorOverlay = ({
     name,

@@ -17,7 +17,7 @@ const UserAccountSelect: React.FC<UserAccountSelectProps> = ({
   onChange,
   type,
 }) => {
-  const newAccountInputRef = useRef<InputRef>()
+  const newAccountInputRef = useRef<InputRef>(null)
   const [selectedUserAccountId, setSelectedUserAccountId] = useState<string>()
   const [newUserAccountName, setNewUserAccountName] = useState<string>()
 

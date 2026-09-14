@@ -96,8 +96,8 @@ const UserFinancialCard: React.FC<UserFinancialCardProps> = ({
       {loading
         ? LoadingSkeleton
         : editable
-        ? FinancialEditableTable()
-        : FinancialTable()}
+          ? FinancialEditableTable()
+          : FinancialTable()}
     </Card>
   )
 }

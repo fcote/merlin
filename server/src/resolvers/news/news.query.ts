@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedNews } from '@models/news'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { Fields, FieldList } from '@resolvers/fields'
 import { NewsFilters } from '@resolvers/news/news.inputs'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'

@@ -56,7 +56,7 @@ const FollowedSecurityModal = ({
   setIsVisible,
   triggerRefresh,
 }: FollowedSecurityModalProps) => {
-  const form = useRef<FormInstance<FollowedSecurityFormType>>()
+  const form = useRef<FormInstance<FollowedSecurityFormType>>(null)
   const { getOrSyncSecurity, securityLoading } = useSecurityGetOrSync()
   const { selfFollowedSecurityLink, selfFollowedSecurityLinkLoading } =
     useSelfFollowedSecurityLink()

@@ -1,4 +1,3 @@
-import { CacheScope } from 'apollo-server-types'
 import { round } from 'lodash'
 import { JSONSchema, Model, PartialModelObject } from 'objection'
 import {
@@ -67,7 +66,7 @@ registerEnumType(FinancialPeriod, {
   name: 'FinancialPeriod',
 })
 
-@TypeCacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
+@TypeCacheControl({ maxAge: 60 * 60 * 24, scope: 'PUBLIC' })
 @ObjectType('Financial')
 class Financial extends BaseModel {
   @Field((_) => Float, { nullable: true })

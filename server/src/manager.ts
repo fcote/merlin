@@ -69,7 +69,7 @@ class ServiceManager {
 
       process.on(eventName, async (...args) => {
         if (eventConfig.log) {
-          logger[eventConfig.logLevel!](...args)
+          logger[eventConfig.logLevel!](String(args[0]), ...args.slice(1))
         }
 
         if (eventConfig.strategy === 'graceful') {

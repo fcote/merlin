@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "commonjs",
+    "types": ["node"],
+    "ignoreDeprecations": "6.0",
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "module": "NodeNext",
     "lib": [
       "esnext",
       "dom"
@@ -18,7 +21,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
     "paths": {
       "@services/*": ["src/services/*"],

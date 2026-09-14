@@ -1,6 +1,6 @@
-import { useSubscription as useApolloSubscription } from '@apollo/client'
+import { useSubscription as useApolloSubscription } from '@apollo/client/react'
 import { OperationVariables } from '@apollo/client/core'
-import { SubscriptionHookOptions } from '@apollo/client/react/types/types'
+import { SubscriptionHookOptions } from '@apollo/client/react'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { DocumentNode } from 'graphql'
 import { useMemo } from 'react'
@@ -9,7 +9,10 @@ import client from '@api/client'
 
 import { queryExtractData } from '@helpers/queryExtractData'
 
-const useSubscription = <TData = any, TVariables = OperationVariables>(
+const useSubscription = <
+  TData = any,
+  TVariables extends OperationVariables = OperationVariables,
+>(
   subscription: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: SubscriptionHookOptions<TData, TVariables> & {
     namespace?: string

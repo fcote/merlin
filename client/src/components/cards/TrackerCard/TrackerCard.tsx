@@ -155,7 +155,7 @@ const TrackerCard: React.FC<TrackerCardProps> = ({
   }
 
   return (
-    <Dropdown overlay={contextMenu} trigger={['contextMenu']}>
+    <Dropdown popupRender={() => contextMenu} trigger={['contextMenu']}>
       <Card
         className="tracker-card"
         key={tracker.id}

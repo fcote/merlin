@@ -1,58 +1,27 @@
-import {
-  ApolloClient,
-  NetworkStatus,
-  ObservableQuery,
-  OperationVariables,
-} from '@apollo/client/core'
-import { ApolloError } from '@apollo/client/errors'
-import {
-  QueryHookOptions,
-  QueryLazyOptions,
-  ObservableQueryFields,
-} from '@apollo/client/react/types/types'
-import { TypedDocumentNode } from '@graphql-typed-document-node/core'
+import { OperationVariables, TypedDocumentNode } from '@apollo/client'
+import { useLazyQuery as useApolloLazyQuery } from '@apollo/client/react'
 import { DocumentNode } from 'graphql'
 
 import useLazyQuery from '@hooks/api/useLazyQuery'
-
 import Paginated from '@lib/paginated'
 
-export interface PaginatedQueryResult<
+const useLazyPaginatedQuery = <
   TData = any,
-  TVariables = OperationVariables
-> extends ObservableQueryFields<Paginated<TData>, TVariables> {
-  client: ApolloClient<any>
-  observable: ObservableQuery<Paginated<TData>, TVariables>
-  data: TData[] | undefined
-  previousData?: Paginated<TData>
-  error?: ApolloError
-  loading: boolean
-  networkStatus: NetworkStatus
-  called: boolean
-}
-
-const useLazyPaginatedQuery = <TData = any, TVariables = OperationVariables>(
+  TVariables extends OperationVariables = OperationVariables,
+>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
-  options?: QueryHookOptions<Paginated<TData>, TVariables> & {
+  options?: useApolloLazyQuery.Options<Paginated<TData>, TVariables> & {
     namespace?: string
   }
 ) => {
-  const [request, { data: rawData, ...rest }] = useLazyQuery<
+  const [request, { data, ...rest }] = useLazyQuery<
     Paginated<TData>,
     TVariables
   >(query, options)
-
   return [
     request,
-    {
-      ...rest,
-      data: rawData?.nodes ?? [],
-      total: rawData?.total ?? 0,
-    },
-  ] as [
-    (options?: QueryLazyOptions<TVariables>) => Promise<Paginated<TData>>,
-    PaginatedQueryResult<TData, TVariables> & { total: number }
-  ]
+    { ...rest, data: data?.nodes ?? [], total: data?.total ?? 0 },
+  ] as const
 }
 
 export default useLazyPaginatedQuery

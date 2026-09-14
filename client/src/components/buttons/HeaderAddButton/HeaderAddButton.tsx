@@ -1,10 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
-import React, { HTMLAttributes } from 'react'
+import { Button, ButtonProps } from 'antd'
+import React from 'react'
 
 import './HeaderAddButton.style.less'
 
-interface HeaderAddButtonProps extends HTMLAttributes<any> {
+interface HeaderAddButtonProps extends ButtonProps {
   handleAdd: () => void
 }
 

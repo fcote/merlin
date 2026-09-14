@@ -1,12 +1,9 @@
 import {
   useMutation as useApolloMutation,
   MutationFunctionOptions,
-} from '@apollo/client'
+} from '@apollo/client/react'
 import { OperationVariables } from '@apollo/client/core'
-import {
-  MutationHookOptions,
-  MutationResult,
-} from '@apollo/client/react/types/types'
+import { MutationHookOptions, MutationResult } from '@apollo/client/react'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { DocumentNode } from 'graphql'
 
@@ -14,13 +11,16 @@ import client from '@api/client'
 
 import { queryExtractData } from '@helpers/queryExtractData'
 
-const useMutation = <TData = any, TVariables = OperationVariables>(
+const useMutation = <
+  TData = any,
+  TVariables extends OperationVariables = OperationVariables,
+>(
   mutation: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: MutationHookOptions<TData, TVariables> & {
     namespace?: string
   }
 ) => {
-  const [baseRequest, { ...rest }] = useApolloMutation<any, TVariables>(
+  const [baseRequest, { ...rest }] = useApolloMutation<any, OperationVariables>(
     mutation,
     { ...options, client }
   )
@@ -34,7 +34,7 @@ const useMutation = <TData = any, TVariables = OperationVariables>(
 
   return [request, { ...rest }] as [
     (options?: MutationFunctionOptions<TData, TVariables>) => Promise<TData>,
-    MutationResult<TData>
+    MutationResult<TData>,
   ]
 }
 

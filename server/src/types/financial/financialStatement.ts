@@ -81,9 +81,7 @@ export type CashFlowStatementKeys =
   | 'freeCashFlow'
 
 export type StatementKeys =
-  | IncomeStatementKeys
-  | BalanceSheetStatementKeys
-  | CashFlowStatementKeys
+  IncomeStatementKeys | BalanceSheetStatementKeys | CashFlowStatementKeys
 
 export type FinancialStatementMap<T> = {
   [FinancialBaseStatement.incomeStatement]: Record<IncomeStatementKeys, T>

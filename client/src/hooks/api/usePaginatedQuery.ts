@@ -1,5 +1,5 @@
 import { OperationVariables } from '@apollo/client/core'
-import { QueryHookOptions } from '@apollo/client/react/types/types'
+import { QueryHookOptions } from '@apollo/client/react'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { DocumentNode } from 'graphql'
 
@@ -7,7 +7,10 @@ import useQuery from '@hooks/api/useQuery'
 
 import Paginated from '@lib/paginated'
 
-const usePaginatedQuery = <TData = any, TVariables = OperationVariables>(
+const usePaginatedQuery = <
+  TData = any,
+  TVariables extends OperationVariables = OperationVariables,
+>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: QueryHookOptions<TData, TVariables> & {
     namespace?: string

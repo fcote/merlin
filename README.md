@@ -39,6 +39,10 @@ ENDPOINT=https://example.com/graphql USERNAME=foo PASSWORD=s3cr3t ./adduser.sh
 
 `ENDPOINT` should be the same value as the `ENDPOINT` variable defined in your `.env` file suffixed with `/graphql`
 
+## Development
+
+Use Node 24 LTS and Go 1.27.1. See the [dependency upgrade notes](./docs/dependency-upgrade.md) for compatibility limits, local verification commands and integration-test coverage.
+
 ## Features
 
 ### Portfolio (Real time)

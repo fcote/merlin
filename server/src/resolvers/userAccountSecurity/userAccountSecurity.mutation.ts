@@ -1,7 +1,7 @@
 import { Ctx, FieldResolver, Resolver, Arg, Authorized } from 'type-graphql'
 
 import { UserAccountSecurity } from '@models/userAccountSecurity'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { SelfMutation } from '@resolvers/root'
 import { UserAccountSecurityFields } from '@resolvers/userAccountSecurity/userAccountSecurity.inputs'
 import { UserAccountSecurityService } from '@services/userAccountSecurity'

@@ -1,7 +1,7 @@
 import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
 
 import { PaginatedFollowedSecurityGroup } from '@models/followedSecurityGroup'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { FollowedSecurityGroupFilters } from '@resolvers/followedSecurityGroup/followedSecurityGroup.inputs'
 import { OrderOptions, PaginationOptions } from '@resolvers/paginated'
 import { SelfQuery } from '@resolvers/root'

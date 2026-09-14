@@ -85,7 +85,7 @@ const Watchlist = () => {
         setIsVisible={setIsWatchlistModalVisible}
         type={FollowedSecurityGroupType.watchlist}
       />
-      <Dropdown overlay={contextMenu} trigger={['contextMenu']}>
+      <Dropdown popupRender={() => contextMenu} trigger={['contextMenu']}>
         <div
           className="watchlist-content"
           style={{ height: 'calc(100vh - 100px)' }}

@@ -1,5 +1,5 @@
-import { SubscribeToMoreOptions } from '@apollo/client/core/watchQueryOptions'
-import { mergeDeep } from '@apollo/client/utilities'
+import { SubscribeToMoreOptions } from '@apollo/client'
+import { merge as mergeDeep } from 'lodash'
 import { uniq } from 'lodash'
 
 import useSelfUserAccountSecuritiesQuery from '@hooks/api/queries/useSelfUserAccountSecurities/useSelfUserAccountSecurities.query'
@@ -18,7 +18,7 @@ const useSelfUserAccountSecurities = (ticker?: string) =>
 
 const subscribeToMoreUserAccountSecurityPrices = (
   tickers: string[]
-): SubscribeToMoreOptions => ({
+): SubscribeToMoreOptions<any> => ({
   document: useSecurityPriceChangesSubscription,
   variables: { tickers: uniq(tickers) },
   updateQuery: (prev, { subscriptionData }) => {

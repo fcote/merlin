@@ -1,9 +1,9 @@
 import cors from '@koa/cors'
-import { execute, subscribe } from 'graphql'
+import { useServer } from 'graphql-ws/use/ws'
 import { Server, createServer } from 'http'
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
-import { SubscriptionServer } from 'subscriptions-transport-ws'
+import { WebSocketServer } from 'ws'
 
 import { config } from '@config'
 import { apolloManager } from '@drivers/apolloManager'
@@ -13,6 +13,8 @@ import { errorHandler } from '@middlewares/http/errorHandler'
 import { validateOrigin } from '@middlewares/http/validateOrigins'
 import { schema } from '@resolvers'
 import { graphqlContext } from '@resolvers/context'
+import { UserService } from '@services/user'
+import { ApolloForbidden } from '@typings/errors/apolloErrors'
 import { Connectable } from '@typings/manager'
 
 class App implements Connectable {
@@ -27,7 +29,7 @@ class App implements Connectable {
   public server: Server
   public koa: Koa = new Koa()
 
-  private subscriptionServer: SubscriptionServer
+  private subscriptionServer: { dispose: () => void | Promise<void> }
 
   public connect = async (): Promise<void> => {
     await apolloManager.connect()
@@ -35,23 +37,32 @@ class App implements Connectable {
     return new Promise(async (resolve, _) => {
       const port = config.get('port')
 
-      this.applyMiddlewares()
+      await this.applyMiddlewares()
 
       this.server = createServer(this.koa.callback())
       this.server.keepAliveTimeout = config.get('keepAliveTimeout')
 
-      this.subscriptionServer = SubscriptionServer.create(
+      this.subscriptionServer = useServer(
         {
           schema,
-          execute,
-          subscribe,
-          onConnect: (connectionParams: any) =>
-            graphqlContext({ connectionParams }),
+          context: async (ctx) => {
+            const context = graphqlContext({
+              connectionParams: ctx.connectionParams ?? {},
+            })
+            if (!context.userToken) throw new ApolloForbidden('ACCESS_DENIED')
+            const user = await new UserService(context).findOne({
+              apiToken: context.userToken,
+            })
+            if (!context.userToken || !user)
+              throw new ApolloForbidden('ACCESS_DENIED')
+            context.user = user
+            return context
+          },
         },
-        {
+        new WebSocketServer({
           server: this.server,
-          path: `${apolloManager.server.graphqlPath}${this.subscriptionPath}`,
-        }
+          path: `/graphql${this.subscriptionPath}`,
+        })
       )
 
       this.server.listen(port, () => {
@@ -62,12 +73,11 @@ class App implements Connectable {
   }
 
   public disconnect = async (): Promise<void> => {
+    await this.subscriptionServer?.dispose()
     await apolloManager.disconnect()
 
     if (!this.server || !this.server.address()) return Promise.resolve()
     return new Promise((resolve, reject) => {
-      this.subscriptionServer.close()
-
       this.server.close((err) => {
         if (err) reject(err)
         else resolve()
@@ -75,14 +85,14 @@ class App implements Connectable {
     })
   }
 
-  private applyMiddlewares = () => {
+  private applyMiddlewares = async () => {
     this.koa
       .use(cors(this.corsOptions))
       .use(bodyParser())
       .use(errorHandler())
       .use(apiToken())
 
-    apolloManager.applyMiddleware()
+    await apolloManager.applyMiddleware()
   }
 }
 

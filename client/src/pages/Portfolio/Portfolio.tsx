@@ -1,14 +1,6 @@
+import { PageHeader } from '@components/PageHeader'
 import { EditOutlined, PlusOutlined } from '@ant-design/icons'
-import {
-  Card,
-  Table,
-  Skeleton,
-  PageHeader,
-  Row,
-  Col,
-  Button,
-  Space,
-} from 'antd'
+import { Card, Table, Skeleton, Row, Col, Button, Space } from 'antd'
 import { ColumnType } from 'antd/es/table'
 import { uniq } from 'lodash'
 import React, { useEffect, useState, useMemo } from 'react'

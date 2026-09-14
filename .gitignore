@@ -25,3 +25,6 @@ server/*.private.json
 server/*.backup
 server/.idea/
 server/schema.graphql
+
+client/test-results/
+client/playwright-report/

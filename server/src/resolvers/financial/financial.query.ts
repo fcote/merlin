@@ -1,8 +1,7 @@
-import { CacheScope } from 'apollo-server-types'
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedFinancial } from '@models/financial'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { CacheControl } from '@resolvers/cacheControl'
 import { Fields, FieldList } from '@resolvers/fields'
 import { FinancialFilters } from '@resolvers/financial/financial.inputs'
@@ -13,7 +12,7 @@ import { RequestContext } from '@typings/context'
 @Resolver()
 class FinancialQueryResolver {
   @Authorized([Right.authenticated])
-  @CacheControl({ maxAge: 60 * 60 * 24, scope: CacheScope.Public })
+  @CacheControl({ maxAge: 60 * 60 * 24, scope: 'PUBLIC' })
   @Query((_) => PaginatedFinancial)
   financials(
     @Ctx() ctx: RequestContext,

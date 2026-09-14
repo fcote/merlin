@@ -1,17 +1,10 @@
+import { PageHeader } from '@components/PageHeader'
 import {
   ExportOutlined,
   InfoCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import {
-  PageHeader,
-  Progress,
-  Descriptions,
-  Button,
-  Tag,
-  Modal,
-  Layout,
-} from 'antd'
+import { Progress, Descriptions, Button, Tag, Modal, Layout } from 'antd'
 import React, { useState, useMemo } from 'react'
 import { useParams, Routes, useNavigate, Route } from 'react-router-dom'
 

@@ -1,6 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons'
 import { Progress, Button } from 'antd'
-import { RenderedCell } from 'rc-table/lib/interface'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -23,7 +22,7 @@ const useWatchlistTableColumns = (
   const renderDefault = (
     value: any,
     record: WatchlistTableItem
-  ): RenderedCell<WatchlistTableItem> => {
+  ) => {
     return {
       children: value,
       props: {
@@ -35,7 +34,7 @@ const useWatchlistTableColumns = (
   const renderName = (
     _: any,
     record: WatchlistTableItem
-  ): RenderedCell<WatchlistTableItem> => {
+  ) => {
     const progress = (
       <Progress
         strokeColor={progressBarStrokeColor}

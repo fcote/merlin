@@ -40,8 +40,7 @@ export enum FinancialBaseStatement {
 }
 
 export type FinancialStatement =
-  | FinancialRatioStatement
-  | FinancialBaseStatement
+  FinancialRatioStatement | FinancialBaseStatement
 
 export const financialStatementLabel = {
   [FinancialBaseStatement.incomeStatement]: 'Income Statement',

@@ -1,8 +1,8 @@
 import { init, setExtras, captureException } from '@sentry/node'
-import { ApolloError } from 'apollo-server-core'
+import { GraphQLError } from 'graphql'
 import { get, isNumber, pick, cloneDeep } from 'lodash'
 import os from 'os'
-import winston, { LogCallback } from 'winston'
+import winston from 'winston'
 import Transport from 'winston-transport'
 import { ConsoleTransportOptions } from 'winston/lib/winston/transports'
 
@@ -22,7 +22,7 @@ const sentryLogLevels = {
 
 const serializeErrors = (data: Record<string, any>): any => {
   const serialize = (error: Error) => {
-    if (error instanceof ApolloError) return error
+    if (error instanceof GraphQLError) return error
     return {
       message: error.message,
       stacktrace: error.stack,
@@ -106,7 +106,7 @@ class SentryTransport extends Transport {
   /**
    * Log events from winston
    */
-  log(info: LogInfo, callback: LogCallback) {
+  log(info: LogInfo, callback: () => void) {
     setImmediate(() => this.emit('logged', info))
 
     const { level, ...data } = info

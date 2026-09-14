@@ -3,7 +3,7 @@ import { Input, Modal, Table, Spin, InputRef } from 'antd'
 import { TableRowSelection } from 'antd/es/table/interface'
 import { ColumnType } from 'antd/lib/table'
 import { debounce, isEmpty } from 'lodash'
-import React, {useState, useRef, ChangeEvent, useMemo, useEffect} from 'react'
+import React, { useState, useRef, ChangeEvent, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useSecuritySearch } from '@hooks/api/queries/useSecuritySearch'
@@ -23,7 +23,7 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
 
   const [isSearchVisible, setIsSearchVisible] = useState(false)
   const [selectedRow, setSelectedRow] = useState<number>(null)
-  const searchInput = useRef<InputRef>()
+  const searchInput = useRef<InputRef>(null)
   const navigate = useNavigate()
 
   const searchItems = useMemo(() => {
@@ -56,8 +56,8 @@ const SpotlightSearchModal = ({ openKey, closeKey }: SpotlightSearchProps) => {
       selectedRow >= lastElement
         ? lastElement
         : selectedRow != null
-        ? selectedRow + 1
-        : 0
+          ? selectedRow + 1
+          : 0
     setSelectedRow(row)
   }
   const handleSelectRowUp = (_: KeyboardEvent) => {

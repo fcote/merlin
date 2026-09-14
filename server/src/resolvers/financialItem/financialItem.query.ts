@@ -1,7 +1,7 @@
 import { Arg, Ctx, Resolver, Query, Authorized } from 'type-graphql'
 
 import { PaginatedFinancialItem } from '@models/financialItem'
-import { Right } from '@resolvers'
+import { Right } from '@resolvers/authorization'
 import { Fields, FieldList } from '@resolvers/fields'
 import { FinancialItemFilters } from '@resolvers/financialItem/financialItem.inputs'
 import { PaginationOptions, OrderOptions } from '@resolvers/paginated'
