@@ -54,7 +54,7 @@
     "@vitejs/plugin-react": "6.1.1",
     "cross-env": "10.1.0",
     "dotenv": "17.4.2",
-    "eslint": "9.39.5",
+    "eslint": "10.10.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import-helpers": "2.0.2",
     "eslint-plugin-prettier": "5.5.6",
