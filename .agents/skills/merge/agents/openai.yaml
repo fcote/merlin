@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge"
+  short_description: "Verify changes and squash-merge a proved PR"
+  default_prompt: "Use $merge to verify and merge the current repository changes."

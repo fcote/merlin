@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release"
+  short_description: "Merge and publish a semantic GitHub Release"
+  default_prompt: "Use $release to publish the current changes with the requested semantic version bump."
