@@ -1,5 +1,4 @@
 import { JSONSchema, Model, Transaction } from 'objection'
-import { registerEnumType, ObjectType, Field, Float } from 'type-graphql'
 
 import { SoftDeleteModel } from '@models/base/softDeleteModel'
 import { User } from '@models/user'
@@ -17,34 +16,23 @@ enum UserAccountType {
   securities = 'securities',
 }
 
-registerEnumType(UserAccountType, {
-  name: 'UserAccountType',
-})
-
 enum UserAccountProvider {
   xtb = 'xtb',
 }
-
-registerEnumType(UserAccountProvider, {
-  name: 'UserAccountProvider',
-})
 
 const UserAccountProviderClass: { [key: string]: typeof SecurityProvider } = {
   [UserAccountProvider.xtb]: XTBProvider,
 }
 
-@ObjectType('UserAccount')
 class UserAccount extends SoftDeleteModel {
-  @Field((_) => String)
   name: string
-  @Field((_) => UserAccountType)
+
   type: UserAccountType
-  @Field((_) => UserAccountProvider, { nullable: true })
+
   provider?: UserAccountProvider
-  @Field((_) => Float)
+
   balance: number
 
-  @Field((_) => String)
   userId: string
 
   user: User
@@ -96,7 +84,6 @@ class UserAccount extends SoftDeleteModel {
   }
 }
 
-@ObjectType('PaginatedUserAccount')
 class PaginatedUserAccount extends PaginatedClass(UserAccount) {}
 
 export {

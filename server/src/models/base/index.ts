@@ -1,5 +1,4 @@
 import stringHash from '@sindresorhus/string-hash'
-import { GraphQLDateTime } from 'graphql-scalars'
 import { without, get } from 'lodash'
 import {
   Model,
@@ -9,7 +8,6 @@ import {
   Transaction,
   raw,
 } from 'objection'
-import { ObjectType, Field, ID } from 'type-graphql'
 
 import { camelToSnakeCase } from '@helpers/camelToSnakeCase'
 import {
@@ -20,11 +18,9 @@ import {
 import { ApolloUnprocessableEntity } from '@typings/errors/apolloErrors'
 import { BadRequest } from '@typings/errors/errors'
 
-@ObjectType('BaseModel', {})
 class BaseModel extends Model {
-  @Field((_) => ID)
   id: number | string
-  @Field((_) => GraphQLDateTime)
+
   createdAt: Date
 
   // Required to resolve circular dependencies of relationMappings

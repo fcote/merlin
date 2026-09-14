@@ -38,9 +38,7 @@
       "@test/*": ["./test/*"],
       "@config": ["./src/config"]
     },
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "esModuleInterop": true
   },
   "include": [
     "./index.ts",

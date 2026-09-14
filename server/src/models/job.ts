@@ -1,5 +1,4 @@
 import { JSONSchema } from 'objection'
-import { ObjectType, Field, registerEnumType } from 'type-graphql'
 
 import { BaseModel } from '@models/base'
 
@@ -9,15 +8,9 @@ enum JobType {
   pricesSubscribed = 'pricesSubscribed',
 }
 
-registerEnumType(JobType, {
-  name: 'JobType',
-})
-
-@ObjectType('Job')
 class Job extends BaseModel {
-  @Field((_) => JobType)
   type: JobType
-  @Field((_) => Boolean)
+
   isRunning: boolean
 
   static get tableName() {

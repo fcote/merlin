@@ -1,32 +1,28 @@
 import { round } from 'lodash'
 import { JSONSchema, Model } from 'objection'
-import { ObjectType, Field, ID, Float } from 'type-graphql'
 
 import { SecurityHistoricalPriceResult } from '@links/types'
 import { BaseModel } from '@models/base'
 import { Security } from '@models/security'
 import { PaginatedClass } from '@resolvers/paginated'
 
-@ObjectType('HistoricalPrice')
 class HistoricalPrice extends BaseModel {
-  @Field((_) => String)
   date: string
-  @Field((_) => Float)
+
   open: number
-  @Field((_) => Float)
+
   high: number
-  @Field((_) => Float)
+
   low: number
-  @Field((_) => Float)
+
   close: number
-  @Field((_) => Float, { nullable: true })
+
   volume: number // In millions
-  @Field((_) => Float, { nullable: true })
+
   change: number
-  @Field((_) => Float)
+
   changePercent: number
 
-  @Field((_) => ID)
   securityId: number | string
 
   security: Security
@@ -95,7 +91,6 @@ class HistoricalPrice extends BaseModel {
   }
 }
 
-@ObjectType('PaginatedHistoricalPrice')
 class PaginatedHistoricalPrice extends PaginatedClass(HistoricalPrice) {}
 
 export { HistoricalPrice, PaginatedHistoricalPrice }

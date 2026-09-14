@@ -1,14 +1,28 @@
-import graphqlFields from 'graphql-fields'
-import { createParameterDecorator } from 'type-graphql'
+import { collectSubFields } from '@graphql-tools/utils'
+import { getNamedType, GraphQLResolveInfo, isObjectType } from 'graphql'
 
 type FieldList = string[]
 
-function Fields() {
-  return createParameterDecorator(({ info }): FieldList => {
-    const fields = graphqlFields(info, {}, { excludedFields: ['__typename'] })
-    if (fields?.nodes) return Object.keys(fields.nodes)
-    return Object.keys(fields)
-  })
+function getRequestedFields(info: GraphQLResolveInfo): FieldList {
+  const returnType = getNamedType(info.returnType)
+  if (!isObjectType(returnType)) return []
+  const collect = (type: typeof returnType, nodes: typeof info.fieldNodes) =>
+    collectSubFields(info.schema, info.fragments, info.variableValues, type, [
+      ...nodes,
+    ]).fields
+  let fields = collect(returnType, info.fieldNodes)
+  const nodes = [...fields.values()]
+    .flat()
+    .filter((node) => node.name.value === 'nodes')
+  const itemType =
+    returnType.getFields().nodes &&
+    getNamedType(returnType.getFields().nodes.type)
+  if (nodes.length && itemType && isObjectType(itemType)) {
+    fields = collect(itemType, nodes)
+  }
+  return [
+    ...new Set([...fields.values()].flat().map((node) => node.name.value)),
+  ].filter((name) => name !== '__typename')
 }
 
-export { Fields, FieldList }
+export { getRequestedFields, FieldList }

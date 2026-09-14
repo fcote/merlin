@@ -1,11 +1,10 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
-require('reflect-metadata')
 const { graphql, GraphQLSchema, GraphQLObjectType } = require('graphql')
 const { schema } = require('../dist/src/resolvers')
 
 // Exercise the scalars registered by Merlin through GraphQL's input/output
-// coercion, including TypeGraphQL's Date mapping and explicit scalar fields.
+// coercion, including the legacy DateTime mapping and explicit scalar fields.
 const echoSchema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'ScalarEcho',

@@ -1,17 +1,13 @@
-import { GraphQLJSON } from 'graphql-scalars'
 import { JSONSchema } from 'objection'
-import { ObjectType, Field } from 'type-graphql'
 
 import { BaseModel } from '@models/base'
 import { PaginatedClass } from '@resolvers/paginated'
 
-@ObjectType('StdLog')
 class StdLog extends BaseModel {
-  @Field((_) => String)
   message: string
-  @Field((_) => String)
+
   level: string
-  @Field((_) => GraphQLJSON)
+
   data: any
 
   static get tableName() {
@@ -24,7 +20,6 @@ class StdLog extends BaseModel {
   }
 }
 
-@ObjectType('PaginatedStdLog')
 class PaginatedStdLog extends PaginatedClass(StdLog) {}
 
 export { StdLog, PaginatedStdLog }

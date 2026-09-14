@@ -1,21 +1,8 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { GraphQLJSON } from 'graphql-scalars'
 import { sumBy, range } from 'lodash'
-import {
-  Ctx,
-  FieldResolver,
-  Resolver,
-  Root,
-  Arg,
-  Float,
-  Int,
-} from 'type-graphql'
 
-import { User, UserMonthlyExpenses } from '@models/user'
-import { PaginatedUserAccount } from '@models/userAccount'
-import { PaginatedUserAccountSecurity } from '@models/userAccountSecurity'
+import { User } from '@models/user'
 import {
-  PaginatedUserTransaction,
   UserTransactionFrequency,
   UserTransactionType,
 } from '@models/userTransaction'
@@ -28,17 +15,15 @@ import { UserAccountSecurityService } from '@services/userAccountSecurity'
 import { UserTransactionService } from '@services/userTransaction'
 import { RequestContext } from '@typings/context'
 
-@Resolver(User)
 class UserFieldsResolver {
-  @FieldResolver((_) => PaginatedUserTransaction)
   async transactions(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext,
-    @Arg('filters', (_) => UserTransactionFilters, { nullable: true })
+    user: User,
+    ctx: RequestContext,
+
     filters?: UserTransactionFilters,
-    @Arg('paginate', (_) => PaginationOptions, { nullable: true })
+
     paginate?: PaginationOptions,
-    @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
+
     orderBy?: OrderOptions[]
   ) {
     return ctx.loaders!.userTransactions.load({
@@ -49,15 +34,14 @@ class UserFieldsResolver {
     })
   }
 
-  @FieldResolver((_) => PaginatedUserAccount)
   async accounts(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext,
-    @Arg('filters', (_) => UserAccountFilters, { nullable: true })
+    user: User,
+    ctx: RequestContext,
+
     filters?: UserAccountFilters,
-    @Arg('paginate', (_) => PaginationOptions, { nullable: true })
+
     paginate?: PaginationOptions,
-    @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
+
     orderBy?: OrderOptions[]
   ) {
     return ctx.loaders!.userAccounts.load({
@@ -68,15 +52,14 @@ class UserFieldsResolver {
     })
   }
 
-  @FieldResolver((_) => PaginatedUserAccountSecurity)
   async accountSecurities(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext,
-    @Arg('filters', (_) => UserAccountSecurityFilters, { nullable: true })
+    user: User,
+    ctx: RequestContext,
+
     filters?: UserAccountSecurityFilters,
-    @Arg('paginate', (_) => PaginationOptions, { nullable: true })
+
     paginate?: PaginationOptions,
-    @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
+
     orderBy?: OrderOptions[]
   ) {
     return new UserAccountSecurityService(ctx).find(
@@ -89,12 +72,7 @@ class UserFieldsResolver {
     )
   }
 
-  @FieldResolver((_) => GraphQLJSON)
-  async monthlyForecast(
-    @Root() user: User,
-    @Ctx() ctx: RequestContext,
-    @Arg('nMonth', (_) => Int) nMonth: number
-  ) {
+  async monthlyForecast(user: User, ctx: RequestContext, nMonth: number) {
     const currentDate = () => {
       return dayjs().startOf('month').hour(0).minute(0).second(0)
     }
@@ -149,23 +127,19 @@ class UserFieldsResolver {
     )
   }
 
-  @FieldResolver((_) => UserMonthlyExpenses)
-  async monthlyExpenses(@Root() user: User, @Ctx() ctx: RequestContext) {
+  async monthlyExpenses(user: User, ctx: RequestContext) {
     return new UserTransactionService(ctx).monthlyExpenses(user.id)
   }
 
-  @FieldResolver((_) => Float)
-  async accountTotalBalance(@Root() user: User, @Ctx() ctx: RequestContext) {
+  async accountTotalBalance(user: User, ctx: RequestContext) {
     return new UserAccountService(ctx).totalBalance(user.id)
   }
 
-  @FieldResolver((_) => Float)
-  incomePerMonthBeforeTaxes(@Root() user: User) {
+  incomePerMonthBeforeTaxes(user: User) {
     return user.incomePerMonthBeforeTaxes
   }
 
-  @FieldResolver((_) => Float)
-  netIncomePerMonth(@Root() user: User) {
+  netIncomePerMonth(user: User) {
     return user.netIncomePerMonth
   }
 }

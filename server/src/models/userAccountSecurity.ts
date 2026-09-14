@@ -1,6 +1,4 @@
-import { GraphQLDateTime } from 'graphql-scalars'
 import { JSONSchema, Model, Transaction } from 'objection'
-import { ObjectType, Field, Float, ID } from 'type-graphql'
 
 import { SoftDeleteModel } from '@models/base/softDeleteModel'
 import { Security } from '@models/security'
@@ -11,26 +9,23 @@ import {
   ApolloForbidden,
 } from '@typings/errors/apolloErrors'
 
-@ObjectType('UserAccountSecurity')
 class UserAccountSecurity extends SoftDeleteModel {
-  @Field((_) => String)
   name: string
-  @Field((_) => Float)
+
   volume: number
-  @Field((_) => Float)
+
   openPrice: number
-  @Field((_) => String)
+
   currency: string
-  @Field((_) => GraphQLDateTime)
+
   openedAt: Date
-  @Field((_) => Float, { nullable: true })
+
   profit: number
 
-  @Field((_) => String, { nullable: true })
   externalId: string
-  @Field((_) => ID)
+
   securityId: number | string
-  @Field((_) => ID)
+
   userAccountId: number | string
 
   userAccount: UserAccount
@@ -83,7 +78,6 @@ class UserAccountSecurity extends SoftDeleteModel {
   }
 }
 
-@ObjectType('PaginatedUserAccountSecurity')
 class PaginatedUserAccountSecurity extends PaginatedClass(
   UserAccountSecurity
 ) {}

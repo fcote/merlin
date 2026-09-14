@@ -1,12 +1,7 @@
-import { GraphQLDateTime } from 'graphql-scalars'
-import { ObjectType, Field } from 'type-graphql'
-
 import { BaseModel } from '@models/base'
 import { SoftDeleteQueryBuilder } from '@models/base/queryBuilder'
 
-@ObjectType('SoftDeleteModel', {})
 class SoftDeleteModel extends BaseModel {
-  @Field((_) => GraphQLDateTime, { nullable: true })
   deletedAt?: Date
 
   QueryBuilderType!: SoftDeleteQueryBuilder<this>
