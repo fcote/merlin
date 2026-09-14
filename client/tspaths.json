@@ -1,21 +1,20 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
     "paths": {
-      "@api/*": ["api/*"],
-      "@api": ["api"],
-      "@components/*": ["components/*"],
-      "@config/*": ["config/*"],
-      "@config": ["config"],
-      "@helpers/*": ["helpers/*"],
-      "@hooks": ["hooks"],
-      "@hooks/*": ["hooks/*"],
-      "@lib": ["lib"],
-      "@lib/*": ["lib/*"],
-      "@pages": ["pages"],
-      "@pages/*": ["pages/*"],
-      "@style": ["style"],
-      "@style/*": ["style/*"]
+      "@api/*": ["./src/api/*"],
+      "@api": ["./src/api"],
+      "@components/*": ["./src/components/*"],
+      "@config/*": ["./src/config/*"],
+      "@config": ["./src/config"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@hooks": ["./src/hooks"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@lib": ["./src/lib"],
+      "@lib/*": ["./src/lib/*"],
+      "@pages": ["./src/pages"],
+      "@pages/*": ["./src/pages/*"],
+      "@style": ["./src/style"],
+      "@style/*": ["./src/style/*"]
     }
   }
 }

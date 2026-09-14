@@ -23,7 +23,7 @@
     "antd": "6.6.4",
     "crypto-hash": "4.0.1",
     "crypto-js": "4.2.0",
-    "graphql": "16.14.2",
+    "graphql": "17.0.2",
     "js-cookie": "3.0.8",
     "katex": "0.18.7",
     "lightweight-charts": "5.2.1",
@@ -54,19 +54,20 @@
     "@vitejs/plugin-react": "6.1.1",
     "cross-env": "10.1.0",
     "dotenv": "17.4.2",
-    "eslint": "9.39.5",
+    "eslint": "10.10.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import-helpers": "2.0.2",
     "eslint-plugin-prettier": "5.5.6",
-    "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "less": "4.9.1",
     "lint-staged": "17.5.1",
     "prettier": "3.9.6",
-    "typescript": "6.0.3",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "vite": "8.3.0",
     "@playwright/test": "1.63.0",
-    "globals": "17.12.0"
+    "globals": "17.12.0",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint-plugin-react-x": "5.19.1"
   },
   "browserslist": {
     "production": [
