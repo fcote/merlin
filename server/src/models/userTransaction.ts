@@ -1,6 +1,4 @@
-import { GraphQLDateTime } from 'graphql-scalars'
 import { JSONSchema, Model, Transaction } from 'objection'
-import { registerEnumType, Field, Float, ObjectType } from 'type-graphql'
 
 import { SoftDeleteModel } from '@models/base/softDeleteModel'
 import { User } from '@models/user'
@@ -17,18 +15,10 @@ enum UserTransactionCategory {
   rent = 'rent',
 }
 
-registerEnumType(UserTransactionCategory, {
-  name: 'UserTransactionCategory',
-})
-
 enum UserTransactionType {
   income = 'income',
   expense = 'expense',
 }
-
-registerEnumType(UserTransactionType, {
-  name: 'UserTransactionType',
-})
 
 enum UserTransactionFrequency {
   daily = 'daily',
@@ -36,26 +26,19 @@ enum UserTransactionFrequency {
   punctual = 'punctual',
 }
 
-registerEnumType(UserTransactionFrequency, {
-  name: 'UserTransactionFrequency',
-})
-
-@ObjectType('UserTransaction')
 class UserTransaction extends SoftDeleteModel {
-  @Field((_) => String, { nullable: true })
   name: string
-  @Field((_) => Float, { nullable: true })
+
   value: number
-  @Field((_) => UserTransactionCategory)
+
   category: UserTransactionCategory
-  @Field((_) => UserTransactionType)
+
   type: UserTransactionType
-  @Field((_) => UserTransactionFrequency)
+
   frequency: UserTransactionFrequency
-  @Field((_) => GraphQLDateTime, { nullable: true })
+
   date: string
 
-  @Field((_) => String)
   userId: string
 
   user: User
@@ -99,7 +82,6 @@ class UserTransaction extends SoftDeleteModel {
   }
 }
 
-@ObjectType('PaginatedUserTransaction')
 class PaginatedUserTransaction extends PaginatedClass(UserTransaction) {}
 
 export {

@@ -1,20 +1,11 @@
 import { round } from 'lodash'
 import { JSONSchema, Model, PartialModelObject } from 'objection'
-import {
-  registerEnumType,
-  ObjectType,
-  Field,
-  Float,
-  Int,
-  ID,
-} from 'type-graphql'
 
 import { SecurityFinancialResult } from '@links/types'
 import { Security } from '@models/./security'
 import { BaseModel } from '@models/base'
 import { FinancialItem } from '@models/financialItem'
 import { Sector } from '@models/sector'
-import { TypeCacheControl } from '@resolvers/cacheControl'
 import { PaginatedClass } from '@resolvers/paginated'
 
 enum FinancialPerformanceGrade {
@@ -29,17 +20,11 @@ enum FinancialPerformanceGrade {
   cMinus = 'C-',
 }
 
-registerEnumType(FinancialPerformanceGrade, {
-  name: 'FinancialPerformanceGrade',
-})
-
-@ObjectType('FinancialPerformance')
 class FinancialPerformance {
-  @Field((_) => FinancialPerformanceGrade, { nullable: true })
   grade?: FinancialPerformanceGrade | null
-  @Field((_) => Float)
+
   sectorValue: number
-  @Field((_) => Float, { nullable: true })
+
   diffPercent?: number | null
 }
 
@@ -48,10 +33,6 @@ enum FinancialFreq {
   Y = 'Y',
   TTM = 'TTM',
 }
-
-registerEnumType(FinancialFreq, {
-  name: 'FinancialFreq',
-})
 
 enum FinancialPeriod {
   Y = 'Y',
@@ -62,29 +43,21 @@ enum FinancialPeriod {
   TTM = 'TTM',
 }
 
-registerEnumType(FinancialPeriod, {
-  name: 'FinancialPeriod',
-})
-
-@TypeCacheControl({ maxAge: 60 * 60 * 24, scope: 'PUBLIC' })
-@ObjectType('Financial')
 class Financial extends BaseModel {
-  @Field((_) => Float, { nullable: true })
   value?: number | null
-  @Field((_) => Int)
+
   year: number | null
-  @Field((_) => FinancialPeriod)
+
   period: FinancialPeriod
-  @Field((_) => String)
+
   reportDate: string
-  @Field(() => Boolean)
+
   isEstimate: boolean
 
-  @Field((_) => ID, { nullable: true })
   securityId: number | string
-  @Field((_) => ID, { nullable: true })
+
   sectorId: number | string
-  @Field((_) => ID)
+
   financialItemId: number | string
 
   security: Security
@@ -169,7 +142,6 @@ class Financial extends BaseModel {
   }
 }
 
-@ObjectType('PaginatedFinancial')
 class PaginatedFinancial extends PaginatedClass(Financial) {}
 
 export {

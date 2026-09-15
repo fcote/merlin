@@ -6,7 +6,7 @@ import bodyParser from 'koa-bodyparser'
 import { WebSocketServer } from 'ws'
 
 import { config } from '@config'
-import { apolloManager } from '@drivers/apolloManager'
+import { graphqlMiddleware, disposeGraphQL } from '@drivers/graphqlManager'
 import { logger } from '@logger'
 import { apiToken } from '@middlewares/http/apiToken'
 import { errorHandler } from '@middlewares/http/errorHandler'
@@ -32,8 +32,6 @@ class App implements Connectable {
   private subscriptionServer: { dispose: () => void | Promise<void> }
 
   public connect = async (): Promise<void> => {
-    await apolloManager.connect()
-
     return new Promise(async (resolve, _) => {
       const port = config.get('port')
 
@@ -74,7 +72,7 @@ class App implements Connectable {
 
   public disconnect = async (): Promise<void> => {
     await this.subscriptionServer?.dispose()
-    await apolloManager.disconnect()
+    await disposeGraphQL()
 
     if (!this.server || !this.server.address()) return Promise.resolve()
     return new Promise((resolve, reject) => {
@@ -92,7 +90,9 @@ class App implements Connectable {
       .use(errorHandler())
       .use(apiToken())
 
-    await apolloManager.applyMiddleware()
+    this.koa.use((ctx, next) =>
+      ctx.path === '/graphql' ? graphqlMiddleware(ctx) : next()
+    )
   }
 }
 

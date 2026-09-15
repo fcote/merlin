@@ -1,13 +1,5 @@
 import { isUndefined } from 'lodash'
 import { JSONSchema, QueryContext, Model, PartialModelObject } from 'objection'
-import {
-  registerEnumType,
-  ObjectType,
-  Field,
-  Float,
-  ID,
-  Int,
-} from 'type-graphql'
 
 import { SecurityQuoteResult } from '@links/types'
 import { BaseModel } from '@models/base'
@@ -27,10 +19,6 @@ enum SecurityType {
   mutualFund = 'Mutual Fund',
 }
 
-registerEnumType(SecurityType, {
-  name: 'SecurityType',
-})
-
 enum SecurityMarketStatus {
   open = 'open',
   closed = 'closed',
@@ -38,47 +26,39 @@ enum SecurityMarketStatus {
   afterHours = 'afterHours',
 }
 
-registerEnumType(SecurityMarketStatus, {
-  name: 'SecurityMarketStatus',
-})
-
-@ObjectType('Security')
 class Security extends BaseModel {
-  @Field((_) => String)
   ticker: string
-  @Field((_) => String, { nullable: true })
+
   currency?: string | null
-  @Field((_) => SecurityType)
+
   type: SecurityType
-  @Field((_) => SecurityMarketStatus, { nullable: true })
+
   marketStatus?: SecurityMarketStatus | null
-  @Field((_) => Int, { nullable: true })
+
   fiscalYearEndMonth?: number | null
 
-  @Field((_) => Float, { nullable: true })
   currentPrice?: number | null
-  @Field((_) => Float, { nullable: true })
+
   dayChange?: number | null
-  @Field((_) => Float, { nullable: true })
+
   dayChangePercent?: number | null
-  @Field((_) => Float, { nullable: true })
+
   weekChange?: number | null
-  @Field((_) => Float, { nullable: true })
+
   weekChangePercent?: number | null
-  @Field((_) => Float, { nullable: true })
+
   extendedHoursPrice?: number | null
-  @Field((_) => Float, { nullable: true })
+
   extendedHoursChangePercent?: number | null
-  @Field((_) => Float, { nullable: true })
+
   high52Week?: number | null
-  @Field((_) => Float, { nullable: true })
+
   low52Week?: number | null
-  @Field((_) => Float, { nullable: true })
+
   marketCapitalization?: number | null
-  @Field((_) => Float, { nullable: true })
+
   sharesOutstanding?: number | null
 
-  @Field((_) => ID, { nullable: true })
   companyId: number | string | null
 
   company: Company
@@ -179,17 +159,14 @@ class Security extends BaseModel {
   }
 }
 
-@ObjectType('SecuritySearch')
 class SecuritySearch {
-  @Field((_) => String)
   ticker: string
-  @Field((_) => String)
+
   name: string
-  @Field((_) => SecurityType)
+
   securityType: SecurityType
 }
 
-@ObjectType('PaginatedSecurity')
 class PaginatedSecurity extends PaginatedClass(Security) {}
 
 export {

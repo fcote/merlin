@@ -1,24 +1,16 @@
-import { Resolver, FieldResolver, Ctx, Arg, Authorized } from 'type-graphql'
-
-import { PaginatedFollowedSecurityGroup } from '@models/followedSecurityGroup'
-import { Right } from '@resolvers/authorization'
 import { FollowedSecurityGroupFilters } from '@resolvers/followedSecurityGroup/followedSecurityGroup.inputs'
 import { OrderOptions, PaginationOptions } from '@resolvers/paginated'
-import { SelfQuery } from '@resolvers/root'
 import { FollowedSecurityGroupService } from '@services/followedSecurityGroup'
 import { RequestContext } from '@typings/context'
 
-@Resolver(SelfQuery)
 class SelfFollowedSecurityGroupQueryResolver {
-  @Authorized([Right.authenticated])
-  @FieldResolver((_) => PaginatedFollowedSecurityGroup)
   async followedSecurityGroups(
-    @Ctx() ctx: RequestContext,
-    @Arg('filters', (_) => FollowedSecurityGroupFilters, { nullable: true })
+    ctx: RequestContext,
+
     filters?: FollowedSecurityGroupFilters,
-    @Arg('paginate', (_) => PaginationOptions, { nullable: true })
+
     paginate?: PaginationOptions,
-    @Arg('orderBy', (_) => [OrderOptions], { nullable: true })
+
     orderBy?: OrderOptions[]
   ) {
     return new FollowedSecurityGroupService(ctx).find(

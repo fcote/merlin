@@ -1,0 +1,437 @@
+{
+  "schemaSha256": "57900d5f927931002a8893d5b56ca66ab131cda8faddbf839fb45e49eeca49dd",
+  "enums": {
+    "EarningTime": {
+      "beforeMarketOpen": "before-market-open",
+      "afterMarketClose": "after-market-close"
+    },
+    "SecurityType": {
+      "commonStock": "Common Stock",
+      "commodity": "Commodity",
+      "etf": "ETF",
+      "index": "Index",
+      "mutualFund": "Mutual Fund"
+    },
+    "SecurityMarketStatus": {
+      "open": "open",
+      "closed": "closed",
+      "preMarket": "preMarket",
+      "afterHours": "afterHours"
+    },
+    "FollowedSecurityGroupType": {
+      "tracker": "tracker",
+      "watchlist": "watchlist"
+    },
+    "UserTransactionCategory": {
+      "subscription": "subscription",
+      "groceries": "groceries",
+      "extra": "extra",
+      "rent": "rent"
+    },
+    "UserTransactionType": {
+      "income": "income",
+      "expense": "expense"
+    },
+    "UserTransactionFrequency": {
+      "daily": "daily",
+      "monthly": "monthly",
+      "punctual": "punctual"
+    },
+    "UserAccountType": {
+      "saving": "saving",
+      "securities": "securities"
+    },
+    "UserAccountProvider": {
+      "xtb": "xtb"
+    },
+    "FinancialPeriod": {
+      "Y": "Y",
+      "Q1": "Q1",
+      "Q2": "Q2",
+      "Q3": "Q3",
+      "Q4": "Q4",
+      "TTM": "TTM"
+    },
+    "FinancialItemType": {
+      "statement": "statement",
+      "ratio": "ratio"
+    },
+    "FinancialStatement": {
+      "liquidityRatios": "liquidity-ratios",
+      "profitabilityRatios": "profitability-ratios",
+      "debtRatios": "debt-ratios",
+      "cashFlowRatios": "cash-flow-ratios",
+      "operatingPerformanceRatios": "operating-performance-ratios",
+      "valuationRatios": "valuation-ratios",
+      "incomeStatement": "income-statement",
+      "balanceSheet": "balance-sheet-statement",
+      "cashFlowStatement": "cash-flow-statement"
+    },
+    "FinancialUnit": {
+      "millions": "millions",
+      "unit": "unit",
+      "percent": "percent",
+      "days": "days"
+    },
+    "FinancialUnitType": {
+      "ratio": "ratio",
+      "amount": "amount",
+      "currency": "currency"
+    },
+    "FinancialItemDirection": {
+      "ascending": "asc",
+      "descending": "desc"
+    },
+    "FinancialPerformanceGrade": {
+      "aPlus": "A+",
+      "a": "A",
+      "aMinus": "A-",
+      "bPlus": "B+",
+      "b": "B",
+      "bMinus": "B-",
+      "cPlus": "C+",
+      "c": "C",
+      "cMinus": "C-"
+    },
+    "FinancialFreq": {
+      "Q": "Q",
+      "Y": "Y",
+      "TTM": "TTM"
+    },
+    "NewsType": {
+      "standard": "standard",
+      "pressRelease": "press-release"
+    },
+    "JobType": {
+      "newsSubscribed": "newsSubscribed",
+      "earningsSubscribed": "earningsSubscribed",
+      "pricesSubscribed": "pricesSubscribed"
+    }
+  },
+  "bindings": [
+    {
+      "type": "Financial",
+      "field": "security",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Financial",
+      "field": "financialItem",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Financial",
+      "field": "performance",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "financials",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Query",
+      "field": "self",
+      "auth": false,
+      "kind": "Query"
+    },
+    {
+      "type": "Mutation",
+      "field": "self",
+      "auth": false,
+      "kind": "Mutation"
+    },
+    {
+      "type": "SelfQuery",
+      "field": "followedSecurityGroups",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "upsertFollowedSecurityGroup",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "FollowedSecurityGroup",
+      "field": "followedSecurities",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Mutation",
+      "field": "userSignUp",
+      "auth": false,
+      "kind": "Mutation"
+    },
+    {
+      "type": "Mutation",
+      "field": "userSignIn",
+      "auth": false,
+      "kind": "Mutation"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "updateUser",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfQuery",
+      "field": "user",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "transactions",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "accounts",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "accountSecurities",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "monthlyForecast",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "monthlyExpenses",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "accountTotalBalance",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "incomePerMonthBeforeTaxes",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "User",
+      "field": "netIncomePerMonth",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "searchSecurity",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Query",
+      "field": "security",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Query",
+      "field": "historicalPrices",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Security",
+      "field": "company",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Security",
+      "field": "followedIn",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Subscription",
+      "field": "securityPriceChanges",
+      "auth": true,
+      "kind": "Subscription"
+    },
+    {
+      "type": "Subscription",
+      "field": "securitySyncProgressChanges",
+      "auth": true,
+      "kind": "Subscription"
+    },
+    {
+      "type": "Mutation",
+      "field": "syncSecurity",
+      "auth": true,
+      "kind": "Mutation"
+    },
+    {
+      "type": "Mutation",
+      "field": "syncSecurityPrices",
+      "auth": true,
+      "kind": "Mutation"
+    },
+    {
+      "type": "Mutation",
+      "field": "executeJob",
+      "auth": true,
+      "kind": "Mutation"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "syncUserAccount",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "upsertUserAccount",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfQuery",
+      "field": "userAccounts",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "stdLogs",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Subscription",
+      "field": "newsChanges",
+      "auth": true,
+      "kind": "Subscription"
+    },
+    {
+      "type": "Company",
+      "field": "sector",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Company",
+      "field": "industry",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "news",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "UserAccountSecurity",
+      "field": "security",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfQuery",
+      "field": "userAccountSecurities",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "upsertUserAccountSecurity",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "upsertUserTransaction",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "forex",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Query",
+      "field": "financialItems",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "linkFollowedSecurity",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "SelfMutation",
+      "field": "unlinkFollowedSecurity",
+      "auth": true,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "FollowedSecurity",
+      "field": "security",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "FollowedSecurity",
+      "field": "followedSecurityGroup",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Subscription",
+      "field": "earningsChanges",
+      "auth": true,
+      "kind": "Subscription"
+    },
+    {
+      "type": "Earning",
+      "field": "security",
+      "auth": false,
+      "kind": "FieldResolver"
+    },
+    {
+      "type": "Query",
+      "field": "earnings",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "Query",
+      "field": "earningCallTranscript",
+      "auth": true,
+      "kind": "Query"
+    },
+    {
+      "type": "SelfQuery",
+      "field": "earnings",
+      "auth": true,
+      "kind": "FieldResolver"
+    }
+  ]
+}

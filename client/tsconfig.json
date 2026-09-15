@@ -1,7 +1,6 @@
 {
   "extends": "./tspaths.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "target": "ESNext",
     "lib": [
       "dom",

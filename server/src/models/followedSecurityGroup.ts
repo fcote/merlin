@@ -1,5 +1,4 @@
 import { JSONSchema, Model, Transaction } from 'objection'
-import { registerEnumType, ObjectType, Field, Int, ID } from 'type-graphql'
 
 import { SoftDeleteModel } from '@models/base/softDeleteModel'
 import { FollowedSecurity } from '@models/followedSecurity'
@@ -16,20 +15,13 @@ enum FollowedSecurityGroupType {
   watchlist = 'watchlist',
 }
 
-registerEnumType(FollowedSecurityGroupType, {
-  name: 'FollowedSecurityGroupType',
-})
-
-@ObjectType('FollowedSecurityGroup')
 class FollowedSecurityGroup extends SoftDeleteModel {
-  @Field((_) => String)
   name: string
-  @Field((_) => Int)
+
   index: number
-  @Field((_) => FollowedSecurityGroupType)
+
   type: FollowedSecurityGroupType
 
-  @Field((_) => ID)
   userId: string
 
   static get tableName() {
@@ -86,7 +78,6 @@ class FollowedSecurityGroup extends SoftDeleteModel {
   }
 }
 
-@ObjectType('PaginatedFollowedSecurityGroup')
 class PaginatedFollowedSecurityGroup extends PaginatedClass(
   FollowedSecurityGroup
 ) {}

@@ -1,11 +1,15 @@
-import EventEmitter from 'events'
+import {
+  createPubSub,
+  filter as filterEvents,
+} from '@graphql-yoga/subscription'
 import { GraphQLResolveInfo } from 'graphql'
-import { PubSub, withFilter } from 'graphql-subscriptions'
-import { ArgsDictionary } from 'type-graphql'
+import { setMaxListeners } from 'node:events'
 
 import { config } from '@config'
 import { JobService } from '@services/job'
 import { RequestContext } from '@typings/context'
+
+type ArgsDictionary = Record<string, any>
 
 // Subscription channels
 
@@ -74,7 +78,7 @@ type SubscriptionOptions<PT, AT> = {
 
 const withCancel = <T>(
   asyncIterator: AsyncIterableIterator<T | undefined>,
-  onCancel: () => void
+  onCancel: () => void | Promise<void>
 ): AsyncIterableIterator<T | undefined> => {
   if (!asyncIterator.return) {
     asyncIterator.return = () =>
@@ -82,9 +86,12 @@ const withCancel = <T>(
   }
 
   const savedReturn = asyncIterator.return.bind(asyncIterator)
-  asyncIterator.return = () => {
-    onCancel()
-    return savedReturn()
+  asyncIterator.return = async () => {
+    try {
+      return await savedReturn()
+    } finally {
+      await onCancel()
+    }
   }
 
   return asyncIterator
@@ -100,27 +107,23 @@ const subscription =
   async ({
     args,
     context,
-    info,
   }: {
     args: ArgsDictionary
     context: RequestContext
     info: GraphQLResolveInfo
   }) => {
-    onSubscribe?.(context, args)
+    await onSubscribe?.(context, args)
 
-    const asyncIterator = await withFilter(
-      () => pubSub.asyncIterableIterator(channel),
-      (payload, variables) => (filter ? filter(payload, variables) : true)
-    )(undefined, args, context, info)
+    const asyncIterator = filterEvents<any>((payload) =>
+      filter ? filter(payload, args as AT) : true
+    )(pubSub.subscribe(channel))
 
-    return withCancel(asyncIterator, () => {
-      onCancel?.(context, args)
-    })
+    return withCancel(asyncIterator, () => onCancel?.(context, args))
   }
 
-const eventEmitter = new EventEmitter()
-eventEmitter.setMaxListeners(config.get('pubsub.maxListeners'))
-const pubSub = new PubSub({ eventEmitter })
+const eventTarget = new EventTarget()
+setMaxListeners(config.get('pubsub.maxListeners'), eventTarget)
+const pubSub = createPubSub<Record<SubscriptionChannel, [any]>>({ eventTarget })
 
 export {
   pubSub,

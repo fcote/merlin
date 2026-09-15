@@ -3,7 +3,7 @@ import ts from '@typescript-eslint/eslint-plugin'
 import prettier from 'eslint-plugin-prettier'
 import importHelpers from 'eslint-plugin-import-helpers'
 import globals from 'globals'
-import react from 'eslint-plugin-react'
+import react from 'eslint-plugin-react-x'
 import hooks from 'eslint-plugin-react-hooks'
 
 export default [
@@ -19,10 +19,9 @@ export default [
       '@typescript-eslint': ts,
       prettier,
       'import-helpers': importHelpers,
-      react,
+      'react-x': react,
       'react-hooks': hooks,
     },
-    settings: { react: { version: 'detect' } },
     rules: {
       'no-redeclare': 'error',
       'no-console': 'error',
@@ -40,7 +39,7 @@ export default [
           singleQuote: true,
         },
       ],
-      'react/jsx-key': 'warn',
+      'react-x/no-missing-key': 'warn',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/no-unused-vars': [

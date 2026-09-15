@@ -1,0 +1,641 @@
+type AuthResponse {
+  apiToken: String!
+  id: String!
+  username: String!
+}
+
+type Company {
+  address: String
+  cik: String
+  createdAt: DateTime!
+  cusip: String
+  description: String
+  employees: Int
+  id: ID!
+  industry: String
+  industryId: ID
+  isin: String
+  name: String!
+  sector: String
+  sectorId: ID
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type Earning {
+  callTranscript: [EarningStatement!]
+  createdAt: DateTime!
+  date: String!
+  eps: Float
+  epsEstimate: Float
+  epsSurprisePercent: Float
+  fiscalQuarter: Int
+  fiscalYear: Int
+  id: ID!
+  revenue: Float
+  revenueEstimate: Float
+  revenueSurprisePercent: Float
+  security: Security!
+  securityId: ID!
+  time: EarningTime
+}
+
+input EarningFilters {
+  fromDate: LocalDate
+  ticker: String
+  toDate: LocalDate
+}
+
+type EarningStatement {
+  speaker: String!
+  statement: String!
+}
+
+enum EarningTime {
+  afterMarketClose
+  beforeMarketOpen
+}
+
+type Financial {
+  createdAt: DateTime!
+  financialItem: FinancialItem!
+  financialItemId: ID!
+  id: ID!
+  isEstimate: Boolean!
+  performance: FinancialPerformance
+  period: FinancialPeriod!
+  reportDate: String!
+  sectorId: ID
+  security: Security!
+  securityId: ID
+  value: Float
+  year: Int!
+}
+
+input FinancialFindFilters {
+  estimate: Boolean! = false
+  freq: FinancialFreq
+  statement: FinancialStatement
+  ticker: String!
+  type: FinancialItemType
+}
+
+enum FinancialFreq {
+  Q
+  TTM
+  Y
+}
+
+type FinancialItem {
+  createdAt: DateTime!
+  direction: FinancialItemDirection
+  id: ID!
+  index: Int!
+  isMain: Boolean!
+  label: String!
+  latexDescription: String
+  slug: String!
+  statement: FinancialStatement!
+  type: FinancialItemType!
+  unit: FinancialUnit!
+  unitType: FinancialUnitType!
+}
+
+enum FinancialItemDirection {
+  ascending
+  descending
+}
+
+input FinancialItemFilters {
+  type: FinancialItemType!
+}
+
+enum FinancialItemType {
+  ratio
+  statement
+}
+
+type FinancialPerformance {
+  diffPercent: Float
+  grade: FinancialPerformanceGrade
+  sectorValue: Float!
+}
+
+enum FinancialPerformanceGrade {
+  a
+  aMinus
+  aPlus
+  b
+  bMinus
+  bPlus
+  c
+  cMinus
+  cPlus
+}
+
+enum FinancialPeriod {
+  Q1
+  Q2
+  Q3
+  Q4
+  TTM
+  Y
+}
+
+enum FinancialStatement {
+  balanceSheet
+  cashFlowRatios
+  cashFlowStatement
+  debtRatios
+  incomeStatement
+  liquidityRatios
+  operatingPerformanceRatios
+  profitabilityRatios
+  valuationRatios
+}
+
+enum FinancialUnit {
+  days
+  millions
+  percent
+  unit
+}
+
+enum FinancialUnitType {
+  amount
+  currency
+  ratio
+}
+
+type FollowedSecurity {
+  alias: String
+  createdAt: DateTime!
+  deletedAt: DateTime
+  followedSecurityGroup: FollowedSecurityGroup!
+  followedSecurityGroupId: ID!
+  id: ID!
+  index: Int
+  security: Security!
+  securityId: ID!
+  technicalAnalysis: String
+}
+
+input FollowedSecurityFields {
+  alias: String
+  followedSecurityGroupId: ID
+  index: Int
+  securityId: ID
+  technicalAnalysis: String
+}
+
+input FollowedSecurityFilters {
+  indexes: [Int!]
+}
+
+type FollowedSecurityGroup {
+  createdAt: DateTime!
+  deletedAt: DateTime
+  followedSecurities(filters: FollowedSecurityFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedFollowedSecurity!
+  id: ID!
+  index: Int!
+  name: String!
+  type: FollowedSecurityGroupType!
+  userId: ID!
+}
+
+input FollowedSecurityGroupFields {
+  id: ID
+  index: Int
+  name: String
+  type: FollowedSecurityGroupType
+}
+
+input FollowedSecurityGroupFilters {
+  type: FollowedSecurityGroupType
+}
+
+enum FollowedSecurityGroupType {
+  tracker
+  watchlist
+}
+
+type Forex {
+  createdAt: DateTime!
+  exchangeRate: Float!
+  fromCurrency: String!
+  id: ID!
+  toCurrency: String!
+}
+
+input ForexCurrencyPair {
+  fromCurrency: String!
+  toCurrency: String!
+}
+
+input ForexFilters {
+  currencyPairs: [ForexCurrencyPair!]!
+}
+
+type HistoricalPrice {
+  change: Float
+  changePercent: Float!
+  close: Float!
+  createdAt: DateTime!
+  date: String!
+  high: Float!
+  id: ID!
+  low: Float!
+  open: Float!
+  securityId: ID!
+  volume: Float
+}
+
+input HistoricalPriceFilters {
+  ticker: String!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+enum JobType {
+  earningsSubscribed
+  newsSubscribed
+  pricesSubscribed
+}
+
+"""
+A local date string (i.e., with no associated timezone) in `YYYY-MM-DD` format, e.g. `2020-01-01`.
+"""
+scalar LocalDate
+
+type Mutation {
+  executeJob(type: JobType!): Boolean!
+  self: SelfMutation!
+  syncSecurity(ticker: String!): Security!
+  syncSecurityPrices(tickers: [String!]!): [Security!]!
+  userSignIn(inputs: SignInFields!): AuthResponse!
+  userSignUp(inputs: SignUpField!): AuthResponse!
+}
+
+type News {
+  content: String!
+  createdAt: DateTime!
+  date: DateTime!
+  id: ID!
+  securityId: ID
+  title: String!
+  type: NewsType!
+  url: String
+  website: String
+}
+
+input NewsFilters {
+  ticker: String!
+  type: NewsType
+}
+
+enum NewsType {
+  pressRelease
+  standard
+}
+
+input OrderOptions {
+  direction: String
+  field: String
+}
+
+type PaginatedEarning {
+  nodes: [Earning!]!
+  total: Int!
+}
+
+type PaginatedFinancial {
+  nodes: [Financial!]!
+  total: Int!
+}
+
+type PaginatedFinancialItem {
+  nodes: [FinancialItem!]!
+  total: Int!
+}
+
+type PaginatedFollowedSecurity {
+  nodes: [FollowedSecurity!]!
+  total: Int!
+}
+
+type PaginatedFollowedSecurityGroup {
+  nodes: [FollowedSecurityGroup!]!
+  total: Int!
+}
+
+type PaginatedForex {
+  nodes: [Forex!]!
+  total: Int!
+}
+
+type PaginatedHistoricalPrice {
+  nodes: [HistoricalPrice!]!
+  total: Int!
+}
+
+type PaginatedNews {
+  nodes: [News!]!
+  total: Int!
+}
+
+type PaginatedStdLog {
+  nodes: [StdLog!]!
+  total: Int!
+}
+
+type PaginatedUserAccount {
+  nodes: [UserAccount!]!
+  total: Int!
+}
+
+type PaginatedUserAccountSecurity {
+  nodes: [UserAccountSecurity!]!
+  total: Int!
+}
+
+type PaginatedUserTransaction {
+  nodes: [UserTransaction!]!
+  total: Int!
+}
+
+input PaginationOptions {
+  limit: Int!
+  offset: Int!
+}
+
+type Query {
+  earningCallTranscript(earningId: ID!): [EarningStatement!]
+  earnings(filters: EarningFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedEarning!
+  financialItems(filters: FinancialItemFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedFinancialItem!
+  financials(filters: FinancialFindFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedFinancial!
+  forex(filters: ForexFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedForex!
+  historicalPrices(filters: HistoricalPriceFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedHistoricalPrice!
+  news(filters: NewsFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedNews!
+  searchSecurity(ticker: String!): [SecuritySearch!]!
+  security(ticker: String!): Security
+  self: SelfQuery!
+  stdLogs(orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedStdLog!
+}
+
+type Security {
+  company: Company
+  companyId: ID
+  createdAt: DateTime!
+  currency: String
+  currentPrice: Float
+  dayChange: Float
+  dayChangePercent: Float
+  extendedHoursChangePercent: Float
+  extendedHoursPrice: Float
+  fiscalYearEndMonth: Int
+  followedIn: String
+  high52Week: Float
+  id: ID!
+  low52Week: Float
+  marketCapitalization: Float
+  marketStatus: SecurityMarketStatus
+  sharesOutstanding: Float
+  ticker: String!
+  type: SecurityType!
+  weekChange: Float
+  weekChangePercent: Float
+}
+
+enum SecurityMarketStatus {
+  afterHours
+  closed
+  open
+  preMarket
+}
+
+type SecuritySearch {
+  name: String!
+  securityType: SecurityType!
+  ticker: String!
+}
+
+type SecuritySyncProgressChange {
+  progress: Float
+  ticker: String!
+}
+
+enum SecurityType {
+  commodity
+  commonStock
+  etf
+  index
+  mutualFund
+}
+
+type SelfMutation {
+  linkFollowedSecurity(inputs: FollowedSecurityFields!): FollowedSecurity!
+  syncUserAccount(inputs: UserAccountSyncFields!): UserAccount!
+  unlinkFollowedSecurity(inputs: FollowedSecurityFields!): Int!
+  updateUser(inputs: UserFields!): User!
+  upsertFollowedSecurityGroup(inputs: FollowedSecurityGroupFields!): FollowedSecurityGroup!
+  upsertUserAccount(inputs: UserAccountFields!): UserAccount!
+  upsertUserAccountSecurity(inputs: UserAccountSecurityFields!): UserAccountSecurity!
+  upsertUserTransaction(inputs: UserTransactionFields!): UserTransaction!
+}
+
+type SelfQuery {
+  earnings(filters: EarningFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedEarning!
+  followedSecurityGroups(filters: FollowedSecurityGroupFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedFollowedSecurityGroup!
+  user: User
+  userAccountSecurities(filters: UserAccountSecurityFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedUserAccountSecurity!
+  userAccounts(filters: UserAccountFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedUserAccount!
+}
+
+input SignInFields {
+  password: String!
+  username: String!
+}
+
+input SignUpField {
+  password: String!
+  username: String!
+}
+
+type StdLog {
+  createdAt: DateTime!
+  data: JSON!
+  id: ID!
+  level: String!
+  message: String!
+}
+
+type Subscription {
+  earningsChanges(tickers: [String!]): Earning!
+  newsChanges(tickers: [String!]): News!
+  securityPriceChanges(tickers: [String!]): Security!
+  securitySyncProgressChanges(ticker: String): SecuritySyncProgressChange!
+}
+
+type User {
+  accountSecurities(filters: UserAccountSecurityFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedUserAccountSecurity!
+  accountTotalBalance: Float!
+  accounts(filters: UserAccountFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedUserAccount!
+  createdAt: DateTime!
+  currency: String!
+  deletedAt: DateTime
+  id: String!
+  incomePerMonthBeforeTaxes: Float!
+  incomePerYear: Int
+  incomeTaxRate: Float
+  monthlyExpenses: UserMonthlyExpenses!
+  monthlyForecast(nMonth: Int!): JSON!
+  netIncomePerMonth: Float!
+  salaryChargeRate: Float
+  transactions(filters: UserTransactionFilters, orderBy: [OrderOptions!], paginate: PaginationOptions): PaginatedUserTransaction!
+  username: String!
+}
+
+type UserAccount {
+  balance: Float!
+  createdAt: DateTime!
+  deletedAt: DateTime
+  id: ID!
+  name: String!
+  provider: UserAccountProvider
+  type: UserAccountType!
+  userId: String!
+}
+
+input UserAccountFields {
+  balance: Float
+  deletedAt: DateTime
+  id: ID
+  name: String
+  provider: UserAccountProvider
+  type: UserAccountType
+}
+
+input UserAccountFilters {
+  types: [UserAccountType!]!
+}
+
+enum UserAccountProvider {
+  xtb
+}
+
+type UserAccountSecurity {
+  createdAt: DateTime!
+  currency: String!
+  deletedAt: DateTime
+  externalId: String
+  id: ID!
+  name: String!
+  openPrice: Float!
+  openedAt: DateTime!
+  profit: Float
+  security: Security!
+  securityId: ID!
+  userAccountId: ID!
+  volume: Float!
+}
+
+input UserAccountSecurityFields {
+  currency: String
+  deletedAt: DateTime
+  id: ID
+  name: String
+  openPrice: Float
+  openedAt: String
+  securityId: ID
+  securityTicker: String
+  userAccountId: ID
+  volume: Float
+}
+
+input UserAccountSecurityFilters {
+  accountId: String
+  ticker: String
+}
+
+input UserAccountSyncFields {
+  id: ID!
+  password: String!
+  username: String!
+}
+
+enum UserAccountType {
+  saving
+  securities
+}
+
+input UserFields {
+  currency: String
+  incomePerYear: Int
+  incomeTaxRate: Float
+  salaryChargeRate: Float
+  username: String
+}
+
+type UserMonthlyExpenses {
+  extra: Float
+  groceries: Float
+  left: Float
+  rent: Float
+  subscription: Float
+  total: Float
+}
+
+type UserTransaction {
+  category: UserTransactionCategory!
+  createdAt: DateTime!
+  date: DateTime
+  deletedAt: DateTime
+  frequency: UserTransactionFrequency!
+  id: ID!
+  name: String
+  type: UserTransactionType!
+  userId: String!
+  value: Float
+}
+
+enum UserTransactionCategory {
+  extra
+  groceries
+  rent
+  subscription
+}
+
+input UserTransactionFields {
+  category: UserTransactionCategory
+  date: String
+  deletedAt: DateTime
+  frequency: UserTransactionFrequency
+  id: ID
+  name: String
+  type: UserTransactionType
+  value: Float
+}
+
+input UserTransactionFilters {
+  categories: [UserTransactionCategory!]
+  frequencies: [UserTransactionFrequency!]
+  since: String
+  types: [UserTransactionType!]
+}
+
+enum UserTransactionFrequency {
+  daily
+  monthly
+  punctual
+}
+
+enum UserTransactionType {
+  expense
+  income
+}

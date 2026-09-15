@@ -1,18 +1,5 @@
-import {
-  Arg,
-  Ctx,
-  Resolver,
-  Mutation,
-  ObjectType,
-  Field,
-  Authorized,
-  FieldResolver,
-} from 'type-graphql'
-
 import { config } from '@config'
 import { User } from '@models/user'
-import { Right } from '@resolvers/authorization'
-import { SelfMutation } from '@resolvers/root'
 import {
   SignUpFields,
   SignInFields,
@@ -25,23 +12,8 @@ import {
   ApolloBadRequest,
 } from '@typings/errors/apolloErrors'
 
-@ObjectType()
-class AuthResponse {
-  @Field((_) => String)
-  id: string
-  @Field((_) => String)
-  username: string
-  @Field((_) => String)
-  apiToken: string
-}
-
-@Resolver()
 class UserMutationResolver {
-  @Mutation((_) => AuthResponse)
-  async userSignUp(
-    @Arg('inputs', (_) => SignUpFields) { username, password }: SignUpFields,
-    @Ctx() ctx: RequestContext
-  ) {
+  async userSignUp({ username, password }: SignUpFields, ctx: RequestContext) {
     if (!config.get('features.allowUserSignUp')) {
       throw new ApolloUnauthorized('USER_SIGN_UP_NOT_ALLOWED')
     }
@@ -65,11 +37,7 @@ class UserMutationResolver {
     }
   }
 
-  @Mutation((_) => AuthResponse)
-  async userSignIn(
-    @Arg('inputs', (_) => SignInFields) { username, password }: SignInFields,
-    @Ctx() ctx: RequestContext
-  ) {
+  async userSignIn({ username, password }: SignInFields, ctx: RequestContext) {
     if (!username || !password) {
       throw new ApolloUnauthorized('MISSING_INPUTS')
     }
@@ -96,14 +64,8 @@ class UserMutationResolver {
   }
 }
 
-@Resolver(SelfMutation)
 class SelfUserMutationResolver {
-  @Authorized([Right.authenticated])
-  @FieldResolver((_) => User)
-  async updateUser(
-    @Arg('inputs', (_) => UserFields) inputs: UserFields,
-    @Ctx() ctx: RequestContext
-  ) {
+  async updateUser(inputs: UserFields, ctx: RequestContext) {
     return new UserService(ctx).update({ ...inputs, id: ctx.user!.id })
   }
 }

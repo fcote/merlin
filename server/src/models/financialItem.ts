@@ -1,5 +1,4 @@
 import { JSONSchema, QueryContext, Model, PartialModelObject } from 'objection'
-import { registerEnumType, ObjectType, Field, Int } from 'type-graphql'
 
 import { SecurityFinancialResult } from '@links/types'
 import { BaseModel } from '@models/base'
@@ -14,19 +13,11 @@ enum FinancialUnit {
   days = 'days',
 }
 
-registerEnumType(FinancialUnit, {
-  name: 'FinancialUnit',
-})
-
 enum FinancialUnitType {
   ratio = 'ratio',
   amount = 'amount',
   currency = 'currency',
 }
-
-registerEnumType(FinancialUnitType, {
-  name: 'FinancialUnitType',
-})
 
 enum FinancialRatioStatement {
   liquidityRatios = 'liquidity-ratios',
@@ -36,10 +27,6 @@ enum FinancialRatioStatement {
   operatingPerformanceRatios = 'operating-performance-ratios',
   valuationRatios = 'valuation-ratios',
 }
-
-registerEnumType(FinancialRatioStatement, {
-  name: 'FinancialRatioStatement',
-})
 
 enum FinancialBaseStatement {
   incomeStatement = 'income-statement',
@@ -54,49 +41,36 @@ const FinancialStatementType = Object.assign(
   FinancialRatioStatement,
   FinancialBaseStatement
 )
-registerEnumType(FinancialStatementType, {
-  name: 'FinancialStatement',
-})
 
 enum FinancialItemType {
   statement = 'statement',
   ratio = 'ratio',
 }
 
-registerEnumType(FinancialItemType, {
-  name: 'FinancialItemType',
-})
-
 enum FinancialItemDirection {
   ascending = 'asc',
   descending = 'desc',
 }
 
-registerEnumType(FinancialItemDirection, {
-  name: 'FinancialItemDirection',
-})
-
-@ObjectType('FinancialItem')
 class FinancialItem extends BaseModel {
-  @Field((_) => String)
   slug: string
-  @Field((_) => String)
+
   label: string
-  @Field((_) => FinancialItemType)
+
   type: FinancialItemType
-  @Field((_) => FinancialStatementType)
+
   statement: FinancialStatement
-  @Field((_) => FinancialUnit)
+
   unit: FinancialUnit
-  @Field((_) => FinancialUnitType)
+
   unitType: FinancialUnitType
-  @Field((_) => Int)
+
   index: number
-  @Field((_) => Boolean)
+
   isMain: boolean
-  @Field((_) => String, { nullable: true })
+
   latexDescription?: string
-  @Field((_) => FinancialItemDirection, { nullable: true })
+
   direction?: FinancialItemDirection
 
   static get tableName() {
@@ -188,7 +162,6 @@ class FinancialItem extends BaseModel {
   }
 }
 
-@ObjectType('PaginatedFinancialItem')
 class PaginatedFinancialItem extends PaginatedClass(FinancialItem) {}
 
 export {

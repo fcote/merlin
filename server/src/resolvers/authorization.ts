@@ -1,26 +1,22 @@
-import { AuthChecker } from 'type-graphql'
+import type { GraphQLFieldResolver } from 'graphql'
 
 import { UserService } from '@services/user'
 import { RequestContext } from '@typings/context'
 import { ApolloForbidden } from '@typings/errors/apolloErrors'
 
-enum Right {
-  authenticated = 'authenticated',
-}
+type FieldResolver = GraphQLFieldResolver<any, RequestContext>
 
-const authChecker: AuthChecker<RequestContext, Right> = async (
-  { context },
-  rights
-) => {
-  if (rights.includes(Right.authenticated)) {
+// Run before protected queries, mutations, and subscription registration.
+const authenticated =
+  (resolve: FieldResolver): FieldResolver =>
+  async (source, args, context, info) => {
+    if (!context.userToken) throw new ApolloForbidden('ACCESS_DENIED')
     const user = await new UserService(context).findOne({
       apiToken: context.userToken,
     })
     if (!user) throw new ApolloForbidden('ACCESS_DENIED')
     context.user = user
+    return resolve(source, args, context, info)
   }
 
-  return true
-}
-
-export { authChecker, Right }
+export { authenticated }

@@ -1,96 +1,72 @@
-import type {
-  ApolloServerPlugin,
-  GraphQLRequestListener,
-  BaseContext as ApolloBaseContext,
-} from '@apollo/server' with { 'resolution-mode': 'import' }
+import { execute, GraphQLError } from 'graphql'
+import type { Plugin } from 'graphql-yoga'
 import { Knex } from 'knex'
-import { Logger } from 'winston'
 
-type TransactionPluginConfig = {
-  knex: Knex
-  logger?: Logger
-  transactionTimeoutMs?: number
-  transactionConfig?: Knex.TransactionConfig
-}
+import { config } from '@config'
+import { knexDriver } from '@knex'
+import { logger } from '@logger'
+import { errorHandlerApollo } from '@middlewares/http/errorHandlerApollo'
+import { DataloaderService } from '@services/dataloader'
+import { RequestContext } from '@typings/context'
 
-type BaseContext = ApolloBaseContext & {
-  trx?: Knex.Transaction
-  trxStartPromise?: Promise<Knex.Transaction>
-  trxTimeout?: NodeJS.Timeout
-}
+// One transaction and one loader set per operation. Finish the transaction
+// before Yoga can send a response, including partial-data resolver failures.
+export const useOperationTransaction = (): Plugin<RequestContext> => ({
+  onExecute({ setExecuteFn }) {
+    setExecuteFn(async (args) => {
+      const context = args.contextValue as RequestContext
+      const trx: Knex.Transaction = await knexDriver.knex.transaction()
+      context.trx = trx
+      let timedOut = false
+      const timeoutMs = config.get('database.idleInTransactionTimeout')
+      const timeout =
+        timeoutMs > 0
+          ? setTimeout(() => {
+              timedOut = true
+              logger.warn('knex > terminating stuck transaction')
+              void trx.rollback().catch((error) => logger.error(error))
+            }, timeoutMs)
+          : undefined
 
-class TransactionPlugin<
-  C extends BaseContext = BaseContext,
-> implements ApolloServerPlugin<C> {
-  constructor(private config: TransactionPluginConfig) {}
-
-  private setTransactionInContext(context: C, trx?: Knex.Transaction) {
-    context.trx = trx
-  }
-
-  private async start(context: C) {
-    // Start the actual transaction
-    context.trxStartPromise = new Promise<Knex.Transaction>(
-      async (resolve, reject) => {
-        try {
-          const trx = await this.config.knex.transaction(
-            this.config?.transactionConfig
-          )
-          this.setTransactionInContext(context, trx)
-          resolve(trx)
-        } catch (err) {
-          reject(err)
+      try {
+        context.loaders = new DataloaderService(context)
+        // Keep the existing single-result contract; graphql-ws owns subscriptions.
+        const result = await execute(args)
+        if (timedOut) throw new GraphQLError('Operation transaction timed out')
+        if (result.errors?.length) {
+          await trx.rollback()
+          const format = errorHandlerApollo(logger)
+          return {
+            ...result,
+            errors: result.errors.map(
+              (error) =>
+                new GraphQLError(error.message, {
+                  nodes: error.nodes,
+                  path: error.path,
+                  originalError: error.originalError,
+                  extensions: format(
+                    {
+                      ...error.toJSON(),
+                      extensions: {
+                        code: 'INTERNAL_SERVER_ERROR',
+                        ...error.extensions,
+                      },
+                    },
+                    error
+                  ).extensions,
+                })
+            ),
+          }
         }
+        await trx.commit()
+        return result
+      } catch (error) {
+        if (!trx.isCompleted()) await trx.rollback()
+        throw error
+      } finally {
+        if (timeout) clearTimeout(timeout)
+        context.trx = undefined
       }
-    )
-    await context.trxStartPromise
-
-    // Set a timeout to kill the transaction if it takes too long
-    if (this.config?.transactionTimeoutMs) {
-      context.trxTimeout = setTimeout(
-        () => this.timeout(context, this.config.logger),
-        this.config.transactionTimeoutMs
-      )
-    }
-  }
-
-  private async timeout(context: C, logger?: Logger) {
-    logger?.warn('knex > terminating stuck transaction')
-    await this.abort(context)
-  }
-
-  private async commit(context: C) {
-    if (!context.trx || context.trx.isCompleted()) return
-    await context.trx.commit()
-    this.cleanup(context)
-  }
-
-  private async abort(context: C) {
-    if (!context.trx || context.trx.isCompleted()) return
-    await context.trx.rollback()
-    this.cleanup(context)
-  }
-
-  private cleanup(context: C) {
-    if (context.trxTimeout) {
-      clearTimeout(context.trxTimeout)
-    }
-    this.setTransactionInContext(context)
-  }
-
-  async requestDidStart(): Promise<GraphQLRequestListener<C>> {
-    return {
-      didResolveOperation: async ({ contextValue: context }) => {
-        await this.start(context)
-      },
-      didEncounterErrors: async ({ contextValue: context }) => {
-        await this.abort(context)
-      },
-      willSendResponse: async ({ contextValue: context }) => {
-        await this.commit(context)
-      },
-    }
-  }
-}
-
-export { TransactionPlugin, TransactionPluginConfig }
+    })
+  },
+})

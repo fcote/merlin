@@ -10,3 +10,6 @@ cpSync('src/config', 'dist/src/config', {
 for (const file of ['tsconfig.paths.js', 'tsconfig.json', 'package.json']) {
   copyFileSync(file, `dist/${file}`)
 }
+
+mkdirSync('dist/src/resolvers', { recursive: true })
+copyFileSync('src/resolvers/schema.graphql', 'dist/src/resolvers/schema.graphql')
