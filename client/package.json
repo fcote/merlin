@@ -32,7 +32,7 @@
     "react": "19.3.0",
     "react-scrollbars-custom": "4.1.1",
     "react-dom": "19.3.0",
-    "react-router-dom": "7.18.3",
+    "react-router-dom": "7.18.4",
     "rxjs": "7.8.2",
     "dayjs": "1.11.23",
     "@graphql-typed-document-node/core": "3.2.0",
