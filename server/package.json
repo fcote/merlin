@@ -65,7 +65,7 @@
     "@types/koa-bodyparser": "4.3.13",
     "@types/koa__cors": "5.0.1",
     "@types/lodash": "4.17.25",
-    "@types/node": "26.6.1",
+    "@types/node": "26.6.2",
     "@types/node-schedule": "2.1.8",
     "@types/numeral": "2.0.5",
     "@types/object-hash": "3.0.6",
