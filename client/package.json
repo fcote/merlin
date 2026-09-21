@@ -67,7 +67,7 @@
     "@playwright/test": "1.63.0",
     "globals": "17.12.0",
     "@typescript/native": "npm:typescript@7.0.2",
-    "eslint-plugin-react-x": "5.19.1"
+    "eslint-plugin-react-x": "5.20.3"
   },
   "browserslist": {
     "production": [
