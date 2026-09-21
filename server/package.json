@@ -39,7 +39,7 @@
     "graphql-scalars": "2.0.0",
     "graphql-ws": "6.2.2",
     "graphql-yoga": "5.24.1",
-    "jsdom": "30.0.1",
+    "jsdom": "30.1.0",
     "knex": "3.3.0",
     "koa": "3.2.1",
     "koa-bodyparser": "4.4.1",
