@@ -10,7 +10,7 @@ require (
 	github.com/rs/zerolog v1.35.1
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8
 	github.com/spf13/viper v1.21.0
-	go.uber.org/atomic v1.11.0
+	go.uber.org/atomic v1.12.0
 	go.uber.org/automaxprocs v1.6.0
 )
 
