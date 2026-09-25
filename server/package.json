@@ -28,7 +28,7 @@
     "@graphql-yoga/plugin-apq": "3.24.1",
     "@graphql-yoga/subscription": "5.1.1",
     "@koa/cors": "5.0.0",
-    "@sentry/node": "10.75.2",
+    "@sentry/node": "10.75.3",
     "@sindresorhus/string-hash": "2.0.0",
     "convict": "6.2.5",
     "cron-parser": "5.10.1",
