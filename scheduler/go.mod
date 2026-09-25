@@ -5,7 +5,7 @@ go 1.27.1
 require (
 	github.com/go-co-op/gocron/v2 v2.22.0
 	github.com/jackc/pgx/v5 v5.11.0
-	github.com/newrelic/go-agent/v3 v3.44.2
+	github.com/newrelic/go-agent/v3 v3.45.0
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.2
 	github.com/rs/zerolog v1.35.1
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8
@@ -17,6 +17,7 @@ require (
 require (
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
+	github.com/google/pprof v0.0.0-20260802141513-ef3492d7dac3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
