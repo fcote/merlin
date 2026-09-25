@@ -44,7 +44,7 @@
     "@types/crypto-js": "4.2.2",
     "@types/js-cookie": "3.0.6",
     "@types/katex": "0.16.8",
-    "@types/node": "26.6.2",
+    "@types/node": "26.6.3",
     "@types/lodash": "4.17.25",
     "@types/numeral": "2.0.5",
     "@types/react": "19.3.0",
