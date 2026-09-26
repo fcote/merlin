@@ -53,7 +53,7 @@
     "@typescript-eslint/parser": "8.70.1",
     "@vitejs/plugin-react": "6.1.1",
     "cross-env": "10.1.0",
-    "dotenv": "17.4.2",
+    "dotenv": "18.0.4",
     "eslint": "10.11.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import-helpers": "2.0.2",
