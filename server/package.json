@@ -70,7 +70,7 @@
     "@types/numeral": "2.0.5",
     "@types/object-hash": "3.0.6",
     "@types/pg": "8.23.1",
-    "@types/ws": "8.18.1",
+    "@types/ws": "8.18.2",
     "@typescript-eslint/eslint-plugin": "8.71.0",
     "@typescript-eslint/parser": "8.71.0",
     "@typescript/native": "npm:typescript@7.0.2",
