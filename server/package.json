@@ -24,7 +24,7 @@
     "test": "npm run build && cd dist && SERVER_PORT=0 node -r ./tsconfig.paths.js --test --test-concurrency=1 ../test/*.cjs"
   },
   "dependencies": {
-    "@graphql-tools/utils": "12.0.1",
+    "@graphql-tools/utils": "12.0.3",
     "@graphql-yoga/plugin-apq": "3.24.1",
     "@graphql-yoga/subscription": "5.1.1",
     "@koa/cors": "5.0.0",
