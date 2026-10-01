@@ -78,7 +78,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-import-helpers": "2.0.2",
     "eslint-plugin-prettier": "5.5.6",
-    "globals": "17.12.0",
+    "globals": "17.13.0",
     "nodemon": "3.1.14",
     "prettier": "3.9.9",
     "ts-node": "10.9.2",
