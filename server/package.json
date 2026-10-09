@@ -31,7 +31,7 @@
     "@sentry/node": "10.76.2",
     "@sindresorhus/string-hash": "2.0.0",
     "convict": "6.2.5",
-    "cron-parser": "5.10.1",
+    "cron-parser": "5.10.2",
     "dataloader": "2.2.3",
     "dayjs": "1.11.23",
     "got": "16.0.0",
