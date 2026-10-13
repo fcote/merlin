@@ -34,7 +34,7 @@
     "cron-parser": "5.10.2",
     "dataloader": "2.2.3",
     "dayjs": "1.11.23",
-    "got": "16.0.0",
+    "got": "16.1.0",
     "graphql": "17.0.2",
     "graphql-scalars": "2.0.0",
     "graphql-ws": "6.3.0",
