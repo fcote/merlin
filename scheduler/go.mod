@@ -3,7 +3,7 @@ module github.com/fcote/merlin/sheduler
 go 1.27.1
 
 require (
-	github.com/go-co-op/gocron/v2 v2.22.0
+	github.com/go-co-op/gocron/v2 v2.23.0
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/newrelic/go-agent/v3 v3.45.0
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v1.0.2
