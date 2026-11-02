@@ -1,7 +1,7 @@
 ###
 ### Build container
 ###
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 # Install deps and build.
@@ -11,7 +11,7 @@ RUN npm ci && npm run build
 ###
 ### Production image container
 ###
-FROM node:24-alpine AS runtime-container
+FROM node:26-alpine AS runtime-container
 WORKDIR /app
 
 # Copy compiled sources
